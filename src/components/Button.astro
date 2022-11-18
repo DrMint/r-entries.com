@@ -1,0 +1,37 @@
+---
+export interface Props {
+  title: string;
+  theme: "white" | "black";
+}
+
+const { title, theme: backgroundColor } = Astro.props;
+const foregroundColor = backgroundColor === "white" ? "black" : "white";
+---
+
+<button>
+  {title}
+  <div id="hoverlay"></div>
+</button>
+
+<style define:vars={{ backgroundColor, foregroundColor }}>
+  button {
+    color: var(--foregroundColor);
+    background-color: var(--backgroundColor);
+    border: none;
+    cursor: pointer;
+    position: relative;
+    padding: 0.5rem 1rem;
+  }
+
+  #hoverlay {
+    position: absolute;
+    inset: 0;
+    top: 100%;
+    transition: top 150ms;
+    backdrop-filter: invert();
+  }
+
+  button:hover > #hoverlay {
+    top: 0;
+  }
+</style>
