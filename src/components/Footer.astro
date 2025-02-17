@@ -22,11 +22,11 @@ import GithubLogo from "../icons/lucide--github.svg";
 
     & > p {
       font-size: small;
-      color: color-mix(in srgb, CanvasText 60%, Canvas);
+      color: var(--foreground-60);
     }
 
     & > a {
-      border: 1px solid color-mix(in srgb, CanvasText 10%, Canvas);
+      border: 1px solid var(--foreground-10);
       border-radius: 6px;
       display: block;
       display: grid;
@@ -39,8 +39,8 @@ import GithubLogo from "../icons/lucide--github.svg";
 
       &:hover,
       &:focus-visible {
-        background-color: color-mix(in srgb, CanvasText 3%, Canvas);
-        border-color: color-mix(in srgb, CanvasText 20%, transparent);
+        background-color: var(--foreground-3);
+        border-color: color-mix(in srgb, var(--foreground) 20%, transparent);
       }
     }
   }

@@ -57,6 +57,43 @@ import Footer from "./Footer.astro";
 </style>
 
 <style is:global>
+  :root {
+    --foreground: CanvasText;
+    --background: Canvas;
+    --foreground-3: color-mix(in srgb, var(--foreground) 3%, var(--background));
+    --foreground-5: color-mix(in srgb, var(--foreground) 5%, var(--background));
+    --foreground-10: color-mix(
+      in srgb,
+      var(--foreground) 10%,
+      var(--background)
+    );
+    --foreground-20: color-mix(
+      in srgb,
+      var(--foreground) 20%,
+      var(--background)
+    );
+    --foreground-30: color-mix(
+      in srgb,
+      var(--foreground) 30%,
+      var(--background)
+    );
+    --foreground-50: color-mix(
+      in srgb,
+      var(--foreground) 50%,
+      var(--background)
+    );
+    --foreground-60: color-mix(
+      in srgb,
+      var(--foreground) 60%,
+      var(--background)
+    );
+    --background-70: color-mix(in srgb, var(--background) 70%, transparent);
+  }
+
+  .medium-zoom-overlay {
+    backdrop-filter: blur(16px);
+  }
+
   a {
     color: inherit;
     text-decoration: unset;
@@ -122,10 +159,10 @@ import Footer from "./Footer.astro";
     }
 
     blockquote {
-      border-left: 4px solid color-mix(in srgb, CanvasText 30%, Canvas);
+      border-left: 4px solid var(--foreground-30);
       margin-left: unset;
       padding: 0.5em 1em;
-      background-color: color-mix(in srgb, CanvasText 5%, Canvas);
+      background-color: var(--foreground-5);
       border-radius: 8px;
     }
 
@@ -137,13 +174,13 @@ import Footer from "./Footer.astro";
     }
 
     :not(.astro-code) > code {
-      background-color: color-mix(in srgb, CanvasText 10%, Canvas);
+      background-color: var(--foreground-10);
       padding: 0.2em 0.5em;
       border-radius: 8px;
     }
 
     .anchor-link {
-      color: color-mix(in srgb, CanvasText 30%, Canvas);
+      color: var(--foreground-30);
       text-decoration: unset;
       margin-right: 8px;
       font-weight: 500;
@@ -152,7 +189,7 @@ import Footer from "./Footer.astro";
 
       &:hover,
       &:focus-visible {
-        color: CanvasText;
+        color: var(--foreground);
       }
     }
   }

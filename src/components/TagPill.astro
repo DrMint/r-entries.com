@@ -25,18 +25,18 @@ const { tag, count, withLinks = false } = Astro.props;
     display: flex;
     align-items: center;
     gap: 6px;
-    background-color: color-mix(in srgb, CanvasText 10%, Canvas);
+    background-color: var(--foreground-10);
     border-radius: 100vmax;
     padding: 2px 8px;
     padding-right: 12px;
 
     & > span {
       font-size: small;
-      color: color-mix(in srgb, CanvasText 60%, Canvas);
+      color: var(--foreground-60);
     }
 
     &.with-links {
-      border: 1px solid color-mix(in srgb, CanvasText 10%, Canvas);
+      border: 1px solid var(--foreground-10);
 
       transition:
         background-color 100ms,
@@ -44,8 +44,8 @@ const { tag, count, withLinks = false } = Astro.props;
 
       &:hover,
       &:focus-visible {
-        background-color: Canvas;
-        border-color: color-mix(in srgb, CanvasText 20%, Canvas);
+        background-color: transparent;
+        border-color: var(--foreground-20);
       }
     }
   }

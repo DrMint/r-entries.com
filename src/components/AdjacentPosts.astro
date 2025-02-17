@@ -81,7 +81,7 @@ const nextPost = posts.findLast(
     & > #next,
     & > #previous {
       display: flex;
-      border: 1px solid color-mix(in srgb, CanvasText 20%, Canvas);
+      border: 1px solid var(--foreground-20);
       border-radius: 8px;
       gap: 12px;
       padding: 8px 16px;
@@ -89,19 +89,21 @@ const nextPost = posts.findLast(
 
       & .label {
         font-size: small;
-        color: color-mix(in srgb, CanvasText 60%, Canvas);
+        color: var(--foreground-60);
       }
 
       &.disabled {
-        border-color: color-mix(in srgb, CanvasText 10%, Canvas);
-        color: color-mix(in srgb, CanvasText 50%, Canvas);
+        border-color: var(--foreground-10);
+        color: var(--foreground-50);
 
         & .label {
-          color: color-mix(in srgb, CanvasText 30%, Canvas);
+          color: var(--foreground-30);
         }
       }
 
-      transition: background-color 100ms, border-color 100ms;
+      transition:
+        background-color 100ms,
+        border-color 100ms;
 
       & > svg {
         transition: translate 100ms;
@@ -109,8 +111,8 @@ const nextPost = posts.findLast(
 
       &:not(.disabled):hover,
       &:not(.disabled):focus-visible {
-        background-color: color-mix(in srgb, CanvasText 5%, Canvas);
-        border-color: color-mix(in srgb, CanvasText 50%, Canvas);
+        background-color: var(--foreground-5);
+        border-color: var(--foreground-50);
 
         & > svg {
           translate: var(--translation) 0px;

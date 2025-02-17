@@ -37,7 +37,7 @@ const items: { href: string; label: string }[] = [
     position: sticky;
     top: 0;
     backdrop-filter: blur(16px);
-    background-color: color-mix(in srgb, Canvas 70%, transparent);
+    background-color: var(--background-70);
     padding: 1em;
 
     & > nav {
@@ -78,7 +78,7 @@ const items: { href: string; label: string }[] = [
         gap: 24px;
 
         & > a {
-          color: color-mix(in srgb, CanvasText 70%, Canvas);
+          color: var(--foreground-60);
           transition: color 100ms;
 
           &:hover,
@@ -87,7 +87,7 @@ const items: { href: string; label: string }[] = [
           }
 
           &.active {
-            color: CanvasText;
+            color: var(--foreground);
           }
         }
       }
