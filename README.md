@@ -3,6 +3,7 @@
 ## TODO
 
 - View transitions
+    - https://developer.chrome.com/docs/web-platform/view-transitions/cross-document#demo
 - TOC
 - TOC observable api
 - Go back up

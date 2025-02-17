@@ -24,7 +24,7 @@ tags.sort((a, b) => b.count - a.count);
       {
         tags.map(({ tag, count }) => (
           <a href={`/tags/${tag}`}>
-            <TagPill tag={tag} count={count} />
+            <TagPill tag={tag} count={count} withLinks />
           </a>
         ))
       }

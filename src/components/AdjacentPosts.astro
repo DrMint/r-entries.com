@@ -100,43 +100,32 @@ const nextPost = posts.findLast(
           color: color-mix(in srgb, CanvasText 30%, Canvas);
         }
       }
+
+      transition: background-color 100ms, border-color 100ms;
+
+      & > svg {
+        transition: translate 100ms;
+      }
+
+      &:not(.disabled):hover,
+      &:not(.disabled):focus-visible {
+        background-color: color-mix(in srgb, CanvasText 5%, Canvas);
+        border-color: color-mix(in srgb, CanvasText 50%, Canvas);
+
+        & > svg {
+          translate: var(--translation) 0px;
+        }
+      }
     }
 
     & > #previous {
       justify-content: end;
       text-align: end;
-
-      transition: background-color 100ms;
-
-      & > svg {
-        transition: translate 100ms;
-      }
-
-      &:not(.disabled):hover,
-      &:not(.disabled):focus-visible {
-        background-color: color-mix(in srgb, CanvasText 10%, Canvas);
-
-        & > svg {
-          translate: 4px 0px;
-        }
-      }
+      --translation: 4px;
     }
 
     & > #next {
-      transition: background-color 100ms;
-
-      & > svg {
-        transition: translate 100ms;
-      }
-
-      &:not(.disabled):hover,
-      &:not(.disabled):focus-visible {
-        background-color: color-mix(in srgb, CanvasText 10%, Canvas);
-
-        & > svg {
-          translate: -4px 0px;
-        }
-      }
+      --translation: -4px;
     }
 
     @media only screen and (max-width: 600px) {

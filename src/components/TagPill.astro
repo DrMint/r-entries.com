@@ -4,14 +4,15 @@ import HashLogo from "../icons/lucide--hash.svg";
 interface Props {
   tag: string;
   count?: number;
+  withLinks?: boolean;
 }
 
-const { tag, count } = Astro.props;
+const { tag, count, withLinks = false } = Astro.props;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div component-root>
+<div component-root class:list={{ "with-links": withLinks }}>
   <HashLogo width={12} height={12} />
   {tag}
   {count && <span>{`(${count})`}</span>}
@@ -32,6 +33,20 @@ const { tag, count } = Astro.props;
     & > span {
       font-size: small;
       color: color-mix(in srgb, CanvasText 60%, Canvas);
+    }
+
+    &.with-links {
+      border: 1px solid color-mix(in srgb, CanvasText 10%, Canvas);
+
+      transition:
+        background-color 100ms,
+        border-color 100ms;
+
+      &:hover,
+      &:focus-visible {
+        background-color: Canvas;
+        border-color: color-mix(in srgb, CanvasText 20%, Canvas);
+      }
     }
   }
 </style>

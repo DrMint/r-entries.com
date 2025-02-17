@@ -18,10 +18,10 @@ if (tags.length === 0) return;
     tags.map((tag) =>
       withLinks ? (
         <a href={`/tags/${tag}`}>
-          <TagPill tag={tag} />
+          <TagPill tag={tag} withLinks={withLinks} />
         </a>
       ) : (
-        <TagPill tag={tag} />
+        <TagPill tag={tag} withLinks={withLinks} />
       )
     )
   }
