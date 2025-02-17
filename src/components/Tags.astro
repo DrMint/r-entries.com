@@ -1,0 +1,37 @@
+---
+import TagPill from "./TagPill.astro";
+
+interface Props {
+  tags: string[] | undefined;
+  withLinks?: boolean;
+}
+
+const { tags = [], withLinks = false } = Astro.props;
+
+if (tags.length === 0) return;
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<div component-root>
+  {
+    tags.map((tag) =>
+      withLinks ? (
+        <a href={`/tags/${tag}`}>
+          <TagPill tag={tag} />
+        </a>
+      ) : (
+        <TagPill tag={tag} />
+      )
+    )
+  }
+</div>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [component-root] {
+    display: flex;
+    gap: 8px;
+  }
+</style>

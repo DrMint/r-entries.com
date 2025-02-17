@@ -1,0 +1,63 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import Tags from "./Tags.astro";
+import PostMeta from "./PostMeta.astro";
+
+interface Props {
+  post: CollectionEntry<"posts">;
+}
+
+const { post } = Astro.props;
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<a href={`/posts/${post.slug}`} component-root>
+  <Image src={post.data.cover} width={256} alt="" />
+  <div>
+    <div>
+      <h2>{post.data.title}</h2>
+      <p>{post.data.summary}</p>
+    </div>
+    <PostMeta post={post} />
+    <Tags tags={post.data.tags} />
+  </div>
+</a>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [component-root] {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    border: 1px solid color-mix(in srgb, CanvasText 10%, transparent);
+    border-radius: 12px;
+    padding: 12px;
+
+    transition:
+      background-color 100ms,
+      border-color 100ms;
+
+    &:hover,
+    &:focus-visible {
+      background-color: color-mix(in srgb, CanvasText 3%, Canvas);
+      border-color: color-mix(in srgb, CanvasText 20%, transparent);
+    }
+
+    & > img {
+      width: 220px;
+      height: auto;
+      object-fit: cover;
+      border-radius: 6px;
+      background-color: color-mix(in srgb, CanvasText 20%, Canvas);
+    }
+
+    & > div {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+</style>

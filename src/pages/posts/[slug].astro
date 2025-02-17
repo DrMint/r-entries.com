@@ -1,0 +1,75 @@
+---
+import { getCollection } from "astro:content";
+import { render } from "astro:content";
+import Html from "../../components/Html.astro";
+import Tags from "../../components/Tags.astro";
+import AdjacentPosts from "../../components/AdjacentPosts.astro";
+import PostMeta from "../../components/PostMeta.astro";
+import { Image } from "astro:assets";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+const { title, cover, summary, tags } = post.data;
+const { Content } = await render(post);
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<Html>
+  <main>
+    <Image id="cover" src={cover} alt="" width={1024} />
+
+    <h1>{title}</h1>
+    <PostMeta post={post} />
+    <Tags tags={tags} withLinks />
+    <AdjacentPosts currentPost={post} />
+
+    <div id="content">
+      {summary && <p>{summary}</p>}
+      <Content />
+    </div>
+  </main>
+</Html>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  main {
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    gap: 16px;
+  }
+
+  #cover {
+    width: 100%;
+    max-width: 1024px;
+    aspect-ratio: 16/9;
+    height: auto;
+    object-fit: cover;
+    border-radius: 16px;
+    background-color: color-mix(in srgb, CanvasText 20%, Canvas);
+  }
+
+  #content {
+    max-width: 768px;
+    width: 100%;
+
+    & > :global(img) {
+      width: 100%;
+      height: auto;
+    }
+
+    & > h1 {
+      text-align: center;
+    }
+  }
+</style>

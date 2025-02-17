@@ -1,0 +1,209 @@
+---
+title: Steam Deck tips
+cover: cover.png
+summary: Tips and tricks about the Steam Deck
+date: 2023-11-27
+tags:
+    - steam-deck
+---
+
+## First checks
+
+Congratulations, you've just received your Steam Deck! Here's a few things you can check to make sure everything is working as expected:
+
+- Check and apply updates
+- Settings
+	- Controller
+		- Test Device Input
+		- Calibration & Advanced Settings
+			- Reduce deadzones until the joysticks starts registering movements when immobile. Then increase the deadzone by one step.
+	- Downloads
+		- Allow download during gameplay
+- Test for dead pixels
+	1. Go to Desktop mode
+	2. Go to https://lcdtech.info/en/tests/dead.pixel.htm
+
+
+## Troubleshooting
+
+### Audio issues
+
+> Everytime the Steam Deck is rebooted, the audio stops working because it defaults to a nonexistent "External speakers" instead of the regular "Speakers".
+
+1. Go to **Desktop Mode** by holding the power button and selecting the option
+2. Open the **System Settings**
+3. In the **Hardware** section, open the **Audio** page
+4. In the **Playback Devices** find "Rembrandt Radeon High Definition Audio Controller"
+5. By default, its "Profile" should be set to **Pro Audio**. Change it **Off**
+6. Restart the device
+
+### Wi-Fi issues
+
+> The Steam Deck keeps losing connectivity. I'm getting the following error: **Steam servers can't be reached**.
+
+This is likely to be an compatibility issue between the Steam Deck and particular Wi-Fi access points/brands or particular wifi network configurations. Follow these steps to fix it: 
+
+1. Start the device in gaming mode and open the **Settings**
+2. In the **System** tab, turn on **Developer Mode**
+3. Navigate to the **Developer** tab and disable "Enable WiFi Power Management"
+4. Restart the device after making these changes
+
+
+
+### Annoying KDE Wallet popups in desktop mode
+
+Edit `/home/deck/.config/kwalletrc`  
+Add `Enabled=false` at the end of the file
+
+
+
+## Desktop Mode
+
+### Set sudo password
+
+Go to settings / users / select user and change password
+
+### Add nested desktop to gaming mode
+
+Right click on `/usr/share/applications/steam/steamos-nested-desktop/steamos-nested-desktop.desktop` and press add to steam
+
+### Transfer Firefox profile
+
+Transfer profile folder and `profiles.ini` file to `/home/deck/.var/app/org.mozilla.firefox/.mozilla/firefox/`
+
+If you want to see the list of profiles, run `flatpak run org.mozilla.firefox -P`
+
+
+
+
+### Remap keyboard
+
+Using X11 XKB, start by dumping the current keyboard layout using this command
+```sh
+xkbcomp $DISPLAY my_keyboard.xkb
+```
+
+After modification, reapply using:
+```sh
+xkbcomp my_keyboard.xkb $DISPLAY
+```
+
+#### Additional tools and tricks
+
+Display currently pressed key codes using:
+```sh
+sudo showkey
+```
+
+
+### Access serial ports
+
+I'm testing serial port through
+```sh
+flatpak install org.thonny.Thonny
+```
+
+Add yourself to the uucp group
+
+```sh
+sudo usermod -a -G uucp deck
+```
+
+
+
+
+
+### Webdev
+
+#### Podman & distrobox
+
+Since SteamOS version 3.5, the deck comes with podman and distrobox preinstalled. This makes installing apps, tools, and library in a sudoless/immutable OS feasible. This also enables you to use various package managers such as apt (Debian/Ubuntu), pacman (Arch), yum (Fedora).
+
+Read more about `Toolbox` https://containertoolbx.org/
+
+View full list of compatible container distro here https://github.com/89luca89/distrobox/blob/main/docs/compatibility.md#containers-distros
+
+#### Install NVM (node)
+
+```sh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+```
+
+#### Install bun
+
+```sh
+curl -fsSL https://bun.sh/install | bash
+```
+
+
+### Add AppImage to start menu using [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
+
+```bash
+chmod +x appimagelauncher-lite-2.2.0-travis995-0f91801-x86_64.AppImage
+./appimagelauncher-lite-2.2.0-travis995-0f91801-x86_64.AppImage install
+```
+
+### Python
+
+#### Install PIP
+
+```bash
+python -m ensurepip --upgrade
+echo 'PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+PATH="$HOME/.local/bin:$PATH"
+```
+
+#### Install Packages
+
+In your dev repository
+
+1. First, create the virtual environment with:
+    
+     `python3 -m venv venv` 
+    
+2. Source the activate file inside the bin directory using the source command:
+    
+     `source venv/bin/activate`
+
+
+### VSCode / VSCodium
+
+Set `window.titleBarStyle` to custom
+
+
+## Decky Loader
+https://github.com/SteamDeckHomebrew/decky-loader
+
+
+### Play games from other platform than Steam
+- https://github.com/moraroy/NonSteamLaunchers-On-Steam-Deck
+- Heroic game launcher
+
+
+## Emulation
+
+### Install Emudeck
+
+- Download the Emudeck image for SteamOS https://www.emudeck.com/EmuDeck.desktop
+
+
+### Nintendo Switch
+Get firmware at https://prodkeys.net/yuzu-firmware/  
+Get prod.key at https://prodkeys.net/yuzu-prod-keys/
+
+#### Configure Gyroscope on Yuzu
+
+- Install gyroscope in Emudeck
+- Restart Steam deck
+- In desktop mode, open Yuzu
+- Open yuzu config, controls, motion
+- Hit Test
+- Close window and press Motion 1
+- Give the device a little check
+- Enjoy
+
+### Resources
+
+https://emudeck.github.io/cheat-sheet/  
+https://romsfun.com  
+https://nopaystation.com/browse

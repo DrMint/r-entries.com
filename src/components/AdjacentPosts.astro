@@ -1,0 +1,142 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import LeftArrow from "../icons/lucide--arrow-left.svg";
+import RightArrow from "../icons/lucide--arrow-right.svg";
+
+interface Props {
+  currentPost: CollectionEntry<"posts">;
+}
+
+const { currentPost } = Astro.props;
+
+const posts = await getCollection("posts");
+
+// Sort from newer to older
+posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const previousPost = posts.find(
+  (otherPost) => otherPost.data.date.valueOf() < currentPost.data.date.valueOf()
+);
+
+const nextPost = posts.findLast(
+  (otherPost) => otherPost.data.date.valueOf() > currentPost.data.date.valueOf()
+);
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<div component-root>
+  {
+    nextPost ? (
+      <a id="next" href={`/posts/${nextPost.slug}`}>
+        <LeftArrow width={18} height={18} />
+        <div>
+          <p class="label">Next Post</p>
+          <p>{nextPost.data.title}</p>
+        </div>
+      </a>
+    ) : (
+      <div id="next" class="disabled">
+        <LeftArrow width={18} height={18} />
+        <div>
+          <p class="label">Next Post</p>
+          <p>Newest post!</p>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    previousPost ? (
+      <a id="previous" href={`/posts/${previousPost.slug}`}>
+        <div>
+          <p class="label">Previous Post</p>
+          <p>{previousPost.data.title}</p>
+        </div>
+        <RightArrow width={18} height={18} />
+      </a>
+    ) : (
+      <div id="previous" class="disabled">
+        <div>
+          <p class="label">Previous Post</p>
+          <p>Last post!</p>
+        </div>
+        <RightArrow width={18} height={18} />
+      </div>
+    )
+  }
+</div>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [component-root] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    max-width: 768px;
+
+    & > #next,
+    & > #previous {
+      display: flex;
+      border: 1px solid color-mix(in srgb, CanvasText 20%, Canvas);
+      border-radius: 8px;
+      gap: 12px;
+      padding: 8px 16px;
+      align-items: center;
+
+      & .label {
+        font-size: small;
+        color: color-mix(in srgb, CanvasText 60%, Canvas);
+      }
+
+      &.disabled {
+        border-color: color-mix(in srgb, CanvasText 10%, Canvas);
+        color: color-mix(in srgb, CanvasText 50%, Canvas);
+
+        & .label {
+          color: color-mix(in srgb, CanvasText 30%, Canvas);
+        }
+      }
+    }
+
+    & > #previous {
+      justify-content: end;
+      text-align: end;
+
+      transition: background-color 100ms;
+
+      & > svg {
+        transition: translate 100ms;
+      }
+
+      &:not(.disabled):hover,
+      &:not(.disabled):focus-visible {
+        background-color: color-mix(in srgb, CanvasText 10%, Canvas);
+
+        & > svg {
+          translate: 4px 0px;
+        }
+      }
+    }
+
+    & > #next {
+      transition: background-color 100ms;
+
+      & > svg {
+        transition: translate 100ms;
+      }
+
+      &:not(.disabled):hover,
+      &:not(.disabled):focus-visible {
+        background-color: color-mix(in srgb, CanvasText 10%, Canvas);
+
+        & > svg {
+          translate: -4px 0px;
+        }
+      }
+    }
+  }
+</style>

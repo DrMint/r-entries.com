@@ -1,0 +1,64 @@
+---
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+
+{
+  /* --------------------------------[ HTML ]-------------------------------- */
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Document</title>
+  </head>
+  <body>
+    <Header />
+    <slot />
+    <Footer />
+  </body>
+</html>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  html {
+    color-scheme: light dark;
+    font-family: sans-serif;
+  }
+
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  body {
+    min-height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 2em;
+    padding: 1em;
+    padding-top: 2em;
+    box-sizing: border-box;
+  }
+</style>
+
+<style is:global>
+  a {
+    color: inherit;
+    text-decoration: unset;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: unset;
+  }
+</style>

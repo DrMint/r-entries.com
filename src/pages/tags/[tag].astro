@@ -1,0 +1,62 @@
+---
+import { getCollection } from "astro:content";
+import Html from "../../components/Html.astro";
+import HashLogo from "../../icons/lucide--hash.svg";
+import PostPreview from "../../components/PostPreview.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  const tags = new Set(posts.flatMap((post) => post.data.tags ?? []));
+
+  return [...tags].map((tag) => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+
+const posts = await getCollection("posts", (post) =>
+  post.data.tags?.includes(tag)
+);
+
+// Sort from newer to older
+posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<Html>
+  <main>
+    <h1>
+      Posts tagged with <span><HashLogo width={26} height={26} />{tag}</span>
+    </h1>
+
+    {posts.map((post) => <PostPreview post={post} />)}
+  </main>
+</Html>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  main {
+    max-width: 768px;
+    width: 100%;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+
+    & > h1 > span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: color-mix(in srgb, CanvasText 10%, Canvas);
+      border-radius: 100vmax;
+      padding: 8px 14px;
+      padding-right: 18px;
+      font-size: 26px;
+      font-weight: 500;
+    }
+  }
+</style>

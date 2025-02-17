@@ -1,0 +1,81 @@
+---
+import Logo from "../icons/r-entries.svg";
+
+const { pathname } = new URL(Astro.request.url);
+
+const items: { href: string; label: string }[] = [
+  { href: "/posts", label: "Posts" },
+  { href: "/tags", label: "Tags" },
+  { href: "/about", label: "About" },
+];
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<header component-root>
+  <nav>
+    <a id="left" href="/">
+      <Logo height={32} width={32} />
+      <p>ReSTRICTed_Entries</p>
+    </a>
+    <div id="right">
+      {
+        items.map(({ href, label }) => (
+          <a href={href} class:list={{ active: pathname.startsWith(href) }}>
+            {label}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+</header>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [component-root] {
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(16px);
+    background-color: color-mix(in srgb, Canvas 70%, transparent);
+    padding: 1em;
+
+    & > nav {
+      margin-inline: auto;
+      max-width: 768px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      & > #left,
+      & > #right {
+        display: flex;
+        align-items: center;
+      }
+
+      & > #left {
+        font-size: x-large;
+        font-weight: 700;
+        gap: 16px;
+      }
+
+      & > #right {
+        gap: 24px;
+
+        & > a {
+          color: color-mix(in srgb, CanvasText 70%, Canvas);
+          transition: color 100ms;
+
+          &:hover,
+          &:focus-visible {
+            color: inherit;
+          }
+
+          &.active {
+            color: CanvasText;
+          }
+        }
+      }
+    }
+  }
+</style>

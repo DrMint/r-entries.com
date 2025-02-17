@@ -1,0 +1,37 @@
+---
+import HashLogo from "../icons/lucide--hash.svg";
+
+interface Props {
+  tag: string;
+  count?: number;
+}
+
+const { tag, count } = Astro.props;
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<div component-root>
+  <HashLogo width={12} height={12} />
+  {tag}
+  {count && <span>{`(${count})`}</span>}
+</div>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [component-root] {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: color-mix(in srgb, CanvasText 10%, Canvas);
+    border-radius: 100vmax;
+    padding: 2px 8px;
+    padding-right: 12px;
+
+    & > span {
+      font-size: small;
+      color: color-mix(in srgb, CanvasText 60%, Canvas);
+    }
+  }
+</style>

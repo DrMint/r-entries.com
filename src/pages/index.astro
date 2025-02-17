@@ -1,11 +1,77 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import { getCollection } from "astro:content";
+import Html from "../components/Html.astro";
+import PostPreview from "../components/PostPreview.astro";
+import RightArrow from "../icons/lucide--arrow-right.svg";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const posts = await getCollection("posts");
+
+// Sort from newer to older
+const latestPosts = posts
+  .toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 2);
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<Html>
+  <main>
+    <h1>Welcome</h1>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut convallis
+      sodales commodo. Fusce eu sapien lectus. Vivamus eleifend scelerisque
+      libero, in cursus leo. Integer tristique, lectus eget dapibus euismod,
+      nisl massa imperdiet felis, sit amet tristique leo leo sed ante. Mauris
+      efficitur leo ac purus tempus varius. Phasellus nec suscipit erat. Mauris
+      pharetra porttitor ipsum vitae venenatis. Cras vitae nisl pellentesque,
+      venenatis mauris at, mattis nisi. Pellentesque sed sem non nunc interdum
+      laoreet. In tincidunt a tortor ut sollicitudin.
+    </p>
+    <h2>Latest posts</h2>
+    {latestPosts.map((post) => <PostPreview post={post} />)}
+    {
+      latestPosts.length !== posts.length && (
+        <a id="view-all" href="/posts">
+          View all posts <RightArrow width={16} height={16} />
+        </a>
+      )
+    }
+  </main>
+</Html>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  main {
+    max-width: 768px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+
+    & > #view-all {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      place-self: center;
+      padding: 8px 16px;
+      border-radius: 8px;
+
+      transition: background-color 100ms;
+
+      & > svg {
+        transition: translate 100ms;
+      }
+
+      &:hover,
+      &:focus-visible {
+        background-color: color-mix(in srgb, CanvasText 10%, Canvas);
+
+        & > svg {
+          translate: 4px 0px;
+        }
+      }
+    }
+  }
+</style>

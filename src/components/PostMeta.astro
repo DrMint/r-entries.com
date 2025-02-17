@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getReadingTime } from "../utils/readingTime";
+
+interface Props {
+  post: CollectionEntry<"posts">;
+}
+
+const { post } = Astro.props;
+const { date } = post.data;
+const readingTime = getReadingTime(post.body);
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<div component-root>
+  <p>{date.toLocaleDateString(undefined, { dateStyle: "long" })}</p>
+  <div class="separator">|</div>
+  <p>{`${readingTime} min read`}</p>
+</div>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [component-root] {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: color-mix(in srgb, CanvasText 60%, Canvas);
+
+    .separator {
+      height: 26px;
+      color: color-mix(in srgb, CanvasText 20%, Canvas);
+    }
+  }
+</style>

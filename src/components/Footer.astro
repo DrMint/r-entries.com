@@ -1,0 +1,47 @@
+---
+import GithubLogo from "../icons/lucide--github.svg";
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<footer component-root>
+  <p>© {new Date().getFullYear()} All rights reserved.</p>
+  <a href="https://github.com/DrMint"><GithubLogo width={16} height={16} /></a>
+</footer>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [component-root] {
+    max-width: 768px;
+    margin-inline: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    & > p {
+      font-size: small;
+      color: color-mix(in srgb, CanvasText 60%, Canvas);
+    }
+
+    & > a {
+      border: 1px solid color-mix(in srgb, CanvasText 10%, Canvas);
+      border-radius: 6px;
+      display: block;
+      display: grid;
+      place-content: center;
+      padding: 8px;
+
+      transition:
+        background-color 100ms,
+        border-color 100ms;
+
+      &:hover,
+      &:focus-visible {
+        background-color: color-mix(in srgb, CanvasText 3%, Canvas);
+        border-color: color-mix(in srgb, CanvasText 20%, transparent);
+      }
+    }
+  }
+</style>
