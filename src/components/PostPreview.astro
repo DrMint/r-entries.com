@@ -57,7 +57,21 @@ const { post } = Astro.props;
     & > div {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
+
+      & > div {
+        & > h2 {
+          margin-bottom: 0.4em;
+        }
+      }
+    }
+
+    @media only screen and (max-width: 600px) {
+      flex-direction: column;
+
+      & > img {
+        width: 100%;
+      }
     }
   }
 </style>

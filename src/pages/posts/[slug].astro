@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 
-const { title, cover, summary, tags } = post.data;
+const { title, cover, tags } = post.data;
 const { Content } = await render(post);
 ---
 
@@ -30,10 +30,11 @@ const { Content } = await render(post);
     <h1>{title}</h1>
     <PostMeta post={post} />
     <Tags tags={tags} withLinks />
+
+    <br />
     <AdjacentPosts currentPost={post} />
 
-    <div id="content">
-      {summary && <p>{summary}</p>}
+    <div id="content" class="prose">
       <Content />
     </div>
   </main>
@@ -47,6 +48,10 @@ const { Content } = await render(post);
     flex-direction: column;
     place-items: center;
     gap: 16px;
+
+    & > h1 {
+      margin-top: 48px;
+    }
   }
 
   #cover {
@@ -60,6 +65,7 @@ const { Content } = await render(post);
   }
 
   #content {
+    margin-block: 64px;
     max-width: 768px;
     width: 100%;
 

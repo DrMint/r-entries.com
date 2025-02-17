@@ -37,6 +37,7 @@ import Footer from "./Footer.astro";
   html {
     color-scheme: light dark;
     font-family: sans-serif;
+    scroll-behavior: smooth;
   }
 
   html,
@@ -52,7 +53,6 @@ import Footer from "./Footer.astro";
     gap: 2em;
     padding: 1em;
     padding-top: 2em;
-    box-sizing: border-box;
   }
 </style>
 
@@ -70,5 +70,100 @@ import Footer from "./Footer.astro";
   h5,
   h6 {
     margin: unset;
+    line-height: 1;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .prose {
+    * {
+      line-height: 1.5;
+    }
+
+    a {
+      color: revert;
+      text-decoration: revert;
+    }
+
+    & > *:first-child {
+      margin-top: unset;
+    }
+
+    & > *:last-child {
+      margin-bottom: unset;
+    }
+
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin-top: 2em;
+      margin-bottom: 1em;
+      scroll-margin-top: calc(56px + 2em);
+    }
+
+    h2 + h3,
+    h3 + h4,
+    h4 + h5,
+    h5 + h6 {
+      margin-top: -1em;
+    }
+
+    ul,
+    ol {
+      margin-block: 0.5em;
+
+      li + li {
+        margin-top: 0.5em;
+      }
+    }
+
+    blockquote {
+      border-left: 4px solid color-mix(in srgb, CanvasText 30%, Canvas);
+      margin-left: unset;
+      padding: 0.5em 1em;
+      background-color: color-mix(in srgb, CanvasText 5%, Canvas);
+      border-radius: 8px;
+    }
+
+    .astro-code {
+      padding: 1em 1.5em;
+      border-radius: 8px;
+      white-space: unset;
+      width: 100%;
+    }
+
+    :not(.astro-code) > code {
+      background-color: color-mix(in srgb, CanvasText 10%, Canvas);
+      padding: 0.2em 0.5em;
+      border-radius: 8px;
+    }
+
+    .anchor-link {
+      color: color-mix(in srgb, CanvasText 30%, Canvas);
+      text-decoration: unset;
+      margin-right: 8px;
+      font-weight: 500;
+
+      transition: color 100ms;
+
+      &:hover,
+      &:focus-visible {
+        color: CanvasText;
+      }
+    }
   }
 </style>
+
+{/* Medium-like image zoom on post images */}
+<script>
+  import mediumZoom from "medium-zoom";
+
+  mediumZoom(document.querySelectorAll(".prose img"), {
+    background: "color-mix(in srgb, Canvas 80%, transparent)",
+    margin: 20,
+  });
+</script>
