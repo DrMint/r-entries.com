@@ -1,5 +1,6 @@
 ---
 import GithubLogo from "src/icons/lucide--github.svg";
+import TwitterLogo from "src/icons/lucide--twitter.svg";
 
 const props = Astro.props;
 ---
@@ -9,9 +10,14 @@ const props = Astro.props;
 <footer component-root {...props}>
   <div>
     <p>© {new Date().getFullYear()} All rights reserved.</p>
-    <a href="https://github.com/DrMint">
-      <GithubLogo width={16} height={16} />
-    </a>
+    <div class="social-links">
+      <a href="https://x.com/DrMint4">
+        <TwitterLogo width={16} height={16} />
+      </a>
+      <a href="https://github.com/DrMint">
+        <GithubLogo width={16} height={16} />
+      </a>
+    </div>
   </div>
 </footer>
 
@@ -40,21 +46,26 @@ const props = Astro.props;
         color: var(--foreground-60);
       }
 
-      & > a {
-        border: 1px solid var(--foreground-10);
-        border-radius: 6px;
-        display: grid;
-        place-content: center;
-        padding: 8px;
+      & .social-links {
+        display: flex;
+        gap: 8px;
 
-        transition:
-          background-color 100ms,
-          border-color 100ms;
+        & > a {
+          border: 1px solid var(--foreground-10);
+          border-radius: 6px;
+          display: grid;
+          place-content: center;
+          padding: 8px;
 
-        &:hover,
-        &:focus-visible {
-          background-color: var(--foreground-3);
-          border-color: color-mix(in srgb, var(--foreground) 20%, transparent);
+          transition:
+            background-color 100ms,
+            border-color 100ms;
+
+          &:hover,
+          &:focus-visible {
+            background-color: var(--foreground-3);
+            border-color: color-mix(in srgb, var(--foreground) 20%, transparent);
+          }
         }
       }
     }
