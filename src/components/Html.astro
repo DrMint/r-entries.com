@@ -28,10 +28,8 @@ const props = Astro.props;
   </head>
   <body>
     <Header />
-    <main>
-      <div {...props}>
-        <slot />
-      </div>
+    <main {...props}>
+      <slot />
     </main>
     <Footer />
   </body>
@@ -62,22 +60,14 @@ const props = Astro.props;
   }
 
   main {
-    border-inline: 1px solid var(--layout-border);
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
 
-    & > div {
-      flex: 1;
+    max-width: 1024px;
+    width: 100%;
+    margin-inline: auto;
 
-      max-width: 1024px;
-      width: 100%;
-      margin-inline: auto;
-
-      @media only screen and (min-width: 1024px) {
-        border-inline: 1px solid var(--layout-border);
-      }
+    @media only screen and (min-width: 1024px) {
+      border-inline: 1px solid var(--layout-border);
     }
   }
 </style>

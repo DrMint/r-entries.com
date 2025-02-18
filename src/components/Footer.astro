@@ -16,16 +16,16 @@ import GithubLogo from "../icons/lucide--github.svg";
 
 <style>
   [component-root] {
-    border-block: 1px solid var(--layout-border);
-
-    @media only screen and (min-width: 1024px) {
-      border-inline: 1px solid var(--layout-border);
-    }
+    border-top: 1px solid var(--layout-border);
 
     & > div {
       max-width: 1024px;
       margin-inline: auto;
-      border-inline: 1px solid var(--layout-border);
+
+      @media only screen and (min-width: 1024px) {
+        border-inline: 1px solid var(--layout-border);
+      }
+
       padding: 16px var(--middle-x-padding);
 
       display: flex;

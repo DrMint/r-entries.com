@@ -14,7 +14,7 @@ const items: { href: string; label: string }[] = [
 
 <header component-root>
   <nav>
-    <a id="left" href="/">
+    <a id="left" href="/" class:list={{ active: pathname === "/" }}>
       <Logo />
       <p>ReSTRICTed_Entries</p>
     </a>
@@ -41,17 +41,16 @@ const items: { href: string; label: string }[] = [
       background-color: var(--background-70);
     }
 
-    border-block: 1px solid var(--layout-border);
-
-    @media only screen and (min-width: 1024px) {
-      border-inline: 1px solid var(--layout-border);
-    }
+    border-bottom: 1px solid var(--layout-border);
 
     & > nav {
       max-width: 1024px;
       margin-inline: auto;
       padding-inline: calc(var(--middle-x-padding) - 16px);
-      border-inline: 1px solid var(--layout-border);
+
+      @media only screen and (min-width: 1024px) {
+        border-inline: 1px solid var(--layout-border);
+      }
 
       display: flex;
       justify-content: space-between;
