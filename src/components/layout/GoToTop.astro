@@ -41,7 +41,7 @@ import ArrowUpToLine from "src/icons/lucide--arrow-up-to-line.svg";
 
     display: grid;
     place-content: center;
-    padding: 8px;
+    padding: 16px;
 
     opacity: 0;
     visibility: hidden;
@@ -51,7 +51,7 @@ import ArrowUpToLine from "src/icons/lucide--arrow-up-to-line.svg";
       visibility 0.3s ease,
       background-color 100ms,
       border-color 100ms;
-    z-index: 100;
+    cursor: pointer;
 
     &.visible {
       opacity: 1;
@@ -62,12 +62,17 @@ import ArrowUpToLine from "src/icons/lucide--arrow-up-to-line.svg";
     &:focus-visible {
       background-color: var(--foreground-3);
       border-color: color-mix(in srgb, var(--foreground) 20%, transparent);
+      & > svg {
+        transform: translateY(-1px);
+      }
     }
 
     & > svg {
       width: 16px;
       height: 16px;
       color: var(--foreground);
+      transform: translateY(2px);
+      transition: transform 100ms;
     }
   }
 </style>

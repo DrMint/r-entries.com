@@ -1,12 +1,12 @@
 ---
 import { getCollection } from "astro:content";
 import { render } from "astro:content";
-import Html from "src/components/Html.astro";
-import Tags from "src/components/Tags.astro";
-import AdjacentPosts from "src/components/AdjacentPosts.astro";
+import Html from "src/components/layout/Html.astro";
+import Tags from "src/pages/posts/_components/Tags.astro";
 import PostMeta from "src/components/PostMeta.astro";
-import TableOfContents from "src/components/TableOfContents.astro";
+import TableOfContents from "src/pages/posts/_components/TableOfContents.astro";
 import { Image } from "astro:assets";
+import AdjacentPosts from "src/pages/posts/_components/AdjacentPosts.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
