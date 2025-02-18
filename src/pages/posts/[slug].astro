@@ -7,6 +7,7 @@ import PostMeta from "src/components/PostMeta.astro";
 import TableOfContents from "src/pages/posts/_components/TableOfContents.astro";
 import { Image } from "astro:assets";
 import AdjacentPosts from "src/pages/posts/_components/AdjacentPosts.astro";
+import { ENABLE_TABLE_OF_CONTENTS_FEATURE } from "src/constants";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -17,8 +18,7 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-
-const { title, cover, tags } = post.data;
+const { title, cover, tags, summary } = post.data;
 const { Content, headings } = await render(post);
 
 // Add a space after the numbering
@@ -27,11 +27,21 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
   slug,
   text: text.replace(/^([\d.]+)/, "$1 "),
 }));
+
+// Get the full URL for the cover image
+const coverUrl = new URL(cover.src, Astro.url).toString();
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html page-root>
+<Html
+  page-root
+  openGraph={{
+    title,
+    description: summary,
+    thumbnail: coverUrl,
+  }}
+>
   <Image id="cover" src={cover} alt="" width={1024} />
   <div id="header">
     <h1>{title}</h1>
@@ -40,7 +50,7 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
   </div>
   <div id="content">
     {
-      numberedHeadings.length > 0 && (
+      ENABLE_TABLE_OF_CONTENTS_FEATURE && numberedHeadings.length > 0 && (
         <TableOfContents headings={numberedHeadings} />
       )
     }

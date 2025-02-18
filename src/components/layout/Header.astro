@@ -1,29 +1,39 @@
 ---
-import Logo from "src/icons/r-entries.svg";
-
-const { pathname } = new URL(Astro.request.url);
-
-const items: { href: string; label: string }[] = [
-  { href: "/posts", label: "Posts" },
-  { href: "/tags", label: "Tags" },
-  { href: "/about", label: "About" },
-];
+import {
+  NAVIGATION_HOME_ITEM,
+  NAVIGATION_ITEMS,
+  WEBSITE_NAME,
+  WebsiteLogo
+} from "src/constants";
+import { isActive } from "src/utils/navigation";
 
 const props = Astro.props;
+const { pathname } = new URL(Astro.request.url);
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <header component-root {...props}>
   <nav>
-    <a id="left" href="/" class:list={{ active: pathname === "/" }}>
-      <Logo />
-      <p>ReSTRICTed_Entries</p>
+    <a
+      id="left"
+      href={NAVIGATION_HOME_ITEM.href}
+      class:list={{ active: isActive(NAVIGATION_HOME_ITEM, pathname) }}
+      title={NAVIGATION_HOME_ITEM.tooltip}
+    >
+      <WebsiteLogo />
+      <p>{WEBSITE_NAME}</p>
     </a>
     <div id="right">
       {
-        items.map(({ href, label }) => (
-          <a href={href} class:list={{ active: pathname.startsWith(href) }}>
+        NAVIGATION_ITEMS.map(({ href, label, detection, tooltip }) => (
+          <a
+            href={href}
+            class:list={{
+              active: isActive({ href, detection }, pathname),
+            }}
+            title={tooltip}
+          >
             {label}
           </a>
         ))

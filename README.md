@@ -3,9 +3,7 @@
 ## TODO
 - View transitions
   - https://developer.chrome.com/docs/web-platform/view-transitions/cross-document#demo
-- TOC
 - TOC observable api
-- Go back up
 
 - Check
   - [`rehype-callouts`](https://github.com/lin-stephanie/rehype-callouts) — render blockquote-based callouts (admonitions/alerts)

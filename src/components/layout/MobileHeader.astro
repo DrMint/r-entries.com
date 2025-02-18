@@ -1,7 +1,10 @@
 ---
-import Logo from "src/icons/r-entries.svg";
-import GithubLogo from "src/icons/lucide--github.svg";
-import TwitterLogo from "src/icons/lucide--twitter.svg";
+import {
+  NAVIGATION_HOME_ITEM,
+  WebsiteLogo,
+  WEBSITE_NAME,
+} from "src/constants";
+import { isActive } from "src/utils/navigation";
 
 const { pathname } = new URL(Astro.request.url);
 const props = Astro.props;
@@ -11,22 +14,18 @@ const props = Astro.props;
 
 <header component-root {...props}>
   <nav>
-    <a id="left" href="/" class:list={{ active: pathname === "/" }}>
+    <a
+      id="left"
+      href={NAVIGATION_HOME_ITEM.href}
+      class:list={{ active: isActive(NAVIGATION_HOME_ITEM, pathname) }}
+    >
       <div>
-        <Logo />
-        <p>ReSTRICTed_Entries</p>
+        <WebsiteLogo />
+        <p>{WEBSITE_NAME}</p>
       </div>
-      <p>© {new Date().getFullYear()} All rights reserved.</p>
     </a>
     <div id="right">
-      <div class="social-links">
-        <a href="https://x.com/DrMint4">
-          <TwitterLogo width={16} height={16} />
-        </a>
-        <a href="https://github.com/DrMint">
-          <GithubLogo width={16} height={16} />
-        </a>
-      </div>
+      <p>© {new Date().getFullYear()} All rights reserved.</p>
     </div>
   </nav>
 </header>
@@ -52,7 +51,7 @@ const props = Astro.props;
       & > #left,
       & > #right {
         display: flex;
-        align-items: center;
+        align-items: end;
       }
 
       & > #left {
@@ -83,47 +82,24 @@ const props = Astro.props;
             }
           }
         }
-
-        & > p {
-          font-size: small;
-          color: var(--foreground-60);
-        }
       }
 
       & > #right {
-        & .social-links {
-          display: flex;
-          gap: 8px;
-
-          & > a {
-            border: 1px solid var(--foreground-10);
-            border-radius: 6px;
-            display: grid;
-            place-content: center;
-            padding: 8px;
-
-            transition:
-              background-color 100ms,
-              border-color 100ms;
-
-            &:hover,
-            &:focus-visible {
-              background-color: var(--foreground-3);
-              border-color: color-mix(
-                in srgb,
-                var(--foreground) 20%,
-                transparent
-              );
-            }
-          }
+        & > p {
+          font-size: small;
+          color: var(--foreground-50);
+          line-height: 1.8;
         }
       }
 
-      @media only screen and (max-width: 400.5px) {
+      @media only screen and (max-width: 600.5px) {
         flex-direction: column;
         align-items: center;
         padding-block: 16px;
-        gap: 24px;
+      }
+
+      @media only screen and (max-width: 400.5px) {
+        gap: 8px;
       }
     }
   }

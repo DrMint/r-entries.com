@@ -1,24 +1,11 @@
 ---
-import HomeIcon from "src/icons/lucide--home.svg";
-import PostsIcon from "src/icons/lucide--newspaper.svg";
-import TagsIcon from "src/icons/lucide--tags.svg";
-import AboutIcon from "src/icons/lucide--circle-user-round.svg";
+import { NAVIGATION_HOME_ITEM, NAVIGATION_ITEMS } from "src/constants";
+import { isActive } from "src/utils/navigation";
 
 const { pathname } = new URL(Astro.request.url);
-
-const items: {
-  href: string;
-  detection: "prefix" | "exact";
-  label: string;
-  icon: any;
-}[] = [
-  { href: "/", detection: "exact", label: "Home", icon: HomeIcon },
-  { href: "/posts", detection: "prefix", label: "Posts", icon: PostsIcon },
-  { href: "/tags", detection: "prefix", label: "Tags", icon: TagsIcon },
-  { href: "/about", detection: "prefix", label: "About", icon: AboutIcon },
-];
-
 const props = Astro.props;
+
+const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
@@ -30,10 +17,7 @@ const props = Astro.props;
         <a
           href={href}
           class:list={{
-            active:
-              detection === "prefix"
-                ? pathname.startsWith(href)
-                : pathname === href,
+            active: isActive({ href, detection }, pathname),
           }}
         >
           <Icon width={24} height={24} />

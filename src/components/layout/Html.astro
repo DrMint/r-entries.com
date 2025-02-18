@@ -5,30 +5,72 @@ import Header from "src/components/layout/Header.astro";
 import JSGuard from "src/components/JSGuard.astro";
 import MobileFooter from "src/components/layout/MobileFooter.astro";
 import MobileHeader from "src/components/layout/MobileHeader.astro";
+import {
+  BACKGROUND_COLOR,
+  DEFAULT_DESCRIPTION,
+  DEFAULT_THUMBNAIL,
+  DEFAULT_TITLE,
+  ENABLE_GO_TO_TOP_FEATURE,
+  FOREGROUND_COLOR,
+} from "src/constants";
+
+interface OpenGraph {
+  title: string;
+  description?: string | undefined;
+  thumbnail?: string | undefined;
+}
+
+interface Props {
+  openGraph?: OpenGraph;
+}
 
 const props = Astro.props;
+const { openGraph } = props;
 
-{
-  /* --------------------------------[ HTML ]-------------------------------- */
-}
+const defaultThumbnailUrl = new URL(DEFAULT_THUMBNAIL, Astro.url).toString();
+
+const title = openGraph?.title ?? DEFAULT_TITLE;
+const description = openGraph?.description ?? DEFAULT_DESCRIPTION;
+const thumbnail = openGraph?.thumbnail ?? defaultThumbnailUrl;
 ---
 
 <html lang="en" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
 
+    {/* Basic tags */}
+    <title>
+      {title !== DEFAULT_TITLE ? `${title} | ${DEFAULT_TITLE}` : DEFAULT_TITLE}
+    </title>
+    <meta name="description" content={description} />
+
+    {/* OpenGraph tags */}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={thumbnail} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="R-Entries" />
+    <meta property="og:url" content={Astro.url} />
+
+    {/* Twitter tags */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@DrMint4" />
+    <meta name="twitter:creator" content="@DrMint4" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={thumbnail} />
+
+    {/* Favicon */}
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="R-Entries" />
     <link rel="manifest" href="/site.webmanifest" />
-
-    <link rel="sitemap" href="/sitemap-index.xml" />
-
-    <title>Document</title>
   </head>
   <body>
     <Header class="fine-only" />
@@ -37,9 +79,13 @@ const props = Astro.props;
       <div {...props}>
         <slot />
       </div>
-      <JSGuard class="go-to-top-guard">
-        <GoToTop />
-      </JSGuard>
+      {
+        ENABLE_GO_TO_TOP_FEATURE && (
+          <JSGuard class="go-to-top-guard">
+            <GoToTop />
+          </JSGuard>
+        )
+      }
     </main>
     <Footer class="fine-only" />
     <MobileFooter class="coarse-only" />
@@ -52,6 +98,35 @@ const props = Astro.props;
   // Enable JavaScript detection
   document.documentElement.classList.remove("no-js");
   document.documentElement.classList.add("js");
+</script>
+
+<script>
+  /* 
+    Medium-like image zoom on post images.
+    Only enabled when the window is larger than 720px. 
+  */
+
+  import mediumZoom from "medium-zoom";
+  import { ENABLE_IMAGE_ZOOM_FEATURE } from "src/constants";
+
+  if (ENABLE_IMAGE_ZOOM_FEATURE) {
+    const zoom = mediumZoom(undefined, {
+      margin: 50,
+      background: "var(--background-70)",
+    });
+
+    const updateZoom = (smallerThan720: boolean) => {
+      if (smallerThan720) {
+        zoom.detach();
+      } else {
+        zoom.attach(".prose img");
+      }
+    };
+
+    const mediaQuery = window.matchMedia("(max-width: 720px)");
+    updateZoom(mediaQuery.matches);
+    mediaQuery.addEventListener("change", ({ matches }) => updateZoom(matches));
+  }
 </script>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
@@ -123,10 +198,14 @@ const props = Astro.props;
   }
 </style>
 
-<style is:global>
+<style
+  is:global
+  define:vars={{
+    foreground: FOREGROUND_COLOR,
+    background: BACKGROUND_COLOR,
+  }}
+>
   :root {
-    --foreground: CanvasText;
-    --background: Canvas;
     --foreground-3: color-mix(in srgb, var(--foreground) 3%, var(--background));
     --foreground-5: color-mix(in srgb, var(--foreground) 5%, var(--background));
     --foreground-10: color-mix(
@@ -184,7 +263,6 @@ const props = Astro.props;
   }
 
   .prose {
-
     * {
       line-height: 1.5;
     }
@@ -298,29 +376,3 @@ const props = Astro.props;
     }
   }
 </style>
-
-<script>
-  /* 
-    Medium-like image zoom on post images.
-    Only enabled when the window is larger than 720px. 
-  */
-
-  import mediumZoom from "medium-zoom";
-
-  const zoom = mediumZoom(undefined, {
-    margin: 50,
-    background: "var(--background-70)",
-  });
-
-  const updateZoom = (smallerThan720: boolean) => {
-    if (smallerThan720) {
-      zoom.detach();
-    } else {
-      zoom.attach(".prose img");
-    }
-  };
-
-  const mediaQuery = window.matchMedia("(max-width: 720px)");
-  updateZoom(mediaQuery.matches);
-  mediaQuery.addEventListener("change", ({ matches }) => updateZoom(matches));
-</script>
