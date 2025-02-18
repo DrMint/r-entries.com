@@ -41,5 +41,6 @@ export default defineConfig({
   devToolbar: {
     enabled: true,
   },
-  site: "http://localhost:4321",
+  site: "https://drmint.github.io",
+  base: "/r-entries.com",
 }); 
