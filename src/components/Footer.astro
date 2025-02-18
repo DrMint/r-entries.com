@@ -1,14 +1,17 @@
 ---
 import GithubLogo from "../icons/lucide--github.svg";
+
+const props = Astro.props;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<footer component-root>
+<footer component-root {...props}>
   <div>
     <p>© {new Date().getFullYear()} All rights reserved.</p>
-    <a href="https://github.com/DrMint"><GithubLogo width={16} height={16} /></a
-    >
+    <a href="https://github.com/DrMint">
+      <GithubLogo width={16} height={16} />
+    </a>
   </div>
 </footer>
 

@@ -1,0 +1,120 @@
+---
+import Logo from "../icons/r-entries.svg";
+import GithubLogo from "../icons/lucide--github.svg";
+
+const { pathname } = new URL(Astro.request.url);
+const props = Astro.props;
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<header component-root {...props}>
+  <nav>
+    <a id="left" href="/" class:list={{ active: pathname === "/" }}>
+      <div>
+        <Logo />
+        <p>ReSTRICTed_Entries</p>
+      </div>
+      <p>© {new Date().getFullYear()} All rights reserved.</p>
+    </a>
+    <div id="right">
+      <a href="https://github.com/DrMint">
+        <GithubLogo width={16} height={16} />
+      </a>
+    </div>
+  </nav>
+</header>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [component-root] {
+    border-bottom: 1px solid var(--layout-border);
+
+    & > nav {
+      max-width: 1024px;
+      margin-inline: auto;
+      padding: 16px calc(var(--middle-x-padding));
+
+      @media only screen and (min-width: 1024px) {
+        border-inline: 1px solid var(--layout-border);
+      }
+
+      display: flex;
+      justify-content: space-between;
+
+      & > #left,
+      & > #right {
+        display: flex;
+        align-items: center;
+      }
+
+      & > #left {
+        flex-direction: column;
+        align-items: end;
+        gap: 4px;
+
+        & > div {
+          display: flex;
+          align-items: center;
+
+          font-size: x-large;
+          font-weight: 700;
+          gap: 16px;
+
+          & svg {
+            width: 32px;
+            height: 32px;
+          }
+
+          @media only screen and (max-width: 400.5px) {
+            display: flex;
+            flex-direction: column;
+
+            & svg {
+              width: 64px;
+              height: 64px;
+            }
+          }
+        }
+
+        & > p {
+          font-size: small;
+          color: var(--foreground-60);
+        }
+      }
+
+      & > #right {
+        & > a {
+          border: 1px solid var(--foreground-10);
+          border-radius: 6px;
+          display: block;
+          display: grid;
+          place-content: center;
+          padding: 8px;
+
+          transition:
+            background-color 100ms,
+            border-color 100ms;
+
+          &:hover,
+          &:focus-visible {
+            background-color: var(--foreground-3);
+            border-color: color-mix(
+              in srgb,
+              var(--foreground) 20%,
+              transparent
+            );
+          }
+        }
+      }
+
+      @media only screen and (max-width: 400.5px) {
+        flex-direction: column;
+        align-items: center;
+        padding-block: 16px;
+        gap: 24px;
+      }
+    }
+  }
+</style>

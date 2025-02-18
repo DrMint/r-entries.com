@@ -8,11 +8,13 @@ const items: { href: string; label: string }[] = [
   { href: "/tags", label: "Tags" },
   { href: "/about", label: "About" },
 ];
+
+const props = Astro.props;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<header component-root>
+<header component-root {...props}>
   <nav>
     <a id="left" href="/" class:list={{ active: pathname === "/" }}>
       <Logo />
@@ -86,7 +88,7 @@ const items: { href: string; label: string }[] = [
           height: 32px;
         }
 
-        @media only screen and (max-width: 400px) {
+        @media only screen and (max-width: 400.5px) {
           display: flex;
           flex-direction: column;
 

@@ -1,0 +1,94 @@
+---
+import HomeIcon from "../icons/lucide--home.svg";
+import PostsIcon from "../icons/lucide--newspaper.svg";
+import TagsIcon from "../icons/lucide--tags.svg";
+import AboutIcon from "../icons/lucide--circle-user-round.svg";
+
+const { pathname } = new URL(Astro.request.url);
+
+const items: {
+  href: string;
+  detection: "prefix" | "exact";
+  label: string;
+  icon: any;
+}[] = [
+  { href: "/", detection: "exact", label: "Home", icon: HomeIcon },
+  { href: "/posts", detection: "prefix", label: "Posts", icon: PostsIcon },
+  { href: "/tags", detection: "prefix", label: "Tags", icon: TagsIcon },
+  { href: "/about", detection: "prefix", label: "About", icon: AboutIcon },
+];
+
+const props = Astro.props;
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<header component-root {...props}>
+  <nav>
+    {
+      items.map(({ href, label, icon: Icon, detection }) => (
+        <a
+          href={href}
+          class:list={{
+            active:
+              detection === "prefix"
+                ? pathname.startsWith(href)
+                : pathname === href,
+          }}
+        >
+          <Icon width={24} height={24} />
+          {label}
+        </a>
+      ))
+    }
+  </nav>
+</header>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [component-root] {
+    position: sticky;
+    bottom: 0;
+    backdrop-filter: blur(24px);
+    background-color: var(--background-70);
+
+    border-top: 1px solid var(--layout-border);
+
+    & > nav {
+      max-width: 1024px;
+      margin-inline: auto;
+      padding-inline: calc(var(--middle-x-padding) - 16px);
+
+      @media only screen and (min-width: 1024px) {
+        border-inline: 1px solid var(--layout-border);
+      }
+
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+
+      & a {
+        display: flex;
+        flex-direction: column;
+        place-items: center;
+        gap: 4px;
+        font-size: small;
+
+        color: var(--foreground-60);
+        padding: 16px;
+        transition: color 100ms;
+
+        &:hover,
+        &:focus-visible {
+          color: inherit;
+        }
+
+        &.active {
+          color: var(--foreground);
+          font-weight: 700;
+        }
+      }
+    }
+  }
+</style>
