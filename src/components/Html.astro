@@ -11,7 +11,7 @@ const props = Astro.props;
 }
 ---
 
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -39,6 +39,14 @@ const props = Astro.props;
   </body>
 </html>
 
+{/* ---------------------------------[ JS ]--------------------------------- */}
+
+<script>
+  // Enable JavaScript detection
+  document.documentElement.classList.remove("no-js");
+  document.documentElement.classList.add("js");
+</script>
+
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
@@ -62,13 +70,13 @@ const props = Astro.props;
     display: flex;
     flex-direction: column;
 
-    @media (any-pointer: fine) {
+    @media (pointer: fine) {
       .coarse-only {
         display: none;
       }
     }
 
-    @media (any-pointer: coarse) {
+    @media (pointer: coarse) {
       .fine-only {
         display: none;
       }

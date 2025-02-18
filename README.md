@@ -1,9 +1,6 @@
 # R-Entries
 
 ## TODO
-
-- Swap to a bottom tabbar when in coarse pointer mode
-
 - View transitions
   - https://developer.chrome.com/docs/web-platform/view-transitions/cross-document#demo
 - TOC

@@ -1,0 +1,21 @@
+---
+// No props needed anymore since we're using slots
+---
+
+<span class="no-js-hide">
+  <slot />
+</span>
+
+<span class="js-hide">
+  <slot name="fallback" />
+</span>
+
+<style>
+  :global(html.no-js) .no-js-hide {
+    display: none;
+  }
+
+  :global(html.js) .js-hide {
+    display: none;
+  }
+</style>
