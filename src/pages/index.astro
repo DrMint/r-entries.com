@@ -1,8 +1,8 @@
 ---
 import { getCollection } from "astro:content";
-import Html from "../components/Html.astro";
-import PostPreview from "../components/PostPreview.astro";
-import RightArrow from "../icons/lucide--arrow-right.svg";
+import Html from "src/components/Html.astro";
+import PostPreview from "src/components/PostPreview.astro";
+import RightArrow from "src/icons/lucide--arrow-right.svg";
 
 const posts = await getCollection("posts");
 

@@ -1,8 +1,8 @@
 ---
 import { getCollection } from "astro:content";
-import Html from "../../components/Html.astro";
-import HashLogo from "../../icons/lucide--hash.svg";
-import PostPreview from "../../components/PostPreview.astro";
+import Html from "src/components/Html.astro";
+import HashLogo from "src/icons/lucide--hash.svg";
+import PostPreview from "src/components/PostPreview.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
