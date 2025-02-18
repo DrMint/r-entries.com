@@ -20,6 +20,13 @@ const { post } = Astro.props;
 
 const { title, cover, tags } = post.data;
 const { Content, headings } = await render(post);
+
+// Add a space after the numbering
+const numberedHeadings = headings.map(({ depth, slug, text }) => ({
+  depth,
+  slug,
+  text: text.replace(/^([\d.]+)/, "$1 "),
+}));
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
@@ -34,7 +41,11 @@ const { Content, headings } = await render(post);
   <div id="content">
     <div id="navigation">
       <AdjacentPosts currentPost={post} />
-      {headings.length > 0 && <TableOfContents headings={headings} />}
+      {
+        numberedHeadings.length > 0 && (
+          <TableOfContents headings={numberedHeadings} />
+        )
+      }
     </div>
     <div class="prose">
       <Content />
