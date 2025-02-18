@@ -1,12 +1,13 @@
 ---
-// No props needed anymore since we're using slots
+const props = Astro.props;
+const { class: className } = props;
 ---
 
-<span class="no-js-hide">
+<span class:list={["no-js-hide", className]} {...props}>
   <slot />
 </span>
 
-<span class="js-hide">
+<span class:list={["js-hide", className]} {...props}>
   <slot name="fallback" />
 </span>
 

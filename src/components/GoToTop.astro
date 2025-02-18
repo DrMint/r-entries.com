@@ -1,0 +1,73 @@
+---
+import ArrowUpToLine from "../icons/lucide--arrow-up-to-line.svg";
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<button id="go-to-top" aria-label="Go to top">
+  <ArrowUpToLine />
+</button>
+
+{/* ---------------------------------[ JS ]--------------------------------- */}
+
+<script>
+  const elem = document.getElementById("go-to-top");
+  if (!elem) throw new Error("Go to top button not found");
+  const button = elem;
+
+  // Add scroll visibility logic
+  const updateVisibility = () => {
+    button.classList.toggle('visible', window.scrollY > window.innerHeight / 2);
+  };
+  
+  // Initial check
+  updateVisibility();
+  // Update on scroll
+  window.addEventListener('scroll', updateVisibility);
+
+  button.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  #go-to-top {
+    outline: 10px solid var(--background);
+
+    border: 1px solid var(--foreground-10);
+    border-radius: 6px;
+
+    display: grid;
+    place-content: center;
+    padding: 8px;
+
+    opacity: 0;
+    visibility: hidden;
+    background-color: var(--background);
+    transition:
+      opacity 0.3s ease,
+      visibility 0.3s ease,
+      background-color 100ms,
+      border-color 100ms;
+    z-index: 100;
+
+    &.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--foreground-3);
+      border-color: color-mix(in srgb, var(--foreground) 20%, transparent);
+    }
+
+    & > svg {
+      width: 16px;
+      height: 16px;
+      color: var(--foreground);
+    }
+  }
+</style>

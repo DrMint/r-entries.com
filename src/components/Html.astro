@@ -1,6 +1,8 @@
 ---
 import Footer from "./Footer.astro";
+import GoToTop from "./GoToTop.astro";
 import Header from "./Header.astro";
+import JSGuard from "./JSGuard.astro";
 import MobileFooter from "./MobileFooter.astro";
 import MobileHeader from "./MobileHeader.astro";
 
@@ -31,8 +33,13 @@ const props = Astro.props;
   <body>
     <Header class="fine-only" />
     <MobileHeader class="coarse-only" />
-    <main {...props}>
-      <slot />
+    <main>
+      <div {...props}>
+        <slot />
+      </div>
+      <JSGuard class="go-to-top-guard">
+        <GoToTop />
+      </JSGuard>
     </main>
     <Footer class="fine-only" />
     <MobileFooter class="coarse-only" />
@@ -85,6 +92,8 @@ const props = Astro.props;
 
   main {
     flex: 1;
+    display: flex;
+    flex-direction: column;
 
     max-width: 1024px;
     width: 100%;
@@ -92,6 +101,24 @@ const props = Astro.props;
 
     @media only screen and (min-width: 1024px) {
       border-inline: 1px solid var(--layout-border);
+    }
+
+    & > .go-to-top-guard {
+      align-self: flex-end;
+      position: sticky;
+      margin-bottom: 32px;
+      transform: translateX(16px);
+
+      bottom: 32px;
+
+      @media (pointer: coarse) {
+        bottom: 110px;
+      }
+
+      @media (max-width: 1096px) {
+        align-self: center;
+        transform: unset;
+      }
     }
   }
 </style>
