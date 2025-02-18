@@ -16,11 +16,13 @@ const posts = await getCollection("posts");
 posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const previousPost = posts.find(
-  (otherPost) => otherPost.data.date.valueOf() < currentPost.data.date.valueOf()
+  (otherPost) =>
+    otherPost.data.date.valueOf() < currentPost.data.date.valueOf(),
 );
 
 const nextPost = posts.findLast(
-  (otherPost) => otherPost.data.date.valueOf() > currentPost.data.date.valueOf()
+  (otherPost) =>
+    otherPost.data.date.valueOf() > currentPost.data.date.valueOf(),
 );
 ---
 
@@ -83,7 +85,7 @@ const nextPost = posts.findLast(
       border: 1px solid var(--foreground-20);
       border-radius: 8px;
       gap: 12px;
-      padding: 8px 16px;
+      padding: 16px;
       align-items: center;
 
       & .label {
@@ -117,16 +119,28 @@ const nextPost = posts.findLast(
           translate: var(--translation) 0px;
         }
       }
+
+      & > div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        & p {
+          line-height: 1.2;
+        }
+      }
     }
 
     & > #previous {
       justify-content: end;
       text-align: end;
       --translation: 4px;
+      padding-left: 24px;
     }
 
     & > #next {
       --translation: -4px;
+      padding-right: 24px;
     }
 
     @media only screen and (max-width: 600.5px) {

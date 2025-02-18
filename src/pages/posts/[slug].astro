@@ -39,17 +39,15 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
     <Tags tags={tags} />
   </div>
   <div id="content">
-    <div id="navigation">
-      <AdjacentPosts currentPost={post} />
-      {
-        numberedHeadings.length > 0 && (
-          <TableOfContents headings={numberedHeadings} />
-        )
-      }
-    </div>
+    {
+      numberedHeadings.length > 0 && (
+        <TableOfContents headings={numberedHeadings} />
+      )
+    }
     <div class="prose">
       <Content />
     </div>
+    <AdjacentPosts currentPost={post} />
   </div>
 </Html>
 
@@ -93,15 +91,8 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 64px;
+      gap: 128px;
       padding: 64px 16px;
-      padding-bottom: 128px;
-
-      & > #navigation {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
     }
   }
 </style>
