@@ -4,18 +4,14 @@ import Html from "../components/Html.astro";
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html>
-  <main>
-    <h1>About</h1>
-  </main>
+<Html page-root>
+  <h1>About</h1>
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  main {
-    max-width: 768px;
-    width: 100%;
-    margin-inline: auto;
+  [page-root] {
+    padding: 64px var(--middle-x-padding);
   }
 </style>

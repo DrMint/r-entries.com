@@ -76,7 +76,6 @@ const nextPost = posts.findLast(
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     width: 100%;
-    max-width: 768px;
 
     & > #next,
     & > #previous {
@@ -130,7 +129,7 @@ const nextPost = posts.findLast(
       --translation: -4px;
     }
 
-    @media only screen and (max-width: 600px) {
+    @media only screen and (max-width: 600.5px) {
       grid-template-columns: 1fr;
     }
   }

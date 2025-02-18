@@ -17,8 +17,7 @@ tags.sort((a, b) => b.count - a.count);
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html>
-  <main>
+<Html page-root>
     <h1>Tags</h1>
     <div>
       {
@@ -29,19 +28,16 @@ tags.sort((a, b) => b.count - a.count);
         ))
       }
     </div>
-  </main>
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  main {
-    max-width: 768px;
-    width: 100%;
-    margin-inline: auto;
+  [page-root] {
+    padding: 64px var(--middle-x-padding);
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    gap: 32px;
 
     & > div {
       display: flex;

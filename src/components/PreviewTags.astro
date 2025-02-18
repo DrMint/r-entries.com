@@ -13,13 +13,7 @@ if (tags.length === 0) return;
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <div component-root>
-  {
-    tags.map((tag) => (
-      <a href={`/tags/${tag}`}>
-        <TagPill tag={tag} withLinks />
-      </a>
-    ))
-  }
+  {tags.map((tag) => <TagPill tag={tag} />)}
 </div>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
@@ -29,6 +23,5 @@ if (tags.length === 0) return;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    justify-content: center;
   }
 </style>

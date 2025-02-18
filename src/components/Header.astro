@@ -34,23 +34,47 @@ const items: { href: string; label: string }[] = [
 
 <style>
   [component-root] {
-    position: sticky;
-    top: 0;
-    backdrop-filter: blur(16px);
-    background-color: var(--background-70);
-    padding: 1em;
+    @media only screen and (min-width: 600.5px) {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(16px);
+      background-color: var(--background-70);
+    }
+
+    border-block: 1px solid var(--layout-border);
+
+    @media only screen and (min-width: 1024px) {
+      border-inline: 1px solid var(--layout-border);
+    }
 
     & > nav {
+      max-width: 1024px;
       margin-inline: auto;
-      max-width: 768px;
+      padding-inline: calc(var(--middle-x-padding) - 16px);
+      border-inline: 1px solid var(--layout-border);
+
       display: flex;
       justify-content: space-between;
-      align-items: end;
 
       & > #left,
       & > #right {
         display: flex;
         align-items: center;
+      }
+
+      & a {
+        color: var(--foreground-60);
+        padding: 16px;
+        transition: color 100ms;
+
+        &:hover,
+        &:focus-visible {
+          color: inherit;
+        }
+
+        &.active {
+          color: var(--foreground);
+        }
       }
 
       & > #left {
@@ -74,28 +98,10 @@ const items: { href: string; label: string }[] = [
         }
       }
 
-      & > #right {
-        gap: 24px;
-
-        & > a {
-          color: var(--foreground-60);
-          transition: color 100ms;
-
-          &:hover,
-          &:focus-visible {
-            color: inherit;
-          }
-
-          &.active {
-            color: var(--foreground);
-          }
-        }
-      }
-
-      @media only screen and (max-width: 600px) {
+      @media only screen and (max-width: 600.5px) {
         flex-direction: column;
         align-items: center;
-        gap: 18px;
+        padding-block: 16px;
       }
     }
   }

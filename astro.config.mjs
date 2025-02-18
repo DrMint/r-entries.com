@@ -38,5 +38,8 @@ export default defineConfig({
   server: {
     host: true,
   },
+  devToolbar: {
+    enabled: false,
+  },
   site: "http://localhost:4321",
 });

@@ -5,42 +5,55 @@ import GithubLogo from "../icons/lucide--github.svg";
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <footer component-root>
-  <p>© {new Date().getFullYear()} All rights reserved.</p>
-  <a href="https://github.com/DrMint"><GithubLogo width={16} height={16} /></a>
+  <div>
+    <p>© {new Date().getFullYear()} All rights reserved.</p>
+    <a href="https://github.com/DrMint"><GithubLogo width={16} height={16} /></a
+    >
+  </div>
 </footer>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
   [component-root] {
-    max-width: 768px;
-    margin-inline: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    border-block: 1px solid var(--layout-border);
 
-    & > p {
-      font-size: small;
-      color: var(--foreground-60);
+    @media only screen and (min-width: 1024px) {
+      border-inline: 1px solid var(--layout-border);
     }
 
-    & > a {
-      border: 1px solid var(--foreground-10);
-      border-radius: 6px;
-      display: block;
-      display: grid;
-      place-content: center;
-      padding: 8px;
+    & > div {
+      max-width: 1024px;
+      margin-inline: auto;
+      border-inline: 1px solid var(--layout-border);
+      padding: 16px var(--middle-x-padding);
 
-      transition:
-        background-color 100ms,
-        border-color 100ms;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-      &:hover,
-      &:focus-visible {
-        background-color: var(--foreground-3);
-        border-color: color-mix(in srgb, var(--foreground) 20%, transparent);
+      & > p {
+        font-size: small;
+        color: var(--foreground-60);
+      }
+
+      & > a {
+        border: 1px solid var(--foreground-10);
+        border-radius: 6px;
+        display: block;
+        display: grid;
+        place-content: center;
+        padding: 8px;
+
+        transition:
+          background-color 100ms,
+          border-color 100ms;
+
+        &:hover,
+        &:focus-visible {
+          background-color: var(--foreground-3);
+          border-color: color-mix(in srgb, var(--foreground) 20%, transparent);
+        }
       }
     }
   }

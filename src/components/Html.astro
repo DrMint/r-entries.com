@@ -2,6 +2,8 @@
 import Header from "./Header.astro";
 import Footer from "./Footer.astro";
 
+const props = Astro.props;
+
 {
   /* --------------------------------[ HTML ]-------------------------------- */
 }
@@ -26,7 +28,11 @@ import Footer from "./Footer.astro";
   </head>
   <body>
     <Header />
-    <slot />
+    <main>
+      <div {...props}>
+        <slot />
+      </div>
+    </main>
     <Footer />
   </body>
 </html>
@@ -44,15 +50,35 @@ import Footer from "./Footer.astro";
   body {
     padding: 0;
     margin: 0;
+
+    color: var(--foreground);
+    background-color: var(--background);
   }
 
   body {
     min-height: 100dvh;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: 2em;
-    padding: 1em;
-    padding-top: 2em;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    border-inline: 1px solid var(--layout-border);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    & > div {
+      flex: 1;
+
+      max-width: 1024px;
+      width: 100%;
+      margin-inline: auto;
+
+      @media only screen and (min-width: 1024px) {
+        border-inline: 1px solid var(--layout-border);
+      }
+    }
   }
 </style>
 
@@ -88,6 +114,8 @@ import Footer from "./Footer.astro";
       var(--background)
     );
     --background-70: color-mix(in srgb, var(--background) 70%, transparent);
+    --layout-border: var(--foreground-20);
+    --middle-x-padding: clamp(16px, 4vw, 48px);
   }
 
   .medium-zoom-overlay {
@@ -115,6 +143,8 @@ import Footer from "./Footer.astro";
   }
 
   .prose {
+    font-size: 18px;
+
     * {
       line-height: 1.5;
     }
@@ -149,13 +179,48 @@ import Footer from "./Footer.astro";
       margin-top: -1em;
     }
 
+    p {
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+
     ul,
     ol {
-      margin-block: 0.5em;
+      margin-block: 0.75em;
 
       li + li {
-        margin-top: 0.5em;
+        margin-top: 1em;
       }
+
+      ::marker {
+        color: var(--foreground-50);
+      }
+    }
+
+    ul > li {
+      padding-left: 3px;
+    }
+
+    ol > li {
+      padding-left: 8px;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+
+      border: 1px solid var(--layout-border);
+
+      background-image: radial-gradient(
+        var(--layout-border) 20%,
+        transparent 30%
+      );
+      background-size: 12px 12px;
+      background-repeat: space;
+    }
+
+    img + img {
+      margin-top: 1em;
     }
 
     blockquote {
@@ -195,12 +260,28 @@ import Footer from "./Footer.astro";
   }
 </style>
 
-{/* Medium-like image zoom on post images */}
 <script>
+  /* 
+    Medium-like image zoom on post images.
+    Only enabled when the window is larger than 720px. 
+  */
+
   import mediumZoom from "medium-zoom";
 
-  mediumZoom(document.querySelectorAll(".prose img"), {
-    background: "color-mix(in srgb, Canvas 80%, transparent)",
-    margin: 20,
+  const zoom = mediumZoom(undefined, {
+    margin: 50,
+    background: "var(--background-70)",
   });
+
+  const updateZoom = (smallerThan720: boolean) => {
+    if (smallerThan720) {
+      zoom.detach();
+    } else {
+      zoom.attach(".prose img");
+    }
+  };
+
+  const mediaQuery = window.matchMedia("(max-width: 720px)");
+  updateZoom(mediaQuery.matches);
+  mediaQuery.addEventListener("change", ({ matches }) => updateZoom(matches));
 </script>

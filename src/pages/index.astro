@@ -14,8 +14,8 @@ const latestPosts = posts
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html>
-  <main>
+<Html page-root>
+  <div id="welcome" class="prose">
     <h1>Welcome</h1>
     <p>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut convallis
@@ -27,35 +27,50 @@ const latestPosts = posts
       venenatis mauris at, mattis nisi. Pellentesque sed sem non nunc interdum
       laoreet. In tincidunt a tortor ut sollicitudin.
     </p>
+    <br />
     <h2>Latest posts</h2>
-    {latestPosts.map((post) => <PostPreview post={post} />)}
+  </div>
+  <div id="latest-post">
     {
-      latestPosts.length !== posts.length && (
-        <a id="view-all" href="/posts">
-          View all posts <RightArrow width={16} height={16} />
-        </a>
-      )
+      latestPosts.map((post) => (
+        <div>
+          <PostPreview post={post} />
+        </div>
+      ))
     }
-  </main>
+  </div>
+  {
+    latestPosts.length !== posts.length && (
+      <a id="view-all" href="/posts">
+        View all posts <RightArrow width={16} height={16} />
+      </a>
+    )
+  }
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  main {
-    max-width: 768px;
-    margin-inline: auto;
+  [page-root] {
     display: flex;
     flex-direction: column;
     gap: 1em;
 
-    & > h2 {
-      margin-top: 1em;
-      margin-bottom: 0.5em;
+    & > #welcome {
+      padding-inline: var(--middle-x-padding);
+      max-width: 70ch;
+      padding-top: 64px;
+      margin-bottom: 16px;
     }
 
-    & > p {
-      line-height: 1.5;
+    & > #latest-post {
+      & > div {
+        border-top: 1px solid var(--layout-border);
+      }
+
+      & > div:last-child {
+        border-bottom: 1px solid var(--layout-border);
+      }
     }
 
     & > #view-all {
@@ -67,6 +82,7 @@ const latestPosts = posts
       padding: 8px 16px;
       border-radius: 8px;
       margin-top: 16px;
+      margin-bottom: 128px;
 
       transition: background-color 100ms;
 

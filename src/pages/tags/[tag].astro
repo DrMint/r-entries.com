@@ -26,37 +26,57 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html>
-  <main>
-    <h1>
-      Posts tagged with <span><HashLogo width={26} height={26} />{tag}</span>
-    </h1>
+<Html page-root>
+  <h1>
+    Posts tagged with <span><HashLogo width={26} height={26} />{tag}</span>
+  </h1>
 
-    {posts.map((post) => <PostPreview post={post} />)}
-  </main>
+  <div id="posts">
+    {
+      posts.map((post) => (
+        <div>
+          <PostPreview post={post} />
+        </div>
+      ))
+    }
+  </div>
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  main {
-    max-width: 768px;
-    width: 100%;
-    margin-inline: auto;
+  [page-root] {
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    gap: 32px;
 
-    & > h1 > span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background-color: var(--foreground-10);
-      border-radius: 100vmax;
-      padding: 8px 14px;
-      padding-right: 18px;
-      font-size: 26px;
-      font-weight: 500;
+    padding-top: 64px;
+    padding-bottom: 128px;
+
+    & > h1 {
+      padding-inline: var(--middle-x-padding);
+
+      & > span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: var(--foreground-10);
+        border-radius: 100vmax;
+        padding: 8px 14px;
+        padding-right: 18px;
+        font-size: 26px;
+        font-weight: 500;
+      }
+    }
+
+    & > #posts {
+      & > div {
+        border-top: 1px solid var(--layout-border);
+      }
+
+      & > div:last-child {
+        border-bottom: 1px solid var(--layout-border);
+      }
     }
   }
 </style>
