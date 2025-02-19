@@ -20,12 +20,20 @@ export type FooterItem = {
 }
 
 export const isActive = (item: Pick<NavigationItem, "href" | "detection">, pathname: string) => {
-    const pathnameWithoutTrailingSlash = removeTrailingSlash(pathname);
+    const fixedPathname =
+        process.env.TRAILING_SLASH === "always" ?
+            enforceTrailingSlash(pathname)
+            : process.env.TRAILING_SLASH === "never" ?
+                removeTrailingSlash(pathname) : pathname;
 
     if (item.detection === "prefix") {
-        return pathnameWithoutTrailingSlash.startsWith(getUrl(item.href));
+        return fixedPathname.startsWith(getUrl(item.href));
     }
-    return pathnameWithoutTrailingSlash === getUrl(item.href);
+    return fixedPathname === getUrl(item.href);
+}
+
+const enforceTrailingSlash = (path: string) => {
+    return path.endsWith("/") ? path : `${path}/`;
 }
 
 const removeTrailingSlash = (path: string) => {
@@ -33,10 +41,14 @@ const removeTrailingSlash = (path: string) => {
 }
 
 export const getUrl = (path: string) => {
-    let url = `${import.meta.env.BASE_URL}${path}`;
+    let url = `${process.env.BASE_PATH}${path}`;
     /* Remove multiple slashes */
     url = url.replace(/\/\/+/g, "/");
-    url = removeTrailingSlash(url);
+    if (process.env.TRAILING_SLASH === "always") {
+        url = enforceTrailingSlash(url);
+    } else if (process.env.TRAILING_SLASH === "never") {
+        url = removeTrailingSlash(url);
+    }
     /* If nothing is left, return the root */
     if (url === "") {
         return "/";

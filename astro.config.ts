@@ -10,11 +10,15 @@ import type { AstroUserConfig } from "astro";
 
 const defaultSiteUrl = "http://localhost:4321";
 const defaultBasePath = "/";
-const defaultTrailingSlash = "never";
+const defaultTrailingSlash = "always";
 
 const siteUrl = process.env.SITE_URL ?? defaultSiteUrl;
 const basePath = process.env.BASE_PATH ?? defaultBasePath;
 const trailingSlash = process.env.TRAILING_SLASH as AstroUserConfig["trailingSlash"] ?? defaultTrailingSlash;
+
+process.env.SITE_URL = siteUrl;
+process.env.BASE_PATH = basePath;
+process.env.TRAILING_SLASH = trailingSlash;
 
 console.log(`
 🔍 Environment Variables during build:
