@@ -14,11 +14,12 @@ import {
   FOREGROUND_COLOR,
 } from "src/constants";
 import { getUrl } from "src/utils/navigation";
+import { getImage } from "astro:assets";
 
 interface OpenGraph {
   title: string;
   description?: string | undefined;
-  thumbnail?: string | undefined;
+  thumbnail?: ImageMetadata | undefined;
 }
 
 interface Props {
@@ -28,11 +29,19 @@ interface Props {
 const props = Astro.props;
 const { openGraph } = props;
 
-const defaultThumbnailUrl = new URL(DEFAULT_THUMBNAIL, Astro.url).toString();
-
 const title = openGraph?.title ?? DEFAULT_TITLE;
 const description = openGraph?.description ?? DEFAULT_DESCRIPTION;
-const thumbnail = openGraph?.thumbnail ?? defaultThumbnailUrl;
+
+const getThumbnail = async () => {
+  if (openGraph?.thumbnail) {
+    return (
+      await getImage({ src: openGraph.thumbnail, width: 1024, format: "jpeg" })
+    ).src;
+  }
+  return DEFAULT_THUMBNAIL;
+};
+
+const thumbnailUrl = new URL(await getThumbnail(), Astro.url).toString();
 ---
 
 <html lang="en" class="no-js">
@@ -52,7 +61,7 @@ const thumbnail = openGraph?.thumbnail ?? defaultThumbnailUrl;
     {/* OpenGraph tags */}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={thumbnail} />
+    <meta property="og:image" content={thumbnailUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="R-Entries" />
     <meta property="og:url" content={Astro.url} />
@@ -63,13 +72,22 @@ const thumbnail = openGraph?.thumbnail ?? defaultThumbnailUrl;
     <meta name="twitter:creator" content="@DrMint4" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={thumbnail} />
+    <meta name="twitter:image" content={thumbnailUrl} />
 
     {/* Favicon */}
-    <link rel="icon" type="image/png" href={getUrl("/favicon-96x96.png")} sizes="96x96" />
+    <link
+      rel="icon"
+      type="image/png"
+      href={getUrl("/favicon-96x96.png")}
+      sizes="96x96"
+    />
     <link rel="icon" type="image/svg+xml" href={getUrl("/favicon.svg")} />
     <link rel="shortcut icon" href={getUrl("/favicon.ico")} />
-    <link rel="apple-touch-icon" sizes="180x180" href={getUrl("/apple-touch-icon.png")} />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href={getUrl("/apple-touch-icon.png")}
+    />
     <meta name="apple-mobile-web-app-title" content="R-Entries" />
     <link rel="manifest" href={getUrl("/site.webmanifest")} />
   </head>

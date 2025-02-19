@@ -14,7 +14,7 @@ const { post } = Astro.props;
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <a href={getUrl(`/posts/${post.slug}`)} component-root>
-  <Image src={post.data.cover} width={280} alt="" />
+  <Image src={post.data.cover} width={280} alt="" format="webp" />
   <div>
     <div>
       <h2>{post.data.title}</h2>

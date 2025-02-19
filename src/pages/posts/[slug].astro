@@ -27,9 +27,6 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
   slug,
   text: text.replace(/^([\d.]+)/, "$1 "),
 }));
-
-// Get the full URL for the cover image
-const coverUrl = new URL(cover.src, Astro.url).toString();
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
@@ -39,10 +36,10 @@ const coverUrl = new URL(cover.src, Astro.url).toString();
   openGraph={{
     title,
     description: summary,
-    thumbnail: coverUrl,
+    thumbnail: cover,
   }}
 >
-  <Image id="cover" src={cover} alt="" width={1024} />
+  <Image id="cover" src={cover} alt="" width={1024} format="webp" />
   <div id="header">
     <h1>{title}</h1>
     <PostMeta post={post} />
