@@ -38,10 +38,11 @@ const getThumbnail = async () => {
       await getImage({ src: openGraph.thumbnail, width: 1024, format: "jpeg" })
     ).src;
   }
-  return DEFAULT_THUMBNAIL;
+  return getUrl(DEFAULT_THUMBNAIL);
 };
 
-const thumbnailUrl = new URL(await getThumbnail(), Astro.url).toString();
+const thumbnail = await getThumbnail();
+const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 ---
 
 <html lang="en" class="no-js">

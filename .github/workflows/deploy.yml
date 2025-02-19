@@ -19,7 +19,7 @@ jobs:
     env:
       SITE_URL: "https://drmint.github.io"
       BASE_PATH: "/r-entries.com"
-
+      TRAILING_SLASH: "always"
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
