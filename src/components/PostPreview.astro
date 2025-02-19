@@ -13,7 +13,7 @@ const { post } = Astro.props;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<a href={getUrl(`/posts/${post.slug}`)} component-root>
+<a href={getUrl(`/posts/${post.slug}`)} data-component="PostPreview">
   <Image src={post.data.cover} width={280} alt="" format="webp" />
   <div>
     <div>
@@ -28,7 +28,7 @@ const { post } = Astro.props;
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [component-root] {
+  [data-component="PostPreview"] {
     display: flex;
     outline: 1px solid transparent;
 

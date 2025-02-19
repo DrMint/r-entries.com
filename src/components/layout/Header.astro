@@ -13,7 +13,7 @@ const { pathname } = new URL(Astro.request.url);
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<header component-root {...props}>
+<header data-component="Header" {...props}>
   <nav>
     <a
       id="left"
@@ -45,7 +45,7 @@ const { pathname } = new URL(Astro.request.url);
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [component-root] {
+  [data-component="Header"] {
     @media only screen and (min-width: 600.5px) {
       position: sticky;
       top: 0;

@@ -13,7 +13,7 @@ const readingTime = getReadingTime(post.body);
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div component-root>
+<div data-component="PostMeta">
   <p>{date.toLocaleDateString(undefined, { dateStyle: "long" })}</p>
   <div class="separator">|</div>
   <p>{`${readingTime} min read`}</p>
@@ -22,7 +22,7 @@ const readingTime = getReadingTime(post.body);
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [component-root] {
+  [data-component="PostMeta"] {
     display: flex;
     gap: 8px;
     align-items: center;

@@ -11,7 +11,7 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html page-root>
+<Html data-page="Posts">
   <h1>Posts</h1>
   <div id="posts">
     {
@@ -27,7 +27,7 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [page-root] {
+  [data-page="Posts"] {
     display: flex;
     flex-direction: column;
     gap: 32px;

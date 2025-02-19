@@ -10,7 +10,7 @@ const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<header component-root {...props}>
+<header data-component="MobileFooter" {...props}>
   <nav>
     {
       items.map(({ href, label, icon: Icon, detection }) => (
@@ -31,7 +31,7 @@ const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [component-root] {
+  [data-component="MobileFooter"] {
     position: sticky;
     bottom: 0;
     backdrop-filter: blur(24px);

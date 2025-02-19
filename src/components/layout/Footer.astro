@@ -4,7 +4,7 @@ const props = Astro.props;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<footer component-root {...props}>
+<footer data-component="Footer" {...props}>
   <div>
     <p>© {new Date().getFullYear()} All rights reserved.</p>
   </div>
@@ -13,7 +13,7 @@ const props = Astro.props;
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [component-root] {
+  [data-component="Footer"] {
     border-top: 1px solid var(--layout-border);
 
     & > div {

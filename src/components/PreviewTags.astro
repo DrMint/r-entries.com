@@ -12,14 +12,14 @@ if (tags.length === 0) return;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div component-root>
+<div data-component="PreviewTags">
   {tags.map((tag) => <TagPill tag={tag} />)}
 </div>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [component-root] {
+  [data-component="PreviewTags"] {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;

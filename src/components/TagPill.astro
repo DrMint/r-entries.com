@@ -12,7 +12,7 @@ const { tag, count, withLinks = false } = Astro.props;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div component-root class:list={{ "with-links": withLinks }}>
+<div data-component="TagPill" class:list={{ "with-links": withLinks }}>
   <HashLogo width={12} height={12} />
   {tag}
   {count && <span>{`(${count})`}</span>}
@@ -21,7 +21,7 @@ const { tag, count, withLinks = false } = Astro.props;
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [component-root] {
+  [data-component="TagPill"] {
     display: flex;
     align-items: center;
     gap: 6px;

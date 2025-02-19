@@ -17,9 +17,9 @@ tags.sort((a, b) => b.count - a.count);
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html page-root>
-    <h1>Tags</h1>
-    <div>
+<Html data-page="Tags">
+  <h1>Tags</h1>
+  <div>
       {
         tags.map(({ tag, count }) => (
           <a href={getUrl(`/tags/${tag}`)}>
@@ -33,7 +33,7 @@ tags.sort((a, b) => b.count - a.count);
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [page-root] {
+  [data-page="Tags"] {
     padding: 64px var(--middle-x-padding);
     display: flex;
     flex-direction: column;

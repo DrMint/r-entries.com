@@ -32,7 +32,7 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <Html
-  page-root
+  data-page="Post"
   openGraph={{
     title,
     description: summary,
@@ -61,7 +61,7 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [page-root] {
+  [data-page="Post"] {
     display: flex;
     flex-direction: column;
     place-items: center;

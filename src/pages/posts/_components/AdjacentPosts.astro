@@ -28,7 +28,7 @@ const nextPost = posts.findLast(
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div component-root>
+<div data-component="AdjacentPosts">
   {
     nextPost ? (
       <a id="next" href={getUrl(`/posts/${nextPost.slug}`)}>
@@ -73,7 +73,7 @@ const nextPost = posts.findLast(
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [component-root] {
+  [data-component="AdjacentPosts"] {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;

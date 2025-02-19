@@ -22,7 +22,7 @@ const toc = headings
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<details component-root>
+<details data-component="TableOfContents">
   <summary>
     <span>Table of Contents</span>
     <ChevronDown width={20} height={20} />
@@ -41,7 +41,7 @@ const toc = headings
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [component-root] {
+  [data-component="TableOfContents"] {
     width: 100%;
     border: 1px solid var(--foreground-20);
     border-radius: 8px;
