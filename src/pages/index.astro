@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { getUrl } from "src/utils/navigation";
 import Html from "src/components/layout/Html.astro";
 import PostPreview from "src/components/PostPreview.astro";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
@@ -41,7 +42,7 @@ const latestPosts = posts
   </div>
   {
     latestPosts.length !== posts.length && (
-      <a id="view-all" href="/posts">
+      <a id="view-all" href={getUrl("/posts")}>
         View all posts <RightArrow width={16} height={16} />
       </a>
     )

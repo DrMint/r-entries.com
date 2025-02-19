@@ -1,6 +1,6 @@
 ---
 import TagPill from "src/components/TagPill.astro";
-
+import { getUrl } from "src/utils/navigation";
 interface Props {
   tags: string[] | undefined;
 }
@@ -15,7 +15,7 @@ if (tags.length === 0) return;
 <div component-root>
   {
     tags.map((tag) => (
-      <a href={`/tags/${tag}`}>
+      <a href={getUrl(`/tags/${tag}`)}>
         <TagPill tag={tag} withLinks />
       </a>
     ))

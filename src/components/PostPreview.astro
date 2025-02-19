@@ -3,7 +3,7 @@ import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import PreviewTags from "src/components/PreviewTags.astro";
 import PostMeta from "src/components/PostMeta.astro";
-
+import { getUrl } from "src/utils/navigation";
 interface Props {
   post: CollectionEntry<"posts">;
 }
@@ -13,7 +13,7 @@ const { post } = Astro.props;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<a href={`/posts/${post.slug}`} component-root>
+<a href={getUrl(`/posts/${post.slug}`)} component-root>
   <Image src={post.data.cover} width={280} alt="" />
   <div>
     <div>

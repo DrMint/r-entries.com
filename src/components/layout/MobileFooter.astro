@@ -1,6 +1,6 @@
 ---
 import { NAVIGATION_HOME_ITEM, NAVIGATION_ITEMS } from "src/constants";
-import { isActive } from "src/utils/navigation";
+import { isActive, getUrl } from "src/utils/navigation";
 
 const { pathname } = new URL(Astro.request.url);
 const props = Astro.props;
@@ -15,7 +15,7 @@ const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
     {
       items.map(({ href, label, icon: Icon, detection }) => (
         <a
-          href={href}
+          href={getUrl(href)}
           class:list={{
             active: isActive({ href, detection }, pathname),
           }}

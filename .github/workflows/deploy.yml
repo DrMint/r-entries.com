@@ -16,6 +16,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SITE_URL: "https://drmint.github.io"
+      BASE_URL: "/r-entries.com"
+
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4

@@ -6,6 +6,9 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypeNumberHeadings } from "./src/utils/rehypeNumberHeadings";
 import type { Element } from "hast";
+import { loadEnv } from "vite";
+
+const env = loadEnv(process.env.NODE_ENV!, process.cwd(), "");
 
 export default defineConfig({
   integrations: [mdx({ optimize: true }), sitemap()],
@@ -41,6 +44,6 @@ export default defineConfig({
   devToolbar: {
     enabled: true,
   },
-  site: "https://drmint.github.io",
-  base: "/r-entries.com",
+  site: env.SITE_URL!,
+  base: env.BASE_PATH!,
 }); 

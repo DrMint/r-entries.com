@@ -3,7 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import LeftArrow from "src/icons/lucide--arrow-left.svg";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
-
+import { getUrl } from "src/utils/navigation";
 interface Props {
   currentPost: CollectionEntry<"posts">;
 }
@@ -31,7 +31,7 @@ const nextPost = posts.findLast(
 <div component-root>
   {
     nextPost ? (
-      <a id="next" href={`/posts/${nextPost.slug}`}>
+      <a id="next" href={getUrl(`/posts/${nextPost.slug}`)}>
         <LeftArrow width={18} height={18} />
         <div>
           <p class="label">Next Post</p>
@@ -51,7 +51,7 @@ const nextPost = posts.findLast(
 
   {
     previousPost ? (
-      <a id="previous" href={`/posts/${previousPost.slug}`}>
+      <a id="previous" href={getUrl(`/posts/${previousPost.slug}`)}>
         <div>
           <p class="label">Previous Post</p>
           <p>{previousPost.data.title}</p>

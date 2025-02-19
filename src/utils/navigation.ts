@@ -20,8 +20,26 @@ export type FooterItem = {
 }
 
 export const isActive = (item: Pick<NavigationItem, "href" | "detection">, pathname: string) => {
+    const pathnameWithoutTrailingSlash = removeTrailingSlash(pathname);
+
     if (item.detection === "prefix") {
-        return pathname.startsWith(item.href);
+        return pathnameWithoutTrailingSlash.startsWith(getUrl(item.href));
     }
-    return pathname === item.href;
+    return pathnameWithoutTrailingSlash === getUrl(item.href);
+}
+
+const removeTrailingSlash = (path: string) => {
+    return path.replace(/\/$/, "");
+}
+
+export const getUrl = (path: string) => {
+    let url = `${import.meta.env.BASE_URL}${path}`;
+    /* Remove multiple slashes */
+    url = url.replace(/\/\/+/g, "/");
+    url = removeTrailingSlash(url);
+    /* If nothing is left, return the root */
+    if (url === "") {
+        return "/";
+    }
+    return url;
 }

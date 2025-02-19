@@ -3,9 +3,9 @@ import {
   NAVIGATION_HOME_ITEM,
   NAVIGATION_ITEMS,
   WEBSITE_NAME,
-  WebsiteLogo
+  WebsiteLogo,
 } from "src/constants";
-import { isActive } from "src/utils/navigation";
+import { isActive, getUrl } from "src/utils/navigation";
 
 const props = Astro.props;
 const { pathname } = new URL(Astro.request.url);
@@ -17,7 +17,7 @@ const { pathname } = new URL(Astro.request.url);
   <nav>
     <a
       id="left"
-      href={NAVIGATION_HOME_ITEM.href}
+      href={getUrl(NAVIGATION_HOME_ITEM.href)}
       class:list={{ active: isActive(NAVIGATION_HOME_ITEM, pathname) }}
       title={NAVIGATION_HOME_ITEM.tooltip}
     >
@@ -28,7 +28,7 @@ const { pathname } = new URL(Astro.request.url);
       {
         NAVIGATION_ITEMS.map(({ href, label, detection, tooltip }) => (
           <a
-            href={href}
+            href={getUrl(href)}
             class:list={{
               active: isActive({ href, detection }, pathname),
             }}
