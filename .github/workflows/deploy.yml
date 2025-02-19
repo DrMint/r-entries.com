@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SITE_URL: "https://drmint.github.io"
-      BASE_URL: "/r-entries.com"
+      BASE_PATH: "/r-entries.com"
 
     steps:
       - name: Checkout your repository using git

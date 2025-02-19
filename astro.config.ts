@@ -6,9 +6,20 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypeNumberHeadings } from "./src/utils/rehypeNumberHeadings";
 import type { Element } from "hast";
-import { loadEnv } from "vite";
 
-const env = loadEnv(process.env.NODE_ENV!, process.cwd(), "");
+const defaultSiteUrl = "http://localhost:4321";
+const defaultBasePath = "/";
+
+const siteUrl = process.env.SITE_URL ?? defaultSiteUrl;
+const basePath = process.env.BASE_PATH ?? defaultBasePath;
+
+console.log(`
+🔍 Environment Variables during build:
+----------------------------------------
+  SITE_URL: ${siteUrl}
+  BASE_PATH: ${basePath}
+----------------------------------------
+`)
 
 export default defineConfig({
   integrations: [mdx({ optimize: true }), sitemap()],
@@ -44,6 +55,6 @@ export default defineConfig({
   devToolbar: {
     enabled: true,
   },
-  site: env.SITE_URL!,
-  base: env.BASE_PATH!,
+  site: siteUrl!,
+  base: basePath!,
 }); 
