@@ -13,6 +13,7 @@ import {
   ENABLE_GO_TO_TOP_FEATURE,
   FOREGROUND_COLOR,
 } from "src/constants";
+import { getUrl } from "src/utils/navigation";
 
 interface OpenGraph {
   title: string;
@@ -39,7 +40,7 @@ const thumbnail = openGraph?.thumbnail ?? defaultThumbnailUrl;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" href={getUrl("/sitemap-index.xml")} />
     <meta name="generator" content={Astro.generator} />
 
     {/* Basic tags */}
@@ -65,12 +66,12 @@ const thumbnail = openGraph?.thumbnail ?? defaultThumbnailUrl;
     <meta name="twitter:image" content={thumbnail} />
 
     {/* Favicon */}
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href={getUrl("/favicon-96x96.png")} sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href={getUrl("/favicon.svg")} />
+    <link rel="shortcut icon" href={getUrl("/favicon.ico")} />
+    <link rel="apple-touch-icon" sizes="180x180" href={getUrl("/apple-touch-icon.png")} />
     <meta name="apple-mobile-web-app-title" content="R-Entries" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="manifest" href={getUrl("/site.webmanifest")} />
   </head>
   <body>
     <Header class="fine-only" />
