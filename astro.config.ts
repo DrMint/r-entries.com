@@ -6,34 +6,13 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypeNumberHeadings } from "./plugins/rehypeNumberHeadings";
 import type { Element } from "hast";
-import type { AstroUserConfig } from "astro";
+import { loadEnv } from "./tools/loadEnv";
 
-const defaultSiteUrl = "http://localhost:4321";
-const defaultBasePath = "/";
-const defaultTrailingSlash = "always";
-
-const siteUrl = process.env.SITE_URL ?? defaultSiteUrl;
-const basePath = process.env.BASE_PATH ?? defaultBasePath;
-const trailingSlash =
-  (process.env.TRAILING_SLASH as AstroUserConfig["trailingSlash"]) ??
-  defaultTrailingSlash;
-
-process.env.SITE_URL = siteUrl;
-process.env.BASE_PATH = basePath;
-process.env.TRAILING_SLASH = trailingSlash;
-
-console.log(`
-🔍 Environment Variables during build:
-----------------------------------------
-  SITE_URL: ${siteUrl}
-  BASE_PATH: ${basePath}
-  TRAILING_SLASH: ${trailingSlash}
-----------------------------------------
-`);
+const env = loadEnv();
 
 export default defineConfig({
   integrations: [mdx({ optimize: true }), sitemap()],
-  trailingSlash: trailingSlash,
+  trailingSlash: env.TRAILING_SLASH,
   markdown: {
     rehypePlugins: [
       rehypeSlug,
@@ -61,10 +40,11 @@ export default defineConfig({
   },
   server: {
     host: true,
+    port: env.PORT,
   },
   devToolbar: {
     enabled: true,
   },
-  site: siteUrl!,
-  base: basePath!,
+  site: env.SITE_URL,
+  base: env.BASE_PATH,
 });
