@@ -1,0 +1,242 @@
+---
+title: Post Exemple
+cover: mdx-logo.png
+coverAlt: "The MDX logo"
+summary: "This is an exemple of a post"
+date: 2025-02-20
+tags:
+  - exemple
+---
+
+Welcome to the beautiful world of Markdown and MDX.
+Markdown is a lightweight markup language with a plain text formatting syntax.
+It is regularly used to format message online, including on Discord.
+
+Right now, you could either be on the website reading this post, or
+reading directly from its corresponding markdown file.
+
+Let's starts with some basics!
+
+Paragraphs are separated by a blank line.
+
+Two lines of text without a blank line in between are part
+of the same paragraph. Single line breaks are only used to
+make the markdown more readable and will not be displayed.
+
+You can force a line break with two spaces at the end of the line.  
+I just did, and so this line will be displayed as a new line.
+
+You can achieve the same thing with a backslash at the end.\
+This line should also be displayed as a new line.
+
+
+
+
+Multiple line breaks in the markdown file are not displayed.
+There was a bunch of them right now and you saw nothing... spooky.
+(unless you're reading the markdown file directly)
+
+If you ACTUALLY want to add blank lines, you can use \<br /> tags.
+<br />
+<br />
+I'm a lonely line...
+<br />
+<br />
+Anyway, let's move on to the cool stuff!
+
+You can have headings, aka titles.
+
+## This is a title for a section of this post
+
+### This is the title for a subsection
+
+#### You can go really deep
+
+##### You probably should never go this deep
+
+###### You're reached rock bottom
+
+Anyway, headings are used to structure the post.
+Let's use one right now to start a new section.
+
+## Formatting
+
+**Bold** is quite nice, isn't it? There is also _italic_ and ~~strikethrough~~.
+You can mix them together: here, a _**bold italic**_ word.
+
+Backticks are used to display inline `code`.
+
+## Lists
+
+You can use unordered lists with `*`, `+` or `-` to create a list item.
+
+- Item 1
+- Item 2
+- Item 3   
+
+You can also use ordered lists with numbers.
+
+1. Item 1
+2. Item 2
+3. Item 3
+
+You can also nest lists.
+
+- Item 1
+    - Subitem 1
+    - Subitem 2
+- Item 2
+- Item 3
+
+And even combine unordered and ordered lists.
+
+1. Item 1
+    - Subitem 1
+    - Subitem 2
+2. Item 2
+3. Item 3
+
+Pretty wild!
+
+Does checklist work?
+
+- [ ] Item 1
+- [x] Item 2
+- [ ] Item 3
+
+Hurray! They do work.
+
+
+## Blocks
+
+### Code blocks
+
+You can use blocks to display code blocks.
+
+```
+A block code block
+    unlike paragraphs
+        preserves whitespace
+```
+
+Typically these are used for sharing bits of code. Here's an example:
+
+```ts
+const a = 1;
+const b = 2;
+const c = a + b;
+console.log(c);   // 3
+```
+
+You can specify the programming language of the code block next to the opening backticks. The provided language will be used for syntax highlighting. Here's different languages:
+
+```java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+```python
+print("Hello, World!")
+```
+
+```js
+console.log("Hello, World!");
+```
+
+```css
+body {
+    background-color: #f0f0f0;
+}
+```
+
+```html
+<html>
+    <body>
+        <h1>Hello, World!</h1>
+    </body>
+</html>
+```
+
+```bash
+ls -la
+```
+
+```ruby
+puts "Hello, World!"
+```
+
+Stop right there cowboy! I think you've got the point.
+
+### Blockquotes
+
+You can use blockquotes to display quotes.
+
+> This is a blockquote
+
+> Here's another one. You can write a lot of things here.  
+> It can be multiple lines, and you can use other markdown elements like **bold**, _italic_, ~~strikethrough~~.
+>
+> They can have multiple paragraphs.
+>
+> They can even have code blocks.
+>
+> ```ts
+> const a = 1;
+> ```
+>
+> And god knows what else. Maybe more blockquotes?
+>
+> > This is a nested blockquote
+>
+> > > This is a doubly nested blockquote
+
+Alright enought with blockquotes.
+
+## Links
+
+- Internal link: [Home](/)
+- External link: [Astro](https://astro.build/) (should have rel="nofollow")
+- Anchor link: [Go back to Blocks](#blocks)
+- Anchor with custom text when hovered: [Hover me](#blocks "I also send you back to the blocks section")
+
+## Images
+
+![The MDX logo](./mdx-logo.png)
+
+You like links, you can have a tooltip text too!
+![The MDX logo](./mdx-logo.png "The MDX logo")
+
+You can also have a link on an image!
+[![The MDX logo](./mdx-logo.png)](https://mdxjs.com/)
+
+## Tables
+
+You can use tables to display data.
+
+| Column 1 | Column 2 | Column 3 |
+| -------- | -------- | -------- |
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |
+| Cell 7   | Cell 8   | Cell 9   |
+
+
+You can align the columns to the left, right, or center.
+
+| Left aligned | Center aligned | Right aligned |
+| :----------- | :------------: | ------------: |
+| Cell 1       | Cell 2         | Cell 3        |
+| Cell 4       | Cell 5         | Cell 6        |
+| Cell 7       | Cell 8         | Cell 9        |  
+
+
+## Other stuff
+
+You can have horizontal rules.
+
+---
+
+They can be used to separate sections of a post.
+

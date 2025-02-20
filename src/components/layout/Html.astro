@@ -139,7 +139,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       if (smallerThan720) {
         zoom.detach();
       } else {
-        zoom.attach(".prose img");
+        zoom.attach(".prose :not(a) > img");
       }
     };
 

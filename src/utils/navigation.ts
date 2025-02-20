@@ -1,5 +1,3 @@
-/* ---------------------------------[ Types ]-------------------------------- */
-
 import type { Props } from "astro";
 
 type Icon = ((_props: Props) => any) & ImageMetadata;
