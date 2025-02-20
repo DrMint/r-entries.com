@@ -361,6 +361,25 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       margin-top: 1em;
     }
 
+    table {
+      width: 100%;
+      overflow: hidden;
+      outline: 1px solid var(--foreground-20);
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: 0.5em 1em;
+        border: 1px solid var(--foreground-10);
+      }
+
+      th {
+        background-color: var(--foreground-5);
+      }
+      
+      
+    }
+
     blockquote {
       border-left: 4px solid var(--foreground-30);
       margin-left: unset;
