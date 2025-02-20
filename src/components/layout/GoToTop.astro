@@ -17,13 +17,13 @@ import ArrowUpToLine from "src/icons/lucide--arrow-up-to-line.svg";
 
   // Add scroll visibility logic
   const updateVisibility = () => {
-    button.classList.toggle('visible', window.scrollY > window.innerHeight / 2);
+    button.classList.toggle("visible", window.scrollY > window.innerHeight / 2);
   };
-  
+
   // Initial check
   updateVisibility();
   // Update on scroll
-  window.addEventListener('scroll', updateVisibility);
+  window.addEventListener("scroll", updateVisibility);
 
   button.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });

@@ -20,14 +20,14 @@ tags.sort((a, b) => b.count - a.count);
 <Html data-page="Tags">
   <h1>Tags</h1>
   <div>
-      {
-        tags.map(({ tag, count }) => (
-          <a href={getUrl(`/tags/${tag}`)}>
-            <TagPill tag={tag} count={count} withLinks />
-          </a>
-        ))
-      }
-    </div>
+    {
+      tags.map(({ tag, count }) => (
+        <a href={getUrl(`/tags/${tag}`)}>
+          <TagPill tag={tag} count={count} withLinks />
+        </a>
+      ))
+    }
+  </div>
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}

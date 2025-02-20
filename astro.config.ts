@@ -4,7 +4,7 @@ import rehypeUnwrapImages from "rehype-unwrap-images";
 import sitemap from "@astrojs/sitemap";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import { rehypeNumberHeadings } from "./src/utils/rehypeNumberHeadings";
+import { rehypeNumberHeadings } from "./plugins/rehypeNumberHeadings";
 import type { Element } from "hast";
 import type { AstroUserConfig } from "astro";
 
@@ -14,7 +14,9 @@ const defaultTrailingSlash = "always";
 
 const siteUrl = process.env.SITE_URL ?? defaultSiteUrl;
 const basePath = process.env.BASE_PATH ?? defaultBasePath;
-const trailingSlash = process.env.TRAILING_SLASH as AstroUserConfig["trailingSlash"] ?? defaultTrailingSlash;
+const trailingSlash =
+  (process.env.TRAILING_SLASH as AstroUserConfig["trailingSlash"]) ??
+  defaultTrailingSlash;
 
 process.env.SITE_URL = siteUrl;
 process.env.BASE_PATH = basePath;
@@ -27,7 +29,7 @@ console.log(`
   BASE_PATH: ${basePath}
   TRAILING_SLASH: ${trailingSlash}
 ----------------------------------------
-`)
+`);
 
 export default defineConfig({
   integrations: [mdx({ optimize: true }), sitemap()],
@@ -65,4 +67,4 @@ export default defineConfig({
   },
   site: siteUrl!,
   base: basePath!,
-}); 
+});

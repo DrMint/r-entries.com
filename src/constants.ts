@@ -28,46 +28,45 @@ export const ENABLE_IMAGE_ZOOM_FEATURE = true;
 /* ------------------------------[ Navigation ]------------------------------ */
 
 export const NAVIGATION_HOME_ITEM: NavigationItem = {
-    href: "/",
-    detection: "exact",
-    label: "Home",
-    icon: HomeIcon,
-    tooltip: "Go to home page"
+  href: "/",
+  detection: "exact",
+  label: "Home",
+  icon: HomeIcon,
+  tooltip: "Go to home page",
 };
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
-    {
-        href: "/posts",
-        detection: "prefix",
-        label: "Posts",
-        icon: PostsIcon,
-    },
-    {
-        href: "/tags",
-        detection: "prefix",
-        label: "Tags",
-        icon: TagsIcon,
-    },
-    {
-        href: "/about",
-        detection: "prefix",
-        label: "About",
-        icon: AboutIcon,
-    },
+  {
+    href: "/posts",
+    detection: "prefix",
+    label: "Posts",
+    icon: PostsIcon,
+  },
+  {
+    href: "/tags",
+    detection: "prefix",
+    label: "Tags",
+    icon: TagsIcon,
+  },
+  {
+    href: "/about",
+    detection: "prefix",
+    label: "About",
+    icon: AboutIcon,
+  },
 ];
 
 export const FOOTER_ITEMS: FooterItem[] = [
-    {
-        href: "https://x.com/DrMint4",
-        icon: TwitterLogo,
-        label: "Twitter",
-        tooltip: "My Twitter profile"
-    },
-    {
-        href: "https://github.com/DrMint",
-        icon: GithubLogo,
-        label: "GitHub",
-        tooltip: "My GitHub profile"
-    }
+  {
+    href: "https://x.com/DrMint4",
+    icon: TwitterLogo,
+    label: "Twitter",
+    tooltip: "My Twitter profile",
+  },
+  {
+    href: "https://github.com/DrMint",
+    icon: GithubLogo,
+    label: "GitHub",
+    tooltip: "My GitHub profile",
+  },
 ];
-

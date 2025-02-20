@@ -16,13 +16,11 @@ const posts = await getCollection("posts");
 posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const previousPost = posts.find(
-  (otherPost) =>
-    otherPost.data.date.valueOf() < currentPost.data.date.valueOf(),
+  (otherPost) => otherPost.data.date.valueOf() < currentPost.data.date.valueOf()
 );
 
 const nextPost = posts.findLast(
-  (otherPost) =>
-    otherPost.data.date.valueOf() > currentPost.data.date.valueOf(),
+  (otherPost) => otherPost.data.date.valueOf() > currentPost.data.date.valueOf()
 );
 ---
 
