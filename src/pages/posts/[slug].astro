@@ -39,7 +39,14 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
     thumbnail: cover,
   }}
 >
-  <Image id="cover" src={cover} alt="" width={1024} format="webp" />
+  <Image
+    id="cover"
+    src={cover}
+    alt={post.data.coverAlt}
+    width={1024}
+    loading="eager"
+    format="webp"
+  />
   <div id="header">
     <h1>{title}</h1>
     <PostMeta post={post} />
