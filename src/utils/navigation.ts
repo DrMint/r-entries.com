@@ -44,15 +44,17 @@ const removeTrailingSlash = (path: string) => {
   return path.replace(/\/$/, "");
 };
 
-export const getUrl = (path: string) => {
+export const getUrl = (path: string, isFile?: boolean) => {
   let url = `${process.env.BASE_PATH}${path}`;
   /* Remove multiple slashes */
   url = url.replace(/\/\/+/g, "/");
-  if (process.env.TRAILING_SLASH === "always") {
-    url = enforceTrailingSlash(url);
-  } else if (process.env.TRAILING_SLASH === "never") {
+
+  if (process.env.TRAILING_SLASH === "never" || isFile) {
     url = removeTrailingSlash(url);
+  } else if (process.env.TRAILING_SLASH === "always") {
+    url = enforceTrailingSlash(url);
   }
+
   /* If nothing is left, return the root */
   if (url === "") {
     return "/";

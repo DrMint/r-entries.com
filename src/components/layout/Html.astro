@@ -38,7 +38,7 @@ const getThumbnail = async () => {
       await getImage({ src: openGraph.thumbnail, width: 1024, format: "jpeg" })
     ).src;
   }
-  return getUrl(DEFAULT_THUMBNAIL);
+  return getUrl(DEFAULT_THUMBNAIL, true);
 };
 
 const thumbnail = await getThumbnail();
@@ -50,7 +50,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="sitemap" href={getUrl("/sitemap-index.xml")} />
+    <link rel="sitemap" href={getUrl("/sitemap-index.xml", true)} />
     <meta name="generator" content={Astro.generator} />
 
     {/* Basic tags */}
@@ -79,18 +79,18 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     <link
       rel="icon"
       type="image/png"
-      href={getUrl("/favicon-96x96.png")}
+      href={getUrl("/favicon-96x96.png", true)}
       sizes="96x96"
     />
-    <link rel="icon" type="image/svg+xml" href={getUrl("/favicon.svg")} />
-    <link rel="shortcut icon" href={getUrl("/favicon.ico")} />
+    <link rel="icon" type="image/svg+xml" href={getUrl("/favicon.svg", true)} />
+    <link rel="shortcut icon" href={getUrl("/favicon.ico", true)} />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href={getUrl("/apple-touch-icon.png")}
+      href={getUrl("/apple-touch-icon.png", true)}
     />
     <meta name="apple-mobile-web-app-title" content="R-Entries" />
-    <link rel="manifest" href={getUrl("/site.webmanifest")} />
+    <link rel="manifest" href={getUrl("/site.webmanifest", true)} />
   </head>
   <body>
     <Header class="fine-only" />
