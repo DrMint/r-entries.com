@@ -5,20 +5,31 @@ const props = Astro.props;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<button id="go-to-top" title="Go to top" {...props}>
+<button data-component="GoToTop" title="Go to top" {...props}>
   <ArrowUpToLine />
 </button>
 
 {/* ---------------------------------[ JS ]--------------------------------- */}
 
 <script>
-  const elem = document.getElementById("go-to-top");
-  if (!elem) throw new Error("Go to top button not found");
+  console.log("[GoToTop] Starting");
+  const elem = document.querySelector("[data-component='GoToTop']");
+  if (!elem) throw new Error("[GoToTop] Go to top button not found");
   const button = elem;
 
   // Add scroll visibility logic
   const updateVisibility = () => {
-    button.classList.toggle("visible", window.scrollY > window.innerHeight / 2);
+    const isVisible = window.scrollY > window.innerHeight / 2;
+    const currentVisible = button.classList.contains("visible");
+    if (isVisible !== currentVisible) {
+      console.log(
+        "[GoToTop] Updating visibility from",
+        currentVisible,
+        "to",
+        isVisible
+      );
+      button.classList.toggle("visible", isVisible);
+    }
   };
 
   // Initial check
@@ -27,6 +38,7 @@ const props = Astro.props;
   window.addEventListener("scroll", updateVisibility);
 
   button.addEventListener("click", () => {
+    console.log("[GoToTop] Clicked");
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 </script>
@@ -34,7 +46,7 @@ const props = Astro.props;
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  #go-to-top {
+  [data-component="GoToTop"] {
     outline: 10px solid var(--background);
 
     border: 1px solid var(--foreground-10);

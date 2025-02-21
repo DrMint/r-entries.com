@@ -2,7 +2,6 @@
 import Footer from "src/components/layout/Footer.astro";
 import GoToTop from "src/components/layout/GoToTop.astro";
 import Header from "src/components/layout/Header.astro";
-import JSGuard from "src/components/JSGuard.astro";
 import MobileFooter from "src/components/layout/MobileFooter.astro";
 import MobileHeader from "src/components/layout/MobileHeader.astro";
 import {
@@ -46,7 +45,7 @@ const thumbnail = await getThumbnail();
 const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 ---
 
-<html lang="en" class="no-js">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -109,13 +108,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       <div {...props}>
         <slot />
       </div>
-      {
-        ENABLE_GO_TO_TOP_FEATURE && (
-          <JSGuard class="go-to-top-guard">
-            <GoToTop />
-          </JSGuard>
-        )
-      }
+      {ENABLE_GO_TO_TOP_FEATURE && <GoToTop />}
     </main>
     <Footer class="fine-only" />
     <MobileFooter class="coarse-only" />
@@ -125,13 +118,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 {/* ---------------------------------[ JS ]--------------------------------- */}
 
 <script>
-  // Enable JavaScript detection
-  document.documentElement.classList.remove("no-js");
-  document.documentElement.classList.add("js");
-</script>
-
-<script>
-  /* 
+  /*
     Medium-like image zoom on post images.
     Only enabled when the window is larger than 720px. 
   */
@@ -139,7 +126,20 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   import mediumZoom from "medium-zoom";
   import { ENABLE_IMAGE_ZOOM_FEATURE } from "src/constants";
 
-  if (ENABLE_IMAGE_ZOOM_FEATURE) {
+  const initMediumZoom = () => {
+    console.log("[MediumZoom] Starting");
+    const proses = document.querySelectorAll(".prose");
+    const images: HTMLImageElement[] = [];
+    proses.forEach((prose) => {
+      prose
+        .querySelectorAll<HTMLImageElement>(":not(a) > img")
+        .forEach((image) => {
+          images.push(image);
+        });
+    });
+
+    console.log("[MediumZoom] Found", images.length, "images");
+
     const zoom = mediumZoom(undefined, {
       margin: 50,
       background: "var(--background-70)",
@@ -147,15 +147,25 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 
     const updateZoom = (smallerThan720: boolean) => {
       if (smallerThan720) {
+        console.log(
+          "[MediumZoom] Viewport is lesser than 720px width: disabling zoom"
+        );
         zoom.detach();
       } else {
-        zoom.attach(".prose :not(a) > img");
+        console.log(
+          "[MediumZoom] Viewport is greater than 720px width: enabled zoom"
+        );
+        zoom.attach(images);
       }
     };
 
     const mediaQuery = window.matchMedia("(max-width: 720px)");
     updateZoom(mediaQuery.matches);
     mediaQuery.addEventListener("change", ({ matches }) => updateZoom(matches));
+  };
+
+  if (ENABLE_IMAGE_ZOOM_FEATURE) {
+    initMediumZoom();
   }
 </script>
 
@@ -208,7 +218,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       border-inline: 1px solid var(--layout-border);
     }
 
-    & > .go-to-top-guard {
+    & > [data-component="GoToTop"] {
       align-self: flex-end;
       position: sticky;
       margin-bottom: 32px;
