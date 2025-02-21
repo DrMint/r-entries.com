@@ -16,7 +16,7 @@ export const GET: APIRoute = async (context) => {
     title: WEBSITE_NAME,
     description: DEFAULT_DESCRIPTION,
     site: context.site!,
-    stylesheet: "/rss/styles.xsl",
+    stylesheet: getUrl("/rss/styles.xsl", true),
     items: await Promise.all(
       posts.map(async (post) => ({
         title: post.data.title,
