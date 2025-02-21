@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
-import PreviewTags from "src/components/PreviewTags.astro";
+import HashLogo from "src/icons/lucide--hash.svg";
 import PostMeta from "src/components/PostMeta.astro";
 import { getUrl } from "src/utils/navigation";
 interface Props {
@@ -22,12 +22,21 @@ const { post, ...rest } = Astro.props;
     format="webp"
   />
   <div>
-    <div>
-      <h2>{post.data.title}</h2>
-      <p>{post.data.summary}</p>
-    </div>
+    <h2>{post.data.title}</h2>
+    <p>{post.data.summary}</p>
     <PostMeta post={post} />
-    <PreviewTags tags={post.data.tags} />
+    {
+      post.data.tags && post.data.tags.length > 0 && (
+        <div class="tags">
+          {post.data.tags?.map((tag) => (
+            <div>
+              <HashLogo width={12} height={12} />
+              {tag}
+            </div>
+          ))}
+        </div>
+      )
+    }
   </div>
 </a>
 
@@ -72,16 +81,27 @@ const { post, ...rest } = Astro.props;
 
       display: flex;
       flex-direction: column;
-      gap: 14px;
       padding: 32px;
 
-      & > div {
-        & > h2 {
-          margin-bottom: 0.4em;
-        }
+      & > h2 {
+        margin-bottom: 0.4em;
+      }
 
-        & > p {
-          line-height: 1.5;
+      & > p {
+        line-height: 1.5;
+      }
+
+      & > .tags {
+        margin-top: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        & > div {
+          background-color: var(--foreground-10);
+          border-radius: 100vmax;
+          padding: 2px 8px;
+          padding-right: 12px;
         }
       }
     }
