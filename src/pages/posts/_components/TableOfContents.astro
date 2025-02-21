@@ -5,7 +5,7 @@ interface Props {
   headings: { depth: number; slug: string; text: string }[];
 }
 
-const { headings } = Astro.props;
+const { headings, ...rest } = Astro.props;
 
 // Filter out h1 and create a nested structure
 const toc = headings
@@ -22,7 +22,7 @@ const toc = headings
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<details data-component="TableOfContents">
+<details data-component="TableOfContents" {...rest}>
   <summary>
     <span>Table of Contents</span>
     <ChevronDown width={20} height={20} />

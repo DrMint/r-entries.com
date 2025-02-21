@@ -1,13 +1,12 @@
 ---
-const props = Astro.props;
-const { class: className } = props;
+const { class: className, ...rest } = Astro.props;
 ---
 
-<span class:list={["no-js-hide", className]} {...props}>
+<span class:list={["no-js-hide", className]} {...rest}>
   <slot />
 </span>
 
-<span class:list={["js-hide", className]} {...props}>
+<span class:list={["js-hide", className]} {...rest}>
   <slot name="fallback" />
 </span>
 

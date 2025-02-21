@@ -5,14 +5,14 @@ interface Props {
   tags: string[] | undefined;
 }
 
-const { tags = [] } = Astro.props;
+const { tags = [], ...rest } = Astro.props;
 
 if (tags.length === 0) return;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div data-component="PreviewTags">
+<div data-component="PreviewTags" {...rest}>
   {tags.map((tag) => <TagPill tag={tag} />)}
 </div>
 

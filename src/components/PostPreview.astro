@@ -8,12 +8,12 @@ interface Props {
   post: CollectionEntry<"posts">;
 }
 
-const { post } = Astro.props;
+const { post, ...rest } = Astro.props;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<a href={getUrl(`/posts/${post.slug}`)} data-component="PostPreview">
+<a data-component="PostPreview" href={getUrl(`/posts/${post.slug}`)} {...rest}>
   <Image
     src={post.data.cover}
     width={280}

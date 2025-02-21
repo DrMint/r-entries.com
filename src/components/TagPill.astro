@@ -7,12 +7,16 @@ interface Props {
   withLinks?: boolean;
 }
 
-const { tag, count, withLinks = false } = Astro.props;
+const { tag, count, withLinks = false, ...rest } = Astro.props;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div data-component="TagPill" class:list={{ "with-links": withLinks }}>
+<div
+  data-component="TagPill"
+  class:list={{ "with-links": withLinks }}
+  {...rest}
+>
   <HashLogo width={12} height={12} />
   {tag}
   {count && <span>{`(${count})`}</span>}

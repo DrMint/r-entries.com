@@ -8,7 +8,7 @@ interface Props {
   currentPost: CollectionEntry<"posts">;
 }
 
-const { currentPost } = Astro.props;
+const { currentPost, ...rest } = Astro.props;
 
 const posts = await getCollection("posts");
 
@@ -26,7 +26,7 @@ const nextPost = posts.findLast(
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div data-component="AdjacentPosts">
+<div data-component="AdjacentPosts" {...rest}>
   {
     nextPost ? (
       <a id="next" href={getUrl(`/posts/${nextPost.slug}`)}>

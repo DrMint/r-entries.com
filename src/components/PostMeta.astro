@@ -6,14 +6,14 @@ interface Props {
   post: CollectionEntry<"posts">;
 }
 
-const { post } = Astro.props;
+const { post, ...rest } = Astro.props;
 const { date } = post.data;
 const readingTime = getReadingTime(post.body);
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div data-component="PostMeta">
+<div data-component="PostMeta" {...rest}>
   <p>{date.toLocaleDateString(undefined, { dateStyle: "long" })}</p>
   <div class="separator">|</div>
   <p>{`${readingTime} min read`}</p>

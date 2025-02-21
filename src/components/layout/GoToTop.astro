@@ -1,10 +1,11 @@
 ---
 import ArrowUpToLine from "src/icons/lucide--arrow-up-to-line.svg";
+const props = Astro.props;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<button id="go-to-top" title="Go to top">
+<button id="go-to-top" title="Go to top" {...props}>
   <ArrowUpToLine />
 </button>
 
