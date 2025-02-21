@@ -275,6 +275,11 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     );
     --background-70: color-mix(in srgb, var(--background) 70%, transparent);
     --layout-border: var(--foreground-20);
+    --foreground-5-transparent: color-mix(
+      in srgb,
+      var(--foreground) 5%,
+      transparent
+    );
     --middle-x-padding: clamp(16px, 4vw, 48px);
   }
 
@@ -312,11 +317,11 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       text-decoration: revert;
     }
 
-    & > *:first-child {
+    *:first-child {
       margin-top: unset;
     }
 
-    & > *:last-child {
+    *:last-child {
       margin-bottom: unset;
     }
 
@@ -399,21 +404,19 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     }
 
     blockquote {
-      border-left: 4px solid var(--foreground-30);
       margin-left: unset;
-      padding: 0.5em 1em;
-      background-color: var(--foreground-5);
-      border-radius: 8px;
+      background-color: var(--foreground-5-transparent);
     }
 
+    blockquote,
     .astro-code {
-      padding: 1em 1.5em;
+      border: 1px solid var(--foreground-5-transparent);
+      border-left-width: 4px;
       border-radius: 8px;
-      white-space: unset;
-      width: 100%;
+      padding: 1em 1.5em;
     }
 
-    :not(.astro-code) > code {
+    p > code {
       background-color: var(--foreground-10);
       padding: 0.2em 0.5em;
       border-radius: 8px;
