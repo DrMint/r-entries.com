@@ -6,6 +6,7 @@ R-Entries is a static website template for personal blogs.
 It is built with Astro and uses the `@astrojs/mdx` integration.
 
 Key features:
+
 - Content
   - Markdown or MDX content
   - Tag support
@@ -26,8 +27,6 @@ Key features:
   - Open Graph metadata
   - Twitter Card metadata
 
-
-
 ## Configuration
 
 To configure the building process, the following environment variables are used:
@@ -39,7 +38,6 @@ To configure the building process, the following environment variables are used:
 
 You can set these in the `.env.local` file.
 If building in a CI environment, you can set them in the environment variables (see `.github/workflows/build.yml`).
-
 
 ## Personalization
 
@@ -53,28 +51,17 @@ Each post is stored in a separate folder.
 The folder name is the post slug.
 The post slug is used in the url as `/posts/{slug}`.
 
-
-
-
-
-
-
-
-
-
-
-
-
 ## TODO
 
 - View transitions
   - https://developer.chrome.com/docs/web-platform/view-transitions/cross-document#demo
 - TOC observable api
-- RSS feed
 - JSON-LD
 - Remove "go to top" button JS dependency
 - Search feature
   - https://docs.astro.build/en/guides/search/
+- RSS feed on mobile
+- Better RSS styling?
 
 - Check
   - [`rehype-callouts`](https://github.com/lin-stephanie/rehype-callouts) — render blockquote-based callouts (admonitions/alerts)

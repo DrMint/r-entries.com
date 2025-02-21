@@ -29,14 +29,12 @@ I just did, and so this line will be displayed as a new line.
 You can achieve the same thing with a backslash at the end.\
 This line should also be displayed as a new line.
 
-
-
-
 Multiple line breaks in the markdown file are not displayed.
 There was a bunch of them right now and you saw nothing... spooky.
 (unless you're reading the markdown file directly)
 
 If you ACTUALLY want to add blank lines, you can use \<br /> tags.
+
 <br />
 <br />
 I'm a lonely line...
@@ -63,6 +61,7 @@ Let's use one right now to start a new section.
 
 **Bold** is quite nice, isn't it? There is also _italic_ and ~~strikethrough~~.
 You can mix them together: here, a _**bold italic**_ word.
+
 <u>Underline</u> is a little bit different, but possible.
 
 Backticks are used to display inline `code`.
@@ -73,7 +72,7 @@ You can use unordered lists with `*`, `+` or `-` to create a list item.
 
 - Item 1
 - Item 2
-- Item 3   
+- Item 3
 
 You can also use ordered lists with numbers.
 
@@ -84,16 +83,16 @@ You can also use ordered lists with numbers.
 You can also nest lists.
 
 - Item 1
-    - Subitem 1
-    - Subitem 2
+  - Subitem 1
+  - Subitem 2
 - Item 2
 - Item 3
 
 And even combine unordered and ordered lists.
 
 1. Item 1
-    - Subitem 1
-    - Subitem 2
+   - Subitem 1
+   - Subitem 2
 2. Item 2
 3. Item 3
 
@@ -106,7 +105,6 @@ Does checklist work?
 - [ ] Item 3
 
 Hurray! They do work.
-
 
 ## Blocks
 
@@ -126,7 +124,7 @@ Typically these are used for sharing bits of code. Here's an example:
 const a = 1;
 const b = 2;
 const c = a + b;
-console.log(c);   // 3
+console.log(c); // 3
 ```
 
 You can specify the programming language of the code block next to the opening backticks. The provided language will be used for syntax highlighting. Here's different languages:
@@ -149,15 +147,15 @@ console.log("Hello, World!");
 
 ```css
 body {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 ```
 
 ```html
 <html>
-    <body>
-        <h1>Hello, World!</h1>
-    </body>
+  <body>
+    <h1>Hello, World!</h1>
+  </body>
 </html>
 ```
 
@@ -223,15 +221,13 @@ You can use tables to display data.
 | Cell 4   | Cell 5   | Cell 6   |
 | Cell 7   | Cell 8   | Cell 9   |
 
-
 You can align the columns to the left, right, or center.
 
 | Left aligned | Center aligned | Right aligned |
 | :----------- | :------------: | ------------: |
-| Cell 1       | Cell 2         | Cell 3        |
-| Cell 4       | Cell 5         | Cell 6        |
-| Cell 7       | Cell 8         | Cell 9        |  
-
+| Cell 1       |     Cell 2     |        Cell 3 |
+| Cell 4       |     Cell 5     |        Cell 6 |
+| Cell 7       |     Cell 8     |        Cell 9 |
 
 ## Other stuff
 
@@ -241,6 +237,5 @@ You can have horizontal rules.
 
 They can be used to separate sections of a post.
 
-
 Here's a sentence with a footnote. [^1]
-[^1]: This is the footnote. 
+[^1]: This is the footnote.

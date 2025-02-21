@@ -7,7 +7,7 @@ const postsCollection = defineCollection({
       title: z.string(),
       cover: image(),
       coverAlt: z.string(),
-      summary: z.string().optional(),
+      summary: z.string(),
       date: z.coerce.date(),
       tags: z.array(z.string()).optional(),
     }),

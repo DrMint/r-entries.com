@@ -2,7 +2,6 @@ import { z } from "zod";
 import dotenv from "dotenv";
 import fs from "fs";
 
-
 export const loadEnv = () => {
   /* These values are only used if the similarly named
   environment variables are not set */

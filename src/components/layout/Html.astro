@@ -12,6 +12,7 @@ import {
   DEFAULT_TITLE,
   ENABLE_GO_TO_TOP_FEATURE,
   FOREGROUND_COLOR,
+  WEBSITE_NAME,
 } from "src/constants";
 import { getUrl } from "src/utils/navigation";
 import { getImage } from "astro:assets";
@@ -49,8 +50,6 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <link rel="sitemap" href={getUrl("/sitemap-index.xml", true)} />
     <meta name="generator" content={Astro.generator} />
 
     {/* Basic tags */}
@@ -91,6 +90,17 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     />
     <meta name="apple-mobile-web-app-title" content="R-Entries" />
     <link rel="manifest" href={getUrl("/site.webmanifest", true)} />
+
+    {/* RSS feed */}
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={WEBSITE_NAME}
+      href={getUrl("/rss.xml", true)}
+    />
+
+    {/* Sitemap */}
+    <link rel="sitemap" href={getUrl("/sitemap-index.xml", true)} />
   </head>
   <body>
     <Header class="fine-only" />
@@ -376,8 +386,6 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       th {
         background-color: var(--foreground-5);
       }
-      
-      
     }
 
     blockquote {
