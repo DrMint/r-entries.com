@@ -13,7 +13,7 @@ const { post, ...rest } = Astro.props;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<a data-component="PostPreview" href={getUrl(`/posts/${post.slug}`)} {...rest}>
+<a data-component="PostCard" href={getUrl(`/posts/${post.slug}`)} {...rest}>
   <Image
     src={post.data.cover}
     width={280}
@@ -43,7 +43,7 @@ const { post, ...rest } = Astro.props;
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [data-component="PostPreview"] {
+  [data-component="PostCard"] {
     display: flex;
     outline: 1px solid transparent;
 

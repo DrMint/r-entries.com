@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import { getUrl } from "src/utils/navigation";
 import Html from "src/components/layout/Html.astro";
-import PostPreview from "src/components/PostPreview.astro";
+import PostCard from "src/components/PostCard.astro";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
 
 const posts = await getCollection("posts");
@@ -35,7 +35,7 @@ const latestPosts = posts
     {
       latestPosts.map((post) => (
         <div>
-          <PostPreview post={post} />
+          <PostCard post={post} />
         </div>
       ))
     }

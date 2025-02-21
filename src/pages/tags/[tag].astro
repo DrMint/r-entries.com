@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Html from "src/components/layout/Html.astro";
 import HashLogo from "src/icons/lucide--hash.svg";
-import PostPreview from "src/components/PostPreview.astro";
+import PostCard from "src/components/PostCard.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -35,7 +35,7 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
     {
       posts.map((post) => (
         <div>
-          <PostPreview post={post} />
+          <PostCard post={post} />
         </div>
       ))
     }
