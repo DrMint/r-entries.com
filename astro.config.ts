@@ -5,8 +5,11 @@ import sitemap from "@astrojs/sitemap";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypeNumberHeadings } from "./plugins/rehypeNumberHeadings";
+import rehypeImageFigures from "./plugins/rehypeImageFigures";
 import type { Element } from "hast";
 import { loadEnv } from "./tools/loadEnv";
+import rehypeExternalLinks from "rehype-external-links";
+import rehypeCallouts from "rehype-callouts";
 
 const env = loadEnv();
 
@@ -17,6 +20,9 @@ export default defineConfig({
     rehypePlugins: [
       rehypeSlug,
       rehypeNumberHeadings,
+      rehypeExternalLinks,
+      rehypeCallouts,
+      rehypeImageFigures,
       [
         rehypeAutolinkHeadings,
         {

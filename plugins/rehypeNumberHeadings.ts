@@ -1,7 +1,8 @@
 import type { Root } from "hast";
+import type { Plugin } from "unified";
 import { visit } from "unist-util-visit";
 
-export const rehypeNumberHeadings = () => (tree: Root) => {
+export const rehypeNumberHeadings: Plugin<[], Root> = () => (tree) => {
   const numbers: number[] = [0, 0, 0, 0, 0, 0]; // For h1-h6
 
   visit(tree, "element", (node) => {

@@ -434,5 +434,199 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
         color: var(--foreground);
       }
     }
+    figure {
+      margin-inline: 0;
+      margin-bottom: 2em;
+
+      & > figcaption {
+        margin-top: 0.5em;
+        color: var(--foreground-60);
+        text-align: center;
+      }
+    }
+
+    /* Callouts */
+
+    .callout {
+      background-color: light-dark(
+        color-mix(in srgb, var(--rc-color) 20%, var(--background)),
+        color-mix(in srgb, var(--rc-color) 10%, var(--background))
+      );
+      border: 1px solid;
+      border-color: light-dark(
+        color-mix(in srgb, var(--rc-color) 50%, var(--background)),
+        color-mix(in srgb, var(--rc-color) 30%, var(--background))
+      );
+      border-left-width: 4px;
+      border-radius: 8px;
+      padding: 1em 1.5em;
+      overflow: hidden;
+      margin-block: 1em;
+
+      & > .callout-title {
+      display: flex;
+        align-items: center;
+      gap: 4px;
+
+      color: color-mix(in srgb, var(--rc-color) 50%, var(--foreground));
+      font-size: inherit;
+
+        & > .callout-title-icon {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      margin-right: 0.3em;
+
+          & > svg {
+            width: 18px;
+            height: 18px;
+          }
+    }
+
+        & > .callout-title-text {
+      color: inherit;
+      font-weight: 600;
+        }
+    }
+
+      & > .callout-content {
+      overflow-x: auto;
+      padding: 0;
+      background-color: transparent;
+    }
+
+      &[data-callout="note"] {
+        --rc-color: rgb(8, 109, 221);
+      }
+
+      &[data-callout="abstract"] {
+        --rc-color: rgb(0, 191, 188);
+      }
+
+      &[data-callout="summary"] {
+        --rc-color: rgb(0, 191, 188);
+      }
+
+      &[data-callout="tldr"] {
+        --rc-color: rgb(0, 191, 188);
+      }
+
+      &[data-callout="info"] {
+        --rc-color: rgb(8, 109, 221);
+      }
+
+      &[data-callout="todo"] {
+        --rc-color: rgb(8, 109, 221);
+      }
+
+      &[data-callout="tip"] {
+        --rc-color: rgb(0, 191, 188);
+      }
+
+      &[data-callout="hint"] {
+        --rc-color: rgb(0, 191, 188);
+      }
+
+      &[data-callout="important"] {
+        --rc-color: rgb(0, 191, 188);
+      }
+
+      &[data-callout="success"] {
+        --rc-color: rgb(8, 185, 78);
+      }
+
+      &[data-callout="check"] {
+        --rc-color: rgb(8, 185, 78);
+      }
+
+      &[data-callout="done"] {
+        --rc-color: rgb(8, 185, 78);
+      }
+
+      &[data-callout="question"] {
+        --rc-color: rgb(236, 117, 0);
+      }
+
+      &[data-callout="help"] {
+        --rc-color: rgb(236, 117, 0);
+      }
+
+      &[data-callout="faq"] {
+        --rc-color: rgb(236, 117, 0);
+      }
+
+      &[data-callout="warning"] {
+        --rc-color: rgb(236, 117, 0);
+      }
+
+      &[data-callout="attention"] {
+        --rc-color: rgb(236, 117, 0);
+    }
+
+      &[data-callout="caution"] {
+        --rc-color: rgb(236, 117, 0);
+      }
+
+      &[data-callout="failure"] {
+        --rc-color: rgb(233, 49, 71);
+      }
+
+      &[data-callout="missing"] {
+        --rc-color: rgb(233, 49, 71);
+      }
+
+      &[data-callout="fail"] {
+        --rc-color: rgb(233, 49, 71);
+      }
+
+      &[data-callout="danger"] {
+        --rc-color: rgb(233, 49, 71);
+      }
+
+      &[data-callout="error"] {
+        --rc-color: rgb(233, 49, 71);
+      }
+
+      &[data-callout="bug"] {
+        --rc-color: rgb(233, 49, 71);
+      }
+
+      &[data-callout="example"] {
+        --rc-color: rgb(120, 82, 238);
+      }
+
+      &[data-callout="quote"] {
+        --rc-color: rgb(158, 158, 158);
+      }
+
+      &[data-callout="cite"] {
+        --rc-color: rgb(158, 158, 158);
+      }
+
+      &:is(details) {
+        & > .callout-title {
+          cursor: pointer;
+          padding: 1em 1.5em;
+          margin: -1em -1.5em;
+
+          & > .callout-fold-icon {
+      display: flex;
+      align-items: center;
+      padding-inline-end: 8px;
+            margin-left: auto;
+
+            & > svg {
+              transition: transform 200ms ease;
+              height: 20px;
+              width: 20px;
+    }
+          }
+        }
+
+        &[open] > .callout-title .callout-fold-icon svg {
+          transform: rotate(180deg);
+        }
+      }
+    }
   }
 </style>
