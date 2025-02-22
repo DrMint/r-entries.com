@@ -246,6 +246,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   }}
 >
   :root {
+    /* Colors */
     --foreground-3: color-mix(in srgb, var(--foreground) 3%, var(--background));
     --foreground-5: color-mix(in srgb, var(--foreground) 5%, var(--background));
     --foreground-10: color-mix(
@@ -280,7 +281,21 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       var(--foreground) 5%,
       transparent
     );
+
+    /* Padding */
     --middle-x-padding: clamp(16px, 4vw, 48px);
+
+    /* Font size */
+    --font-size-increase: (2px + min(0.5vw, 5px));
+    --font-size-xs: 12px;
+    --font-size-s: 14px;
+    --font-size-m: 16px;
+    --font-size-l: calc(16px + var(--font-size-increase) * 0.4);
+    --font-size-xl: calc(16px + var(--font-size-increase) * 0.9);
+    --font-size-2xl: calc(16px + var(--font-size-increase) * 1.6);
+    --font-size-3xl: calc(16px + var(--font-size-increase) * 2.5);
+    --font-size-4xl: calc(16px + var(--font-size-increase) * 3.5);
+    --font-size-5xl: calc(16px + var(--font-size-increase) * 7.5);
   }
 
   .medium-zoom-overlay {
@@ -303,13 +318,55 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     line-height: 1;
   }
 
+  h1 {
+    font-size: var(--font-size-4xl);
+    letter-spacing: -0.03em;
+    font-stretch: 95%;
+    font-weight: 900;
+  }
+
+  h2 {
+    font-size: var(--font-size-3xl);
+    letter-spacing: -0.025em;
+    font-stretch: 95%;
+    font-weight: 800;
+  }
+
+  h3 {
+    font-size: var(--font-size-2xl);
+    letter-spacing: -0.02em;
+    font-stretch: 95%;
+    font-weight: 750;
+  }
+
+  h4 {
+    font-size: var(--font-size-xl);
+    letter-spacing: -0.02em;
+    font-stretch: 95%;
+    font-weight: 700;
+  }
+
+  h5 {
+    font-size: var(--font-size-l);
+    letter-spacing: -0.02em;
+    font-stretch: 95%;
+    font-weight: 600;
+  }
+
+  h6 {
+    font-size: var(--font-size-m);
+    letter-spacing: -0.02em;
+    font-stretch: 93%;
+    font-weight: 450;
+  }
+
   * {
     box-sizing: border-box;
   }
 
   .prose {
     * {
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     a {
@@ -333,6 +390,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       margin-top: 2em;
       margin-bottom: 1em;
       scroll-margin-top: calc(56px + 2em);
+      line-height: 1;
     }
 
     h2 + h3,
@@ -424,7 +482,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 
     .anchor-link {
       color: var(--foreground-60);
-      font-size: 0.9em;
+      font-size: 90%;
       text-decoration: unset;
       margin-right: 0.4em;
       transition: color 100ms;
@@ -434,6 +492,23 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
         color: var(--foreground);
       }
     }
+
+    kbd {
+      background-color: var(--foreground-10);
+      padding: 0.2em 0.5em;
+      border-radius: 8px;
+      border-bottom: 1px solid var(--foreground-30);
+    }
+
+    mark {
+      padding: 0.1em 0.4em;
+    }
+
+    abbr {
+      text-decoration-color: var(--foreground-60);
+      text-underline-offset: 0.3em;
+    }
+
     figure {
       margin-inline: 0;
       margin-bottom: 2em;
@@ -464,36 +539,36 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       margin-block: 1em;
 
       & > .callout-title {
-      display: flex;
+        display: flex;
         align-items: center;
-      gap: 4px;
+        gap: 4px;
 
-      color: color-mix(in srgb, var(--rc-color) 50%, var(--foreground));
-      font-size: inherit;
+        color: color-mix(in srgb, var(--rc-color) 50%, var(--foreground));
+        font-size: inherit;
 
         & > .callout-title-icon {
-      display: flex;
-      flex: 0 0 auto;
-      align-items: center;
-      margin-right: 0.3em;
+          display: flex;
+          flex: 0 0 auto;
+          align-items: center;
+          margin-right: 0.3em;
 
           & > svg {
             width: 18px;
             height: 18px;
           }
-    }
+        }
 
         & > .callout-title-text {
-      color: inherit;
-      font-weight: 600;
+          color: inherit;
+          font-weight: 600;
         }
-    }
+      }
 
       & > .callout-content {
-      overflow-x: auto;
-      padding: 0;
-      background-color: transparent;
-    }
+        overflow-x: auto;
+        padding: 0;
+        background-color: transparent;
+      }
 
       &[data-callout="note"] {
         --rc-color: rgb(8, 109, 221);
@@ -561,7 +636,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 
       &[data-callout="attention"] {
         --rc-color: rgb(236, 117, 0);
-    }
+      }
 
       &[data-callout="caution"] {
         --rc-color: rgb(236, 117, 0);
@@ -610,16 +685,16 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
           margin: -1em -1.5em;
 
           & > .callout-fold-icon {
-      display: flex;
-      align-items: center;
-      padding-inline-end: 8px;
+            display: flex;
+            align-items: center;
+            padding-inline-end: 8px;
             margin-left: auto;
 
             & > svg {
               transition: transform 200ms ease;
               height: 20px;
               width: 20px;
-    }
+            }
           }
         }
 

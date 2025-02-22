@@ -55,6 +55,7 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
     & > h1 {
       padding-inline: var(--middle-x-padding);
+      line-height: 1.5;
 
       & > span {
         display: inline-flex;
@@ -64,7 +65,7 @@ posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
         border-radius: 100vmax;
         padding: 8px 14px;
         padding-right: 18px;
-        font-size: 26px;
+        font-size: var(--font-size-2xl);
         font-weight: 500;
       }
     }
