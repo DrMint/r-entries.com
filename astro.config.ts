@@ -1,14 +1,14 @@
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
-import rehypeUnwrapImages from "rehype-unwrap-images";
 import sitemap from "@astrojs/sitemap";
 import rehypeSlug from "rehype-slug";
+import rehypeUnwrapImages from "rehype-unwrap-images";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypeNumberHeadings } from "./plugins/rehypeNumberHeadings";
 import rehypeImageFigures from "./plugins/rehypeImageFigures";
+import { rehypeExternalNofollow } from "./plugins/rehypeExternalNofollow";
 import type { Element } from "hast";
 import { loadEnv } from "./tools/loadEnv";
-import rehypeExternalLinks from "rehype-external-links";
 import rehypeCallouts from "rehype-callouts";
 
 const env = loadEnv();
@@ -20,9 +20,6 @@ export default defineConfig({
     rehypePlugins: [
       rehypeSlug,
       rehypeNumberHeadings,
-      rehypeExternalLinks,
-      rehypeCallouts,
-      rehypeImageFigures,
       [
         rehypeAutolinkHeadings,
         {
@@ -38,7 +35,10 @@ export default defineConfig({
           },
         },
       ],
+      rehypeCallouts,
       rehypeUnwrapImages,
+      rehypeImageFigures,
+      rehypeExternalNofollow,
     ],
   },
   experimental: {
