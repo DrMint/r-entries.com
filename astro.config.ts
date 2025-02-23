@@ -38,7 +38,13 @@ export default defineConfig({
       rehypeCallouts,
       rehypeUnwrapImages,
       rehypeImageFigures,
+[
       rehypeExternalNofollow,
+{
+          target: "_blank",
+          rel: ["nofollow", "noreferrer", "noopener"],
+        },
+      ],
     ],
   },
   experimental: {

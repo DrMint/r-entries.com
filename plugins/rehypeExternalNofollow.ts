@@ -1,8 +1,17 @@
-import type { Element } from "hast";
+import type { Root, Element } from "hast";
 import { visit } from "unist-util-visit";
+import type { Plugin } from "unified";
 
-export function rehypeExternalNofollow() {
-  return (tree: any) => {
+interface Options {
+  target?: "_blank" | "_self";
+  rel?: string[];
+}
+
+export const rehypeExternalNofollow: Plugin<[Options | undefined], Root> =
+  (options) => (tree) => {
+    const target = options?.target;
+    const rel = options?.rel ?? ["nofollow"];
+
     visit(tree, "element", (node: Element) => {
       if (
         node.tagName === "a" &&
@@ -10,9 +19,10 @@ export function rehypeExternalNofollow() {
         /^https?:\/\//.test(node.properties.href) &&
         !node.properties.href.includes(process.env.SITE_URL!)
       ) {
-        // Add nofollow to external links
-        node.properties.rel = "nofollow";
+        if (target) {
+          node.properties.target = target;
+        }
+        node.properties.rel = rel;
       }
     });
   };
-}
