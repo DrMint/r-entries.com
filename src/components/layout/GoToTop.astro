@@ -87,5 +87,9 @@ const props = Astro.props;
       transform: translateY(2px);
       transition: transform 100ms;
     }
+
+    @media print {
+      display: none;
+    }
   }
 </style>

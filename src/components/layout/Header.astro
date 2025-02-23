@@ -125,6 +125,18 @@ const { pathname } = new URL(Astro.request.url);
           margin-bottom: unset;
         }
       }
+
+      @media print {
+        place-content: center;
+
+        & > #right {
+          display: none;
+        }
+
+        & > #left {
+          color: var(--foreground);
+        }
+      }
     }
   }
 </style>
