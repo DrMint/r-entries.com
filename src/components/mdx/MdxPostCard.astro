@@ -1,0 +1,28 @@
+---
+import PostCard from "src/components/PostCard.astro";
+import { getEntry } from "astro:content";
+interface Props {
+  post: string;
+}
+
+const { post: postName } = Astro.props;
+
+const post = await getEntry("posts", postName);
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<div data-component="MdxPostCard">
+  {post ? <PostCard post={post} /> : <div>Post not found</div>}
+</div>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-component="MdxPostCard"] {
+    border: 1px solid var(--layout-border);
+
+    text-decoration: none;
+    color: inherit;
+  }
+</style>

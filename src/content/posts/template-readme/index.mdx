@@ -1,0 +1,32 @@
+---
+title: STRICT Astro Template
+cover: cover.png
+coverAlt: "The Astro logo"
+summary: "Explaining the template"
+date: 2025-02-23
+tags:
+  - exemple
+---
+
+import MdxPostCard from "src/components/mdx/MdxPostCard.astro";
+
+STRICT is a blogging template for [Astro](https://astro.build/),
+which I created for my blog [r-entries.com](https://r-entries.com).
+
+Starting this project, I had the following requirements:
+
+- **Static site generation**, so the website loads fast, has lower hosting costs, and can be hosted anywhere.
+- **No client-side JavaScript required**. Some JS can be sprinkled in for <abbr title="Quality of Life">QoL</abbr> features--if impossible otherwise--using the [Progressive Enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement) strategy.
+- **Minimal dependencies**, both for the static generation and client-side.
+  - No UI framework, no CSS framework, no JS framework, no component library. **Cut the bloat, I want full control!**
+- **Performant**. This is just a blog, any user should enjoy a smooth experience regardless of their device.
+- **Respectful**
+  - of user's **privacy** (no tracking, no analytics, no cookies)
+  - of user's **bandwidth** (no custom fonts, optimized images)
+  - of user's **preferences** (choice of web browser, light/dark mode, reduced motion, etc...)
+- **SEO-friendly**, I mostly write posts for myself, but wouldn't mind if other people can find them when relevant.
+- **Good editorial experience**, that's common sense for a blog. I often write about programming good **code highlighting** is a must.
+- **Tags** and **post's subpages**, so user navigation is a breeze.
+- **Print friendly**, I like to print my posts sometimes, especially cooking recipes.
+
+<MdxPostCard post={"template-readme/mdx-syntax"} />

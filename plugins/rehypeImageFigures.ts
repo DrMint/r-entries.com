@@ -7,7 +7,7 @@ import type { Plugin } from "unified";
  * in figure elements and adds figcaption.
  * Images without alt text are left unchanged.
  */
-const rehypeImageFigures: Plugin<[], Root> = () => (tree) => {
+export const rehypeImageFigures: Plugin<[], Root> = () => (tree) => {
   visit(tree, "element", (node: Element, index, parent) => {
     // Only process img elements
     if (node.tagName !== "img") return;
@@ -20,7 +20,7 @@ const rehypeImageFigures: Plugin<[], Root> = () => (tree) => {
     const figure: Element = {
       type: "element",
       tagName: "figure",
-      properties: {},
+      properties: { "data-rehype-image-figures": "" },
       children: [
         // The original image
         node,
@@ -45,5 +45,3 @@ const rehypeImageFigures: Plugin<[], Root> = () => (tree) => {
     }
   });
 };
-
-export default rehypeImageFigures;

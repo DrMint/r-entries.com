@@ -3,6 +3,7 @@
 ## Overview
 
 R-Entries is a static website template for personal blogs.
+
 It is built with Astro and uses the `@astrojs/mdx` integration.
 
 Key features:
@@ -10,6 +11,7 @@ Key features:
 - Content
   - Markdown or MDX content
   - Tag support
+  - Code highlighting
 - Progressive enhancement
   - JavaScript is only used for some of the QoL features
 - Stylish and minimalistic design
@@ -53,6 +55,7 @@ The post slug is used in the url as `/posts/{slug}`.
 
 ## TODO
 
+- Nested posts
 - View transitions
   - https://developer.chrome.com/docs/web-platform/view-transitions/cross-document#demo
 - TOC observable api

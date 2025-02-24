@@ -5,11 +5,13 @@ import rehypeSlug from "rehype-slug";
 import rehypeUnwrapImages from "rehype-unwrap-images";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypeNumberHeadings } from "./plugins/rehypeNumberHeadings";
-import rehypeImageFigures from "./plugins/rehypeImageFigures";
+import { rehypeImageFigures } from "./plugins/rehypeImageFigures";
 import { rehypeExternalNofollow } from "./plugins/rehypeExternalNofollow";
+import { rehypeMarkNonMDXNodes } from "./plugins/rehypeMarkNonMDXNodes";
 import type { Element } from "hast";
 import { loadEnv } from "./tools/loadEnv";
 import rehypeCallouts from "rehype-callouts";
+import rehypePrettyCode from "rehype-pretty-code";
 
 const env = loadEnv();
 
@@ -17,6 +19,10 @@ export default defineConfig({
   integrations: [mdx({ optimize: true }), sitemap()],
   trailingSlash: env.TRAILING_SLASH,
   markdown: {
+    remarkRehype: {
+      footnoteLabel: "Footnotes",
+    },
+    syntaxHighlight: false,
     rehypePlugins: [
       rehypeSlug,
       rehypeNumberHeadings,
@@ -35,16 +41,27 @@ export default defineConfig({
           },
         },
       ],
+      [
+        rehypePrettyCode,
+        {
+          theme: {
+            light: "light-plus",
+            dark: "dark-plus",
+          },
+          keepBackground: false,
+        },
+      ],
       rehypeCallouts,
       rehypeUnwrapImages,
       rehypeImageFigures,
-[
-      rehypeExternalNofollow,
-{
+      [
+        rehypeExternalNofollow,
+        {
           target: "_blank",
           rel: ["nofollow", "noreferrer", "noopener"],
         },
       ],
+      rehypeMarkNonMDXNodes,
     ],
   },
   experimental: {

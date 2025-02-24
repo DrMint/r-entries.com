@@ -57,14 +57,30 @@ You can have headings, aka titles.
 Anyway, headings are used to structure the post.
 Let's use one right now to start a new section.
 
-## Formatting
+## Inline elements
 
-**Bold** is quite nice, isn't it? There is also _italic_ and ~~strikethrough~~.
-You can mix them together: here, a _**bold italic**_ word.
+**Bold** is quite nice, isn't it? Actually you can do bold with **two underscores** or **two asterisks**.
+There is also _italic_: same thing, you can use _an underscore_ or _an asterisk_.
 
-<u>Underline</u> is a little bit different, but possible.
+There is also ~~strikethrough~~, which can be done with ~~two tildes~~ or ~a single tilde~.
+
+Finally, you can mix them together: here, a _**bold italic**_ word.
+
+<u>Underline</u> is achieve with HTML tags, same with
+<mark>highlighted text</mark>.
 
 Backticks are used to display inline `code`.
+
+You can anotate a word such as <abbr title="Graphics Interchange Format">GIF</abbr> (hover the word to see the tooltip).
+
+You can also use subscripts (i.e. H<sub>2</sub>O) and superscripts (i.e. X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>).
+
+If you express keyboard inputs with the \<kbd> tag: <kbd>CTRL</kbd> + <kbd>A</kbd> to select all.
+
+Double dashes--like these--are automatically converted to en-dashes.
+
+Here's a simple sentence with a footnote [^1].
+[^1]: This is the content of the footnote.
 
 ## Lists
 
@@ -151,23 +167,141 @@ body {
 }
 ```
 
-```html
-<html>
-  <body>
-    <h1>Hello, World!</h1>
-  </body>
-</html>
+Long lines of code don't get wrapped to the next line:
+
+```java
+public static void main(String[] args) {
+    Time start = new Time(8, 12, 15);
+    Time stop = new Time(12, 34, 55);
+    Time diff;
+
+    // call difference method
+    diff = difference(start, stop);
+
+    System.out.printf("TIME DIFFERENCE: %d:%d:%d - %d:%d:%d = %d:%d:%d\n", start.hours, start.minutes, start.seconds, stop.hours, stop.minutes, stop.seconds, diff.hours, diff.minutes, diff.seconds);
+}
 ```
 
-```bash
-ls -la
+#### Titles and captions
+
+You can set a title :
+
+```java title="src/main/java/com/drmint/helloworld/App.java"
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
 ```
 
-```ruby
-puts "Hello, World!"
+You can also set some caption:
+
+```java title="src/main/java/com/drmint/helloworld/App.java" caption="A small piece of code in most general-purpose programming languages, this program is used to illustrate a language's basic syntax."
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
 ```
 
-Stop right there cowboy! I think you've got the point.
+#### Line numbers
+
+You can display the line numbers
+
+```java showLineNumbers
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+You can also set the starting line number:
+
+```java title="src/main/java/com/drmint/helloworld/App.java" showLineNumbers{97}
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+#### Highlighting
+
+You can set the range of lines to highlight:
+
+```ts {3-5, 8} showLineNumbers
+async function highlightCode(code: string) {
+  const file = await unified()
+    .use(remarkParse)
+    .use(remarkRehype)
+    .use(rehypePrettyCode, {
+      keepBackground: false,
+    })
+    .use(rehypeStringify)
+    .process(code);
+
+  return String(file);
+}
+```
+
+And you can set them as insertions or deletions:
+
+```ts {3,4}#del {5-7}#ins showLineNumbers
+async function highlightCode(code: string) {
+  const file = await unified()
+    .use(remarkParse)
+    .use(remarkRehype)
+    .use(rehypePrettyCode, {
+      keepBackground: false,
+    })
+    .use(rehypeStringify)
+    .process(code);
+
+  return String(file);
+}
+```
+
+You can set words to highlight:
+
+```js /age/#v /name/#v /setAge/#s /setName/#s /50/#i /"Taylor"/#i
+const [age, setAge] = useState(50);
+const [name, setName] = useState("Taylor");
+```
+
+And just like lines, you can set them as insertions or deletions:
+
+```css "left"#del "inline"#ins
+blockquote {
+  margin-leftinline: unset;
+  background-color: var(--foreground-5-transparent);
+}
+```
+
+#### Inline code
+
+Let's consider the following code:
+
+```java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+Maybe you want to talk about a section of this code and you want proper highlighting with inline code.
+
+You can use the `\{:java}` to specify the language of the code.
+Here, `public class HelloWorld{:java}` is properly highlighted.
+However, it doesn't work if there isn't enought context.
+
+For example, `main{:java}` is not highlighted correctly because it's impossible to know what "main" refers to without context.
+You can provide the context by using the `\{:.entity.name.function}` meta string.
+Now, `main{:.entity.name.function}` is properly highlighted.
+
+We can do the same with `args{:.entity.name.variable}`, `HelloWorld{:.entity.name.class}`, or `public{:.keyword}`.
+To find more of these meta string, you can check `node_modules/@shikijs/themes/dist/dark-plus.mjs`.
 
 ### Blockquotes
 
@@ -182,7 +316,7 @@ You can use blockquotes to display quotes.
 >
 > They can even have code blocks.
 >
-> ```ts
+> ```ts title="simple.ts"
 > const a = 1;
 > ```
 >
@@ -195,6 +329,8 @@ You can use blockquotes to display quotes.
 Alright enought with blockquotes.
 
 ### Callouts
+
+#### Types
 
 > [!note] This is a "note" callout
 > Some random content don't worry about it
@@ -277,6 +413,8 @@ Alright enought with blockquotes.
 > [!cite] This is a "cite" callout
 > Some random content don't worry about it
 
+#### Collapsible
+
 You can have callouts collapsible
 
 > [!cite]+ Opened by default
@@ -291,6 +429,7 @@ You can have callouts collapsible
 - External link: [Astro](https://astro.build/) (should have rel="nofollow")
 - Anchor link: [Go back to Blocks](#blocks)
 - Anchor with custom text when hovered: [Hover me](#blocks "I also send you back to the blocks section")
+- Automatic link: https://astro.build/
 
 ## Images
 
@@ -322,23 +461,10 @@ You can align the columns to the left, right, or center.
 | Cell 4       |     Cell 5     |        Cell 6 |
 | Cell 7       |     Cell 8     |        Cell 9 |
 
-## Other stuff
+## Others
 
 You can have horizontal rules.
 
 ---
 
 They can be used to separate sections of a post.
-
-<abbr title="Graphics Interchange Format">GIF</abbr> is a bitmap image format.
-
-H<sub>2</sub>O
-
-X<sup>n</sup> + Y<sup>n</sup> = Z<sup>n</sup>
-
-Press <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>Delete</kbd> to end the session.
-
-Most <mark>salamanders</mark> are nocturnal, and hunt for insects, worms, and other small creatures.
-
-Here's a sentence with a footnote. [^1]
-[^1]: This is the footnote.
