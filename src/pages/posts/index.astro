@@ -1,12 +1,9 @@
 ---
-import { getCollection } from "astro:content";
 import Html from "src/components/layout/Html.astro";
 import PostCard from "src/components/PostCard.astro";
+import { getPosts } from "src/utils/collections";
 
-const posts = await getCollection("posts");
-
-// Sort from newer to older
-posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const posts = await getPosts({ sort: "date", order: "desc" });
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}

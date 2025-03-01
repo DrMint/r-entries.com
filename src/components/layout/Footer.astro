@@ -1,5 +1,6 @@
 ---
 import RssLogo from "src/icons/lucide--rss.svg";
+import SitemapLogo from "src/icons/lucide--map.svg";
 import { getUrl } from "src/utils/navigation";
 const props = Astro.props;
 ---
@@ -10,7 +11,10 @@ const props = Astro.props;
   <div>
     <p>© {new Date().getFullYear()} All rights reserved.</p>
     <div class="social-links">
-      <a href={getUrl("/rss.xml", true)}>
+      <a href={getUrl("/sitemap")} title="Sitemap">
+        <SitemapLogo width={16} height={16} />
+      </a>
+      <a href={getUrl("/rss.xml", true)} title="RSS Feed">
         <RssLogo width={16} height={16} />
       </a>
     </div>

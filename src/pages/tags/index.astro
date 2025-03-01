@@ -1,18 +1,10 @@
 ---
-import { getCollection } from "astro:content";
 import Html from "src/components/layout/Html.astro";
 import TagPill from "src/components/TagPill.astro";
 import { getUrl } from "src/utils/navigation";
-const posts = await getCollection("posts");
-const tagNames = new Set(posts.flatMap((post) => post.data.tags ?? []));
+import { getTags } from "src/utils/collections";
 
-const tags = [...tagNames].map((tag) => ({
-  tag,
-  count: posts.filter((post) => post.data.tags?.includes(tag)).length,
-}));
-
-// Sort from most prevalent to least
-tags.sort((a, b) => b.count - a.count);
+const tags = await getTags({ sort: "prevalence", order: "desc" });
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}

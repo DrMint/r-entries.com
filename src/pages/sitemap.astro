@@ -1,0 +1,112 @@
+---
+import Html from "src/components/layout/Html.astro";
+import { getUrl } from "src/utils/navigation";
+import { getPostsTree, getTags } from "src/utils/collections";
+
+const posts = await getPostsTree();
+const tags = await getTags({ sort: "name", order: "asc" });
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<Html data-page="Sitemap">
+  <h1>Sitemap</h1>
+  <ul>
+    <li>
+      <a href={getUrl("/")}>Home</a>
+    </li>
+    {
+      posts.length > 0 && (
+        <li>
+          <a href={getUrl("/posts")}>Posts</a>
+          <ul>
+            {posts.map((post) => (
+              <li>
+                <a href={getUrl(`/posts/${post.slug}`)}>{post.data.title}</a>
+                {post.nestedPosts.length > 0 && (
+                  <ul>
+                    {post.nestedPosts.map((nestedPost) => (
+                      <li>
+                        <a href={getUrl(`/posts/${nestedPost.slug}`)}>
+                          {nestedPost.data.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </li>
+      )
+    }
+    {
+      tags.length > 0 && (
+        <li>
+          <a href={getUrl("/tags")}>Tags</a>
+          <ul>
+            {tags.map((tag) => (
+              <li>
+                <a href={getUrl(`/tags/${tag.tag}`)}>{tag.tag}</a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      )
+    }
+    <li>
+      <a href={getUrl("/about")}>About</a>
+    </li>
+    <li>
+      Meta
+      <ul>
+        <li>
+          <a href={getUrl("/rss.xml", true)}>RSS (XML)</a>
+        </li>
+        <li>
+          <a href={getUrl("/sitemap.xml", true)}>Sitemap (XML)</a>
+        </li>
+        <li>
+          <a href={getUrl("/sitemap")}>Sitemap (you are here)</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</Html>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-page="Sitemap"] {
+    padding: 64px var(--middle-x-padding);
+
+    & > h1 {
+      margin-bottom: 1em;
+    }
+
+    ul,
+    ol {
+      margin-block: 0.75em;
+
+      & > li + li {
+        margin-top: 0.5em;
+      }
+
+      ::marker {
+        color: var(--foreground-50);
+      }
+    }
+
+    ul > li {
+      padding-left: 3px;
+    }
+
+    ol > li {
+      padding-left: 8px;
+    }
+
+    a {
+      color: revert;
+    }
+  }
+</style>

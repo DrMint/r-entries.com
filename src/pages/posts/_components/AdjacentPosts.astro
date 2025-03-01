@@ -1,27 +1,16 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
 import LeftArrow from "src/icons/lucide--arrow-left.svg";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
 import { getUrl } from "src/utils/navigation";
+import { getAdjacentPosts } from "src/utils/collections";
+
 interface Props {
   currentPost: CollectionEntry<"posts">;
 }
 
 const { currentPost, ...rest } = Astro.props;
-
-const posts = await getCollection("posts");
-
-// Sort from newer to older
-posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-
-const previousPost = posts.find(
-  (otherPost) => otherPost.data.date.valueOf() < currentPost.data.date.valueOf()
-);
-
-const nextPost = posts.findLast(
-  (otherPost) => otherPost.data.date.valueOf() > currentPost.data.date.valueOf()
-);
+const { previousPost, nextPost } = await getAdjacentPosts(currentPost);
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}

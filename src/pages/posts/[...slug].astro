@@ -1,5 +1,4 @@
 ---
-import { getCollection } from "astro:content";
 import { render } from "astro:content";
 import Html from "src/components/layout/Html.astro";
 import Tags from "src/pages/posts/_components/Tags.astro";
@@ -8,14 +7,15 @@ import TableOfContents from "src/pages/posts/_components/TableOfContents.astro";
 import { Image } from "astro:assets";
 import AdjacentPosts from "src/pages/posts/_components/AdjacentPosts.astro";
 import { ENABLE_TABLE_OF_CONTENTS_FEATURE } from "src/constants";
+import { getPosts } from "src/utils/collections";
 
-export async function getStaticPaths() {
-  const posts = await getCollection("posts");
+export const getStaticPaths = async () => {
+  const posts = await getPosts({ includingNested: true });
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
   }));
-}
+};
 
 const { post } = Astro.props;
 const { title, cover, tags, summary } = post.data;

@@ -1,17 +1,17 @@
 import rss from "@astrojs/rss";
-import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
 import { getUrl } from "src/utils/navigation";
 import { WEBSITE_NAME, DEFAULT_DESCRIPTION } from "src/constants";
 import { experimental_AstroContainer } from "astro/container";
 import { loadRenderers } from "astro:container";
 import { getContainerRenderer } from "@astrojs/mdx";
+import { getPosts } from "src/utils/collections";
 
 const renderers = await loadRenderers([getContainerRenderer()]);
 const container = await experimental_AstroContainer.create({ renderers });
 
 export const GET: APIRoute = async (context) => {
-  const posts = await getCollection("posts");
+  const posts = await getPosts({ includingNested: true });
   return rss({
     title: WEBSITE_NAME,
     description: DEFAULT_DESCRIPTION,

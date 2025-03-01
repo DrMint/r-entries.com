@@ -1,16 +1,16 @@
 ---
-import { getCollection } from "astro:content";
 import { getUrl } from "src/utils/navigation";
 import Html from "src/components/layout/Html.astro";
 import PostCard from "src/components/PostCard.astro";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
+import { getPosts } from "src/utils/collections";
 
-const posts = await getCollection("posts");
-
-// Sort from newer to older
-const latestPosts = posts
-  .toSorted((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 2);
+const latestPosts = await getPosts({
+  maxCount: 3,
+  sort: "date",
+  order: "desc",
+});
+const postsCount = (await getPosts()).length;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
@@ -41,7 +41,7 @@ const latestPosts = posts
     }
   </div>
   {
-    latestPosts.length !== posts.length && (
+    latestPosts.length !== postsCount && (
       <a id="view-all" href={getUrl("/posts")}>
         View all posts <RightArrow width={16} height={16} />
       </a>
