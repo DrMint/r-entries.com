@@ -128,16 +128,8 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 
   const initMediumZoom = () => {
     console.log("[MediumZoom] Starting");
-    const proses = document.querySelectorAll(".prose");
-    const images: HTMLImageElement[] = [];
-    proses.forEach((prose) => {
-      prose
-        .querySelectorAll<HTMLImageElement>(":not(a) > img")
-        .forEach((image) => {
-          images.push(image);
-        });
-    });
-
+    
+    const images = document.querySelectorAll(":not(a) > img[data-rehype-non-mdx]");
     console.log("[MediumZoom] Found", images.length, "images");
 
     const zoom = mediumZoom(undefined, {
