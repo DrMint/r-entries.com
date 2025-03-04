@@ -14,7 +14,12 @@ export const getStaticPaths = async () => {
 };
 
 const { tag } = Astro.props;
-const posts = await getPosts({ tag, sort: "date", order: "desc" });
+const posts = await getPosts({
+  tag,
+  includingNested: true,
+  sort: "date",
+  order: "desc",
+});
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}

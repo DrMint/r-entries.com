@@ -10,7 +10,7 @@ export type NavigationItem = {
   tooltip?: string | undefined;
 };
 
-export type FooterItem = {
+export type SocialItem = {
   href: string;
   icon: Icon;
   label: string;

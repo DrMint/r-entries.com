@@ -5,7 +5,7 @@ import AboutIcon from "src/icons/lucide--circle-user-round.svg";
 import GithubLogo from "src/icons/lucide--github.svg";
 import TwitterLogo from "src/icons/lucide--twitter.svg";
 import Logo from "src/icons/r-entries.svg";
-import type { FooterItem, NavigationItem } from "./utils/navigation";
+import type { SocialItem, NavigationItem } from "./utils/navigation";
 
 /* ------------------------------[ Constants ]------------------------------- */
 
@@ -56,7 +56,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   },
 ];
 
-export const FOOTER_ITEMS: FooterItem[] = [
+export const SOCIAL_ITEMS: SocialItem[] = [
   {
     href: "https://x.com/DrMint4",
     icon: TwitterLogo,

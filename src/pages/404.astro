@@ -1,0 +1,21 @@
+---
+import Html from "src/components/layout/Html.astro";
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<Html data-page="404">
+  <h1>404</h1>
+</Html>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-page="404"] {
+    padding: 64px var(--middle-x-padding);
+
+    & > h1 {
+      margin-bottom: 1em;
+    }
+  }
+</style>

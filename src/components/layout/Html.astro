@@ -294,6 +294,11 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 
   .medium-zoom-overlay {
     backdrop-filter: blur(8px);
+    z-index: 2;
+  }
+
+  .medium-zoom-image {
+    z-index: 3;
   }
 
   a {

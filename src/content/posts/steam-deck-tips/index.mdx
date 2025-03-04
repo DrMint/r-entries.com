@@ -105,6 +105,32 @@ Add yourself to the uucp group
 sudo usermod -a -G uucp deck
 ```
 
+### Crack zip password
+
+```sh
+distrobox enter debian
+```
+
+```sh
+sudo apt install libssl-dev
+```
+
+```sh
+git clone https://github.com/openwall/john --depth 1 --single-branch
+cd john/src/
+./configure
+make -s clean && make -sj4
+```
+
+```sh
+cd ../run/
+./zip2john test.zip > hash.txt
+```
+
+```sh
+./john --format=zip --incremental hash.txt
+```
+
 ### Webdev
 
 #### Podman & distrobox

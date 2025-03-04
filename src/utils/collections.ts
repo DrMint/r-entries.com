@@ -1,4 +1,4 @@
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection, getEntry, type CollectionEntry } from "astro:content";
 
 export const getPosts = async (options?: {
   tag?: string;
@@ -70,4 +70,10 @@ export const getTags = async (options?: {
   if (order === "desc") tags = tags.reverse();
 
   return tags;
+};
+
+export const getPage = async (slug: string) => {
+  const page = await getEntry("pages", slug);
+  if (!page) throw new Error(`Page not found: ${slug}`);
+  return page;
 };

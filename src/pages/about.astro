@@ -1,11 +1,42 @@
 ---
 import Html from "src/components/layout/Html.astro";
+import { SOCIAL_ITEMS } from "src/constants";
+import { getPage } from "src/utils/collections";
+
+const page = await getPage("about");
+const { title, summary } = page.data;
+const { Content } = await page.render();
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html data-page="About">
-  <h1>About</h1>
+<Html openGraph={{ title, description: summary }} data-page="About">
+  <div class="header">
+    <h1>{title}</h1>
+  </div>
+
+  <Content />
+
+  {
+    SOCIAL_ITEMS.length > 0 && (
+      <div class="socials">
+        <h2>Links</h2>
+        <div>
+          {SOCIAL_ITEMS.map(({ href, icon: Icon, label, tooltip }) => (
+            <a
+              href={href}
+              title={tooltip}
+              rel="nofollow noreferrer noopener"
+              target="_blank"
+            >
+              <Icon width={24} height={24} />
+              {label}
+            </a>
+          ))}
+        </div>
+      </div>
+    )
+  }
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
@@ -13,5 +44,53 @@ import Html from "src/components/layout/Html.astro";
 <style>
   [data-page="About"] {
     padding: 64px var(--middle-x-padding);
+    max-width: 70ch;
+
+    & > .header {
+      & > h1 {
+        margin-bottom: 1em;
+      }
+
+      & > p {
+        line-height: 1.6;
+        margin-block: 1em;
+      }
+    }
+
+    & > .socials {
+      & > h2 {
+        margin-top: 2em;
+        margin-bottom: 1em;
+      }
+
+      & > div {
+        display: flex;
+        gap: 8px;
+
+        & > a {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          margin-block: 0.5em;
+          border: 1px solid var(--foreground-10);
+          border-radius: 6px;
+          padding: 12px 20px;
+
+          transition:
+            background-color 100ms,
+            border-color 100ms;
+
+          &:hover,
+          &:focus-visible {
+            background-color: var(--foreground-3);
+            border-color: color-mix(
+              in srgb,
+              var(--foreground) 20%,
+              transparent
+            );
+          }
+        }
+      }
+    }
   }
 </style>

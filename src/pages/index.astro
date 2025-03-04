@@ -3,7 +3,11 @@ import { getUrl } from "src/utils/navigation";
 import Html from "src/components/layout/Html.astro";
 import PostCard from "src/components/PostCard.astro";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
-import { getPosts } from "src/utils/collections";
+import { getPosts, getPage } from "src/utils/collections";
+
+const homePage = await getPage("home");
+const { title, summary } = homePage.data;
+const { Content } = await homePage.render();
 
 const latestPosts = await getPosts({
   maxCount: 3,
@@ -15,36 +19,28 @@ const postsCount = (await getPosts()).length;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html data-page="Home">
-  <div id="welcome" class="prose">
-    <h1>Welcome</h1>
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut convallis
-      sodales commodo. Fusce eu sapien lectus. Vivamus eleifend scelerisque
-      libero, in cursus leo. Integer tristique, lectus eget dapibus euismod,
-      nisl massa imperdiet felis, sit amet tristique leo leo sed ante. Mauris
-      efficitur leo ac purus tempus varius. Phasellus nec suscipit erat. Mauris
-      pharetra porttitor ipsum vitae venenatis. Cras vitae nisl pellentesque,
-      venenatis mauris at, mattis nisi. Pellentesque sed sem non nunc interdum
-      laoreet. In tincidunt a tortor ut sollicitudin.
-    </p>
-    <br />
-    <h2>Latest posts</h2>
-  </div>
-  <div id="latest-post">
-    {
-      latestPosts.map((post) => (
-        <div>
-          <PostCard post={post} />
-        </div>
-      ))
-    }
+<Html openGraph={{ title, description: summary }} data-page="Home">
+  <div id="welcome">
+    <h1>{title}</h1>
+    <Content />
   </div>
   {
-    latestPosts.length !== postsCount && (
-      <a id="view-all" href={getUrl("/posts")}>
-        View all posts <RightArrow width={16} height={16} />
-      </a>
+    latestPosts.length > 0 && (
+      <>
+        <h2>Latest posts</h2>
+        <div id="latest-post">
+          {latestPosts.map((post) => (
+            <div>
+              <PostCard post={post} />
+            </div>
+          ))}
+        </div>
+        {latestPosts.length !== postsCount && (
+          <a id="view-all" href={getUrl("/posts")}>
+            View all posts <RightArrow width={16} height={16} />
+          </a>
+        )}
+      </>
     )
   }
 </Html>
@@ -66,11 +62,12 @@ const postsCount = (await getPosts()).length;
       & > h1 {
         margin-bottom: 1em;
       }
+    }
 
-      & > p {
-        line-height: 1.6;
-        margin-block: 1em;
-      }
+    & > h2 {
+      margin-block: 0.5em;
+      margin-top: 1em;
+      padding-inline: var(--middle-x-padding);
     }
 
     & > #latest-post {
