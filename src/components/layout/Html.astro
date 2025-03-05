@@ -136,7 +136,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 
     const zoom = mediumZoom(undefined, {
       margin: 50,
-      background: "var(--background-70)",
+      background: "var(--medium-zoom-overlay-background)",
     });
 
     const updateZoom = (smallerThan720: boolean) => {
@@ -276,6 +276,12 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       transparent
     );
 
+    --medium-zoom-overlay-background: var(--background-70);
+
+    @media (prefers-reduced-transparency) {
+      --medium-zoom-overlay-background: var(--background);
+    }
+
     /* Padding */
     --middle-x-padding: clamp(16px, 4vw, 48px);
 
@@ -295,6 +301,10 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   .medium-zoom-overlay {
     backdrop-filter: blur(8px);
     z-index: 2;
+
+    @media (prefers-reduced-transparency) {
+      backdrop-filter: none;
+    }
   }
 
   .medium-zoom-image {
