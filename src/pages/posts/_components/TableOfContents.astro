@@ -46,18 +46,15 @@ const toc = headings
     border: 1px solid var(--foreground-20);
     border-radius: 8px;
 
-    &[open] > summary {
-      border-bottom: 1px solid var(--foreground-20);
-      background-color: var(--foreground-5);
+    transition: border-color 100ms;
 
-      & > svg {
-        transform: rotate(180deg);
-      }
+    &:hover,
+    &:focus-visible {
+      border-color: color-mix(in srgb, var(--foreground) 50%, transparent);
     }
 
     summary {
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
+      border-radius: 8px;
       user-select: none;
       width: 100%;
       display: flex;
@@ -71,8 +68,27 @@ const toc = headings
       color: inherit;
       font-size: var(--font-size-xl);
 
+      transition: background-color 100ms;
+
+      &:hover,
+      &:focus-visible {
+        background-color: var(--foreground-5);
+      }
+
       & > svg {
         transition: transform 200ms ease;
+      }
+
+      [open] > & {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+
+        border-bottom: 1px solid var(--foreground-20);
+        background-color: var(--foreground-5);
+
+        & > svg {
+          transform: rotate(180deg);
+        }
       }
     }
 

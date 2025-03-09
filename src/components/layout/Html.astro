@@ -373,6 +373,10 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     box-sizing: border-box;
   }
 
+  *:focus-visible {
+    outline: 2px solid var(--foreground) !important;
+  }
+
   [id] {
     scroll-margin-top: calc(56px + 2em);
   }
