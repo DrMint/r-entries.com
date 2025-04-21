@@ -64,9 +64,6 @@ export default defineConfig({
       rehypeMarkNonMDXNodes,
     ],
   },
-  experimental: {
-    svg: true,
-  },
   server: {
     host: true,
     port: env.PORT,
