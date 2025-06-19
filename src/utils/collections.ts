@@ -8,6 +8,7 @@ export const getPosts = async (options?: {
   includingNested?: boolean;
 }) => {
   let posts = await getCollection("posts");
+  posts = posts.filter((post) => !post.data.draft);
   if (!options?.includingNested) {
     posts = posts.filter((post) => !post.slug.includes("/"));
   }
