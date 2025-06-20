@@ -670,11 +670,18 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   /* Callouts */
 
   .callout[data-rehype-non-mdx] {
+    border: 1px solid;
+
+    /* Monochrome fallback for browsers that don't support color-mix */
+    background-color: var(--foreground-5);
+    border-color: var(--foreground-20);
+
+    /* TODO: Add more colorful fallback for browsers that don't support color-mix */
     background-color: light-dark(
       color-mix(in srgb, var(--rc-color) 20%, var(--background)),
       color-mix(in srgb, var(--rc-color) 10%, var(--background))
     );
-    border: 1px solid;
+
     border-color: light-dark(
       color-mix(in srgb, var(--rc-color) 50%, var(--background)),
       color-mix(in srgb, var(--rc-color) 30%, var(--background))
@@ -690,6 +697,10 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       align-items: center;
       gap: 4px;
 
+      /* Monochrome fallback for browsers that don't support color-mix */
+      color: var(--foreground-70);
+
+      /* TODO: Add more colorful fallback for browsers that don't support color-mix */
       color: color-mix(in srgb, var(--rc-color) 50%, var(--foreground));
       font-size: inherit;
 
@@ -825,7 +836,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       --rc-color: rgb(158, 158, 158);
     }
 
-    &:is(details) {
+    &details {
       & > .callout-title {
         cursor: pointer;
         padding: 1em 1.5em;
