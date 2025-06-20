@@ -5,16 +5,15 @@ import Header from "src/components/layout/Header.astro";
 import MobileFooter from "src/components/layout/MobileFooter.astro";
 import MobileHeader from "src/components/layout/MobileHeader.astro";
 import {
-  BACKGROUND_COLOR,
   DEFAULT_DESCRIPTION,
   DEFAULT_THUMBNAIL,
   DEFAULT_TITLE,
   ENABLE_GO_TO_TOP_FEATURE,
-  FOREGROUND_COLOR,
   WEBSITE_NAME,
 } from "src/constants";
 import { getUrl } from "src/utils/navigation";
 import { getImage } from "astro:assets";
+import { generateLightDarkColorTheme } from "src/utils/colors";
 
 interface OpenGraph {
   title: string;
@@ -185,17 +184,17 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
+  }
 
-    @media (pointer: fine) {
-      .coarse-only {
-        display: none;
-      }
+  @media (pointer: fine) {
+    .coarse-only {
+      display: none;
     }
+  }
 
-    @media (pointer: coarse) {
-      .fine-only {
-        display: none;
-      }
+  @media (pointer: coarse) {
+    .fine-only {
+      display: none;
     }
   }
 
@@ -232,51 +231,38 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   }
 </style>
 
-<style
-  is:global
-  define:vars={{
-    foreground: FOREGROUND_COLOR,
-    background: BACKGROUND_COLOR,
-  }}
->
+<style is:global define:vars={generateLightDarkColorTheme()}>
   :root {
-    /* Colors */
-    --foreground-3: color-mix(in srgb, var(--foreground) 3%, var(--background));
-    --foreground-5: color-mix(in srgb, var(--foreground) 5%, var(--background));
-    --foreground-10: color-mix(
-      in srgb,
-      var(--foreground) 10%,
-      var(--background)
-    );
-    --foreground-20: color-mix(
-      in srgb,
-      var(--foreground) 20%,
-      var(--background)
-    );
-    --foreground-30: color-mix(
-      in srgb,
-      var(--foreground) 30%,
-      var(--background)
-    );
-    --foreground-50: color-mix(
-      in srgb,
-      var(--foreground) 50%,
-      var(--background)
-    );
-    --foreground-60: color-mix(
-      in srgb,
-      var(--foreground) 60%,
-      var(--background)
-    );
-    --background-70: color-mix(in srgb, var(--background) 70%, transparent);
-    --layout-border: var(--foreground-20);
-    --foreground-5-transparent: color-mix(
-      in srgb,
-      var(--foreground) 5%,
-      transparent
-    );
+    --foreground: var(--light-foreground);
+    --background: var(--light-background);
+    --foreground-3: var(--light-foreground-3);
+    --foreground-5: var(--light-foreground-5);
+    --foreground-10: var(--light-foreground-10);
+    --foreground-20: var(--light-foreground-20);
+    --foreground-30: var(--light-foreground-30);
+    --foreground-50: var(--light-foreground-50);
+    --foreground-60: var(--light-foreground-60);
+    --background-70-transparent: var(--light-background-70-transparent);
+    --foreground-5-transparent: var(--light-foreground-5-transparent);
+    --foreground-20-transparent: var(--light-foreground-20-transparent);
 
-    --medium-zoom-overlay-background: var(--background-70);
+    @media (prefers-color-scheme: dark) {
+      --foreground: var(--dark-foreground);
+      --background: var(--dark-background);
+      --foreground-3: var(--dark-foreground-3);
+      --foreground-5: var(--dark-foreground-5);
+      --foreground-10: var(--dark-foreground-10);
+      --foreground-20: var(--dark-foreground-20);
+      --foreground-30: var(--dark-foreground-30);
+      --foreground-50: var(--dark-foreground-50);
+      --foreground-60: var(--dark-foreground-60);
+      --background-70-transparent: var(--dark-background-70-transparent);
+      --foreground-5-transparent: var(--dark-foreground-5-transparent);
+      --foreground-20-transparent: var(--dark-foreground-20-transparent);
+    }
+
+    --layout-border: var(--foreground-20);
+    --medium-zoom-overlay-background: var(--background-70-transparent);
 
     @media (prefers-reduced-transparency) {
       --medium-zoom-overlay-background: var(--background);
@@ -612,8 +598,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
         background-color: var(--foreground-10);
         padding: 0.2em 0.5em;
         border-radius: 6px;
-        border-bottom: 1px solid
-          color-mix(in srgb, var(--foreground) 20%, transparent);
+        border-bottom: 1px solid var(--foreground-20-transparent);
 
         &[data-chars-id] > span {
           color: var(--foreground-60);

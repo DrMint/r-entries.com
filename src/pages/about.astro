@@ -83,11 +83,7 @@ const { Content } = await page.render();
           &:hover,
           &:focus-visible {
             background-color: var(--foreground-3);
-            border-color: color-mix(
-              in srgb,
-              var(--foreground) 20%,
-              transparent
-            );
+            border-color: var(--foreground-20);
           }
         }
       }

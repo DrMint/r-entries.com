@@ -16,9 +16,6 @@ export const DEFAULT_TITLE = "R-Entries";
 export const DEFAULT_DESCRIPTION = "A collection of entries about R";
 export const DEFAULT_THUMBNAIL = "/default-thumbnail.jpg";
 
-export const FOREGROUND_COLOR = "CanvasText";
-export const BACKGROUND_COLOR = "Canvas";
-
 /* -------------------------------[ Features ]------------------------------- */
 
 export const ENABLE_GO_TO_TOP_FEATURE = true;

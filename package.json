@@ -18,6 +18,7 @@
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.4.1",
     "astro": "^5.10.0",
+    "color": "^5.0.0",
     "dotenv": "^16.5.0",
     "medium-zoom": "^1.1.0",
     "postcss-preset-env": "^10.2.3",
