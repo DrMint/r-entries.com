@@ -531,25 +531,6 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   [data-rehype-pretty-code-figure][data-rehype-non-mdx] {
     margin-inline: unset;
 
-    &:has([data-rehype-pretty-code-title]) {
-      & > [data-rehype-pretty-code-title] {
-        border: 1px solid var(--foreground-5-transparent);
-        border-left-width: 4px;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-        border-bottom: unset;
-        padding: 0.5em 1em;
-        font-family: monospace;
-      }
-
-      & > pre {
-        border-top-left-radius: unset;
-        border-top-right-radius: unset;
-        border-top: unset;
-        margin-top: unset;
-      }
-    }
-
     & > [data-rehype-pretty-code-caption] {
       color: var(--foreground-60);
       text-align: center;
@@ -625,6 +606,23 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
           );
         }
       }
+    }
+
+    & > [data-rehype-pretty-code-title] {
+      border: 1px solid var(--foreground-5-transparent);
+      border-left-width: 4px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      border-bottom: unset;
+      padding: 0.5em 1em;
+      font-family: monospace;
+    }
+
+    & > [data-rehype-pretty-code-title] + pre {
+      border-top-left-radius: unset;
+      border-top-right-radius: unset;
+      border-top: unset;
+      margin-top: unset;
     }
 
     [data-line-numbers] {
