@@ -50,8 +50,12 @@ const { pathname } = new URL(Astro.request.url);
       position: sticky;
       top: 0;
 
-      backdrop-filter: blur(16px);
-      background-color: var(--background-70-transparent);
+      background-color: var(--background);
+      
+      @supports (backdrop-filter: blur(16px)) {
+        backdrop-filter: blur(16px);
+        background-color: var(--background-70-transparent);
+      }
 
       @media (prefers-reduced-transparency) {
         backdrop-filter: none;

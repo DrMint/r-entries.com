@@ -35,8 +35,12 @@ const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
     position: sticky;
     bottom: 0;
 
-    backdrop-filter: blur(24px);
-    background-color: var(--background-70-transparent);
+    background-color: var(--background);
+
+    @supports (backdrop-filter: blur(24px)) {
+      backdrop-filter: blur(24px);
+      background-color: var(--background-70-transparent);
+    }
 
     @media (prefers-reduced-transparency) {
       backdrop-filter: none;
