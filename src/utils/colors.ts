@@ -27,7 +27,7 @@ export const generateColorTheme = (
   };
 };
 
-export const generateLightDarkColorTheme = (): Record<string, string> => {
+const generateLightDarkColorTheme = (): Record<string, string> => {
   const lightColors = generateColorTheme("#000000", "#ffffff");
   const darkColors = generateColorTheme("#fbfbfe", "#1c1b22");
 
@@ -40,3 +40,8 @@ export const generateLightDarkColorTheme = (): Record<string, string> => {
     ),
   };
 };
+
+export const generateColorThemeInline = (): string => {
+  const theme = generateLightDarkColorTheme();
+  return Object.entries(theme).map(([key, value]) => `--${key}: ${value};`).join(" ");
+}

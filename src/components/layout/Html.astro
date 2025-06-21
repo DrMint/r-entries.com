@@ -13,7 +13,7 @@ import {
 } from "src/constants";
 import { getUrl } from "src/utils/navigation";
 import { getImage } from "astro:assets";
-import { generateLightDarkColorTheme } from "src/utils/colors";
+import { generateColorThemeInline } from "src/utils/colors";
 
 interface OpenGraph {
   title: string;
@@ -44,7 +44,7 @@ const thumbnail = await getThumbnail();
 const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 ---
 
-<html lang="en">
+<html lang="en" style={generateColorThemeInline()}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -231,7 +231,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   }
 </style>
 
-<style is:global define:vars={generateLightDarkColorTheme()}>
+<style is:global>
   :root {
     --foreground: var(--light-foreground);
     --background: var(--light-background);
