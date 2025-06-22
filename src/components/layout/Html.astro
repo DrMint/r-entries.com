@@ -186,15 +186,26 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     flex-direction: column;
   }
 
-  @media (pointer: fine) {
+  /* Fallback for browsers that don't support pointer media queries */
+  .coarse-only {
+    display: none;
+  }
+
+  @media (-moz-touch-enabled: 0), (pointer: fine) {
     .coarse-only {
       display: none;
     }
   }
 
-  @media (pointer: coarse) {
+  @media (-moz-touch-enabled: 1), (pointer: coarse) {
     .fine-only {
       display: none;
+    }
+
+    .coarse-only {
+      /* Using initial isn't the best idea, considering an element with
+      .fine-only could use another display value. */
+      display: initial;
     }
   }
 
