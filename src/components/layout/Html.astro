@@ -26,7 +26,7 @@ interface Props {
 }
 
 const props = Astro.props;
-const { openGraph } = props;
+const { openGraph, ...otherProps } = props;
 
 const title = openGraph?.title ?? DEFAULT_TITLE;
 const description = openGraph?.description ?? DEFAULT_DESCRIPTION;
@@ -104,7 +104,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     <Header class="fine-only" />
     <MobileHeader class="coarse-only" />
     <main>
-      <div {...props}>
+      <div {...otherProps}>
         <slot />
       </div>
       {ENABLE_GO_TO_TOP_FEATURE && <GoToTop />}
