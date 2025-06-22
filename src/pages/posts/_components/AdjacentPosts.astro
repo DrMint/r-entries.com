@@ -133,5 +133,25 @@ const { previousPost, nextPost } = await getAdjacentPosts(currentPost);
     @media only screen and (max-width: 600.5px) {
       grid-template-columns: 1fr;
     }
+
+    @media only screen and (min-width: 1600.5px) {
+      & > #next,
+      & > #previous {
+        position: fixed;
+        --margin: calc((100vw - 1024px) * 0.07);
+        max-width: calc((100vw - 1024px) / 2 - var(--margin) * 2);
+        top: 50%;
+      }
+
+      & > #next {
+        left: calc((100vw - 1024px) / 2 - var(--margin));
+        transform: translateX(-100%);
+      }
+
+      & > #previous {
+        right: calc((100vw - 1024px) / 2 - var(--margin));
+        transform: translateX(100%);
+      }
+    }
   }
 </style>
