@@ -231,7 +231,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
       bottom: 32px;
 
       @media (pointer: coarse) {
-        bottom: 110px;
+        bottom: calc(80px + 32px);
       }
 
       @media (max-width: 1096px) {
