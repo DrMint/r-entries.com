@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import { Picture } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import HashLogo from "src/icons/lucide--hash.svg";
 import PostMeta from "src/components/PostMeta.astro";
@@ -14,12 +14,12 @@ const { post, ...rest } = Astro.props;
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <a data-component="PostCard" href={getUrl(`/posts/${post.slug}`)} {...rest}>
-  <Image
+  <Picture
     src={post.data.cover}
-    width={280}
     alt={post.data.coverAlt}
-    loading="eager"
-    format="webp"
+    widths={[280, 480]}
+    sizes="(max-width: 600px) 100vw, 280px"
+    formats={["avif", "webp", "jpeg"]}
   />
   <div>
     <h2>{post.data.title}</h2>
@@ -57,9 +57,9 @@ const { post, ...rest } = Astro.props;
       outline-color: var(--foreground-20-transparent);
     }
 
-    & > img {
+    & > picture > img {
       width: 280px;
-      height: auto;
+      height: 100%;
       object-fit: cover;
 
       mask-image: linear-gradient(
@@ -109,7 +109,7 @@ const { post, ...rest } = Astro.props;
     @media only screen and (max-width: 600.5px) {
       flex-direction: column;
 
-      & > img {
+      & > picture > img {
         width: 100%;
       }
 
