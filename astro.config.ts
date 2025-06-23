@@ -2,10 +2,8 @@ import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import rehypeSlug from "rehype-slug";
-import rehypeUnwrapImages from "rehype-unwrap-images";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypeNumberHeadings } from "./plugins/rehypeNumberHeadings";
-import { rehypeImageFigures } from "./plugins/rehypeImageFigures";
 import { rehypeExternalNofollow } from "./plugins/rehypeExternalNofollow";
 import { rehypeMarkNonMDXNodes } from "./plugins/rehypeMarkNonMDXNodes";
 import type { Element } from "hast";
@@ -52,8 +50,6 @@ export default defineConfig({
         },
       ],
       rehypeCallouts,
-      rehypeUnwrapImages,
-      rehypeImageFigures,
       [
         rehypeExternalNofollow,
         {

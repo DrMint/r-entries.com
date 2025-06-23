@@ -76,20 +76,20 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
     & > picture {
       width: 100%;
       aspect-ratio: 16/9;
-    }
 
-    & > picture > img {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      border-bottom: 1px solid var(--layout-border);
+      & > img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-bottom: 1px solid var(--layout-border);
 
-      background-image: radial-gradient(
-        var(--layout-border) 20%,
-        transparent 30%
-      );
-      background-size: 16px 16px;
-      background-repeat: space;
+        background-image: radial-gradient(
+          var(--layout-border) 20%,
+          transparent 30%
+        );
+        background-size: 16px 16px;
+        background-repeat: space;
+      }
     }
 
     & > #header {

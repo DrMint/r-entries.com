@@ -128,10 +128,35 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   const initMediumZoom = () => {
     console.log("[MediumZoom] Starting");
 
-    const images = document.querySelectorAll(
-      ":not(a) > img[data-rehype-non-mdx]"
+    const images = document.querySelectorAll<HTMLImageElement>(
+      ".enable-medium-zoom"
     );
     console.log("[MediumZoom] Found", images.length, "images");
+
+    images.forEach((image) => {
+      if (image.currentSrc) {
+        image.src = image.currentSrc;
+        image.removeAttribute("srcset");
+        image.removeAttribute("sizes");
+
+        if (image.src.endsWith("jpg")) {
+          image.setAttribute(
+            "data-zoom-src",
+            image.getAttribute("data-zoom-jpg-src")!
+          );
+        } else if (image.src.endsWith("avif")) {
+          image.setAttribute(
+            "data-zoom-src",
+            image.getAttribute("data-zoom-avif-src")!
+          );
+        } else if (image.src.endsWith("webp")) {
+          image.setAttribute(
+            "data-zoom-src",
+            image.getAttribute("data-zoom-webp-src")!
+          );
+        }
+      }
+    });
 
     const zoom = mediumZoom(undefined, {
       margin: 50,
@@ -386,6 +411,10 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
 
   /* Rehype nodes */
 
+  .footnotes[data-rehype-non-mdx] {
+    margin-top: calc(var(--font-size-3xl) * 2);
+  }
+
   *[data-rehype-non-mdx] {
     line-height: 1.6;
   }
@@ -462,7 +491,6 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   img[data-rehype-non-mdx] {
     width: 100%;
     height: auto;
-
     border: 1px solid var(--layout-border);
 
     background-image: radial-gradient(

@@ -9,6 +9,11 @@ tags:
   - sweet
 ---
 
+import MdxImage from "src/components/mdx/MdxImage.astro";
+import canelesClosup from "./caneles-closup.png";
+import canelesClosupInside from "./caneles-closup-inside.jpg";
+import canelesCloser from "./caneles-closer.png";
+
 I've made some small-sized Canelés today. It's a traditional pastry for the Bordeaux region. They have strong rum and vanilla flavors, the outside slightly crusty and caramelized while the custardy inside stays soft and firm.
 
 The recipe is quite simple but the cooking process requires a bit of experimentation to get just right. Traditionally, they should be cooked in copper molds, which help spread the heat uniformly on the surface of the pastry. Here at home, I'm using silicone molds. So to get this darker crust, I cook them in the molds until the exposed part turn golden brown, unmold them and finish cooking them upright in an improvised bain-marie (so that the bottom part doesn't burn on the baking tray).
@@ -49,6 +54,18 @@ And now recipe time!
 
 ## Gallery
 
-![A tray of fresh Canelés, highlighting their dark golden color and shiny surface](caneles-closer.png)
-![A view from above of the Canelés, showing their characteristic shape](caneles-closup.png)
-![The inside of a Canelé, showing the contrast between the crusty outside and the custardy inside](caneles-closup-inside.jpg)
+<MdxImage
+  src={canelesCloser}
+  alt="A tray of fresh Canelés, highlighting their dark golden color and shiny surface"
+  caption
+/>
+<MdxImage
+  src={canelesClosup}
+  alt="A view from above of the Canelés, showing their characteristic shape"
+  caption
+/>
+<MdxImage
+  src={canelesClosupInside}
+  alt="The inside of a Canelé, showing the contrast between the crusty outside and the custardy inside"
+  caption
+/>

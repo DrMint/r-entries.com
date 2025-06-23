@@ -43,5 +43,7 @@ const generateLightDarkColorTheme = (): Record<string, string> => {
 
 export const generateColorThemeInline = (): string => {
   const theme = generateLightDarkColorTheme();
-  return Object.entries(theme).map(([key, value]) => `--${key}: ${value};`).join(" ");
-}
+  return Object.entries(theme)
+    .map(([key, value]) => `--${key}: ${value};`)
+    .join(" ");
+};

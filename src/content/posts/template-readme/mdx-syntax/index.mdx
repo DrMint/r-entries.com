@@ -8,6 +8,9 @@ tags:
   - exemple
 ---
 
+import MdxImage from "src/components/mdx/MdxImage.astro";
+import mdxLogo from "./mdx-logo.png";
+
 Welcome to the beautiful world of Markdown and MDX.
 Markdown is a lightweight markup language with a plain text formatting syntax.
 It is regularly used to format message online, including on Discord.
@@ -437,15 +440,17 @@ You can have callouts collapsible
 
 ## Images
 
-![](./mdx-logo.png)
+The alternative text is required.
 
-![The MDX logo](./mdx-logo.png)
+<MdxImage src={mdxLogo} alt="The MDX logo" />
 
-You like links, you can have a tooltip text too!
-![The MDX logo](./mdx-logo.png "Hello! I'm a tooltip message ^^")
+You can also have a caption which by default is the alternative text.
 
-You can also have a link on an image!
-[![The MDX logo](./mdx-logo.png)](https://mdxjs.com/)
+<MdxImage src={mdxLogo} alt="The MDX logo" caption />
+
+You can also have a caption with a custom text.
+
+<MdxImage src={mdxLogo} alt="The MDX logo" caption="Hello! I'm a caption ^^" />
 
 ## Tables
 
