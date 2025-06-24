@@ -1,0 +1,93 @@
+---
+import { Picture } from "astro:assets";
+
+type Props = Parameters<typeof Picture>[0];
+const props = Astro.props;
+---
+
+<div data-component="Lightbox">
+  <Picture {...props} />
+</div>
+
+{/* ---------------------------------[ JS ]--------------------------------- */}
+
+<script>
+  const lightboxes = document.querySelectorAll<HTMLDivElement>(
+    "[data-component='Lightbox']"
+  );
+  lightboxes.forEach((lightbox) => {
+    const picture = lightbox.querySelector<HTMLPictureElement>("picture")!;
+    const img = picture.querySelector<HTMLImageElement>("img")!;
+    const initialSizes = img.sizes;
+    const placeholder = document.createElement("div");
+
+    lightbox.addEventListener("click", () => {
+      const opened = !lightbox.classList.contains("opened");
+
+      if (opened) {
+        const { top, left, width, height } = picture.getBoundingClientRect();
+        picture.style.setProperty("top", `${top}px`);
+        picture.style.setProperty("left", `${left}px`);
+        picture.style.setProperty("width", `${width}px`);
+        picture.style.setProperty("height", `${height}px`);
+        placeholder.style.width = `${width}px`;
+        placeholder.style.height = `${height}px`;
+        lightbox.parentNode?.insertBefore(placeholder, lightbox);
+        setTimeout(() => {
+          picture.style.removeProperty("top");
+          picture.style.removeProperty("left");
+          picture.style.removeProperty("width");
+          picture.style.removeProperty("height");
+        }, 2000);
+      } else {
+        picture.style.removeProperty("top");
+        picture.style.removeProperty("left");
+        picture.style.removeProperty("width");
+        picture.style.removeProperty("height");
+        placeholder.remove();
+      }
+
+      lightbox.classList.toggle("opened");
+
+      picture.childNodes.forEach((child) => {
+        if (
+          child instanceof HTMLSourceElement ||
+          child instanceof HTMLImageElement
+        ) {
+          child.sizes = lightbox.classList.contains("opened")
+            ? "100vw"
+            : initialSizes;
+        }
+      });
+    });
+  });
+</script>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-component="Lightbox"] {
+    &.opened {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      background-color: var(--background-70-transparent);
+      backdrop-filter: blur(8px);
+      display: grid;
+      place-items: center;
+
+      & > picture {
+        position: absolute;
+        transition: top 250ms, left 250ms;
+      }
+    }
+
+    transition:
+      backdrop-filter 250ms,
+      background-color 250ms;
+
+    & > picture {
+      display: block;
+    }
+  }
+</style>
