@@ -1,5 +1,5 @@
 ---
-import Lightbox from "../layout/Lightbox.astro";
+import Lightbox from "src/components/layout/Lightbox.astro";
 
 interface Props {
   src: ImageMetadata;
@@ -16,8 +16,8 @@ const { src, alt } = Astro.props;
   alt={alt}
   widths={[320, 480, 610, 768, 1024, 1280, 1600, 1920]}
   sizes="(max-width: 650px) 100vw, 608.5px"
-  formats={["avif", "webp", "jpg"]}
-  fallbackFormat="jpg"
+  formats={["avif", "webp", "jpeg"]}
+  fallbackFormat="jpeg"
   width={600}
   minWidth={750}
 />

@@ -5,7 +5,7 @@ import AboutIcon from "src/icons/lucide--circle-user-round.svg";
 import GithubLogo from "src/icons/lucide--github.svg";
 import TwitterLogo from "src/icons/lucide--twitter.svg";
 import Logo from "src/icons/r-entries.svg";
-import type { SocialItem, NavigationItem } from "./utils/navigation";
+import type { SocialItem, NavigationItem } from "src/utils/navigation";
 
 /* ------------------------------[ Constants ]------------------------------- */
 
