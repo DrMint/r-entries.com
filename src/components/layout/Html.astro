@@ -231,11 +231,6 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     }
 
     --layout-border: var(--foreground-20);
-    --medium-zoom-overlay-background: var(--background-70-transparent);
-
-    @media (prefers-reduced-transparency) {
-      --medium-zoom-overlay-background: var(--background);
-    }
 
     /* Padding */
     --middle-x-padding: clamp(16px, 4vw, 48px);
@@ -251,19 +246,6 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     --font-size-3xl: calc(16px + var(--font-size-increase) * 2.5);
     --font-size-4xl: calc(16px + var(--font-size-increase) * 3.5);
     --font-size-5xl: calc(16px + var(--font-size-increase) * 7.5);
-  }
-
-  .medium-zoom-overlay {
-    backdrop-filter: blur(8px);
-    z-index: 2;
-
-    @media (prefers-reduced-transparency) {
-      backdrop-filter: none;
-    }
-  }
-
-  .medium-zoom-image {
-    z-index: 3;
   }
 
   a {

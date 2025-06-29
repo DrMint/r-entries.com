@@ -12,6 +12,9 @@ const props = Astro.props;
 {/* ---------------------------------[ JS ]--------------------------------- */}
 
 <script>
+  const ANIM_DURATION = 250;
+  const PADDING = 64;
+
   const lightboxes = document.querySelectorAll<HTMLDivElement>(
     "[data-component='Lightbox']"
   );
@@ -21,44 +24,142 @@ const props = Astro.props;
     const initialSizes = img.sizes;
     const placeholder = document.createElement("div");
 
-    lightbox.addEventListener("click", () => {
-      const opened = !lightbox.classList.contains("opened");
+    let previousPictureBoundingBox: DOMRect;
+    let previousImageBoundingBox: DOMRect;
+    let isClickBlocked = false;
+    let scrollPosition = 0;
 
-      if (opened) {
-        const { top, left, width, height } = picture.getBoundingClientRect();
-        picture.style.setProperty("top", `${top}px`);
-        picture.style.setProperty("left", `${left}px`);
-        picture.style.setProperty("width", `${width}px`);
-        picture.style.setProperty("height", `${height}px`);
-        placeholder.style.width = `${width}px`;
-        placeholder.style.height = `${height}px`;
-        lightbox.parentNode?.insertBefore(placeholder, lightbox);
-        setTimeout(() => {
-          picture.style.removeProperty("top");
-          picture.style.removeProperty("left");
-          picture.style.removeProperty("width");
-          picture.style.removeProperty("height");
-        }, 2000);
-      } else {
+    const scrollPreventionListener = () => {
+      console.log("[Lightbox] Preventing scroll");
+      window.scrollTo(window.scrollX, scrollPosition);
+    };
+
+    const keydownListener = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        console.log("[Lightbox] Closing with 'Escape' being pressed");
+        closeLightbox();
+      }
+    };
+
+    const resizingListener = () => {
+      console.log("[Lightbox] Closing because of resizing");
+      closeLightbox();
+    };
+
+    const openLightbox = () => {
+      if (isClickBlocked) return;
+      isClickBlocked = true;
+
+      const pictureBoundingBox = picture.getBoundingClientRect();
+      const imageBoundingBox = img.getBoundingClientRect();
+
+      // Step 0: Disable scroll
+      scrollPosition = window.scrollY;
+      document.addEventListener("scroll", scrollPreventionListener);
+
+      lightbox.style.setProperty(
+        "transition",
+        `backdrop-filter ${ANIM_DURATION}ms, background-color ${ANIM_DURATION}ms`
+      );
+      lightbox.style.setProperty("backdrop-filter", "blur(8px)");
+      lightbox.style.setProperty(
+        "background-color",
+        "var(--background-70-transparent)"
+      );
+      lightbox.classList.add("opened");
+      previousPictureBoundingBox = pictureBoundingBox;
+      previousImageBoundingBox = imageBoundingBox;
+
+      // Step 1: Fix the picture in place according to its position in the viewport
+      picture.style.setProperty("top", `${pictureBoundingBox.top}px`);
+      picture.style.setProperty("left", `${pictureBoundingBox.left}px`);
+      picture.style.setProperty("width", `${imageBoundingBox.width}px`);
+      picture.style.setProperty("height", `${imageBoundingBox.height}px`);
+      placeholder.style.setProperty("width", `${pictureBoundingBox.width}px`);
+      placeholder.style.setProperty("height", `${pictureBoundingBox.height}px`);
+
+      // Step 2: Add a placeholder to the lightbox so that the content doesn't shift
+      lightbox.parentNode?.insertBefore(placeholder, lightbox);
+
+      // Step 3: After a delay, make the picture fill the viewport with some margins
+      setTimeout(() => {
+        picture.style.setProperty(
+          "transition-property",
+          "top, left, width, height"
+        );
+        picture.style.setProperty("transition-duration", `${ANIM_DURATION}ms`);
+        picture.style.setProperty("top", `${PADDING}px`);
+        picture.style.setProperty("left", `${PADDING}px`);
+        picture.style.setProperty("width", `calc(100% - ${PADDING * 2}px)`);
+        picture.style.setProperty("height", `calc(100% - ${PADDING * 2}px)`);
+      }, 0);
+
+      setTimeout(() => {
+        isClickBlocked = false;
+        document.addEventListener("keydown", keydownListener);
+        window.addEventListener("resize", resizingListener);
+        picture.childNodes.forEach((child) => {
+          if (
+            child instanceof HTMLSourceElement ||
+            child instanceof HTMLImageElement
+          ) {
+            child.sizes = "100vw";
+          }
+        });
+      }, ANIM_DURATION);
+    };
+
+    const closeLightbox = () => {
+      if (isClickBlocked) return;
+      isClickBlocked = true;
+
+      document.removeEventListener("keydown", keydownListener);
+      window.removeEventListener("resize", resizingListener);
+
+      // Step 4: Revert step 3
+      picture.style.setProperty("top", `${previousPictureBoundingBox.top}px`);
+      picture.style.setProperty("left", `${previousPictureBoundingBox.left}px`);
+      picture.style.setProperty("width", `${previousImageBoundingBox.width}px`);
+      picture.style.setProperty(
+        "height",
+        `${previousImageBoundingBox.height}px`
+      );
+
+      // Step 5: Remove the placeholder
+      lightbox.style.removeProperty("backdrop-filter");
+      lightbox.style.removeProperty("background-color");
+
+      setTimeout(() => {
+        lightbox.classList.remove("opened");
         picture.style.removeProperty("top");
         picture.style.removeProperty("left");
         picture.style.removeProperty("width");
         picture.style.removeProperty("height");
+        picture.style.removeProperty("transition-property");
+        picture.style.removeProperty("transition-duration");
         placeholder.remove();
+
+        document.removeEventListener("scroll", scrollPreventionListener);
+
+        isClickBlocked = false;
+        picture.childNodes.forEach((child) => {
+          if (
+            child instanceof HTMLSourceElement ||
+            child instanceof HTMLImageElement
+          ) {
+            child.sizes = initialSizes;
+          }
+        });
+      }, ANIM_DURATION);
+    };
+
+    lightbox.addEventListener("click", () => {
+      const opened = !lightbox.classList.contains("opened");
+      if (opened) {
+        openLightbox();
+      } else {
+        closeLightbox();
       }
-
-      lightbox.classList.toggle("opened");
-
-      picture.childNodes.forEach((child) => {
-        if (
-          child instanceof HTMLSourceElement ||
-          child instanceof HTMLImageElement
-        ) {
-          child.sizes = lightbox.classList.contains("opened")
-            ? "100vw"
-            : initialSizes;
-        }
-      });
     });
   });
 </script>
@@ -67,27 +168,36 @@ const props = Astro.props;
 
 <style>
   [data-component="Lightbox"] {
+    cursor: zoom-in;
+    width: 100%;
+
     &.opened {
+      cursor: zoom-out;
       position: fixed;
       inset: 0;
       z-index: 3;
-      background-color: var(--background-70-transparent);
-      backdrop-filter: blur(8px);
-      display: grid;
-      place-items: center;
 
       & > picture {
-        position: absolute;
-        transition: top 250ms, left 250ms;
+        position: fixed;
+        display: flex;
+        place-items: center;
+
+        & > img {
+          height: 100%;
+          object-fit: contain;
+          border-color: transparent;
+          background-image: unset;
+          background-color: unset;
+        }
       }
     }
 
-    transition:
-      backdrop-filter 250ms,
-      background-color 250ms;
-
     & > picture {
       display: block;
+
+      & > img {
+        transition: border-color 250ms;
+      }
     }
   }
 </style>

@@ -4,10 +4,10 @@ import Html from "src/components/layout/Html.astro";
 import Tags from "src/pages/posts/_components/Tags.astro";
 import PostMeta from "src/components/PostMeta.astro";
 import TableOfContents from "src/pages/posts/_components/TableOfContents.astro";
-import { Picture } from "astro:assets";
 import AdjacentPosts from "src/pages/posts/_components/AdjacentPosts.astro";
 import { ENABLE_TABLE_OF_CONTENTS_FEATURE } from "src/constants";
 import { getPosts } from "src/utils/collections";
+import Lightbox from "src/components/layout/Lightbox.astro";
 
 export const getStaticPaths = async () => {
   const posts = await getPosts({ includingNested: true });
@@ -39,12 +39,14 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
     thumbnail: cover,
   }}
 >
-  <Picture
+  <Lightbox
     src={cover}
     alt={post.data.coverAlt}
     widths={[320, 480, 768, 1024, 1280, 1600, 1920]}
     sizes="(max-width: 1024px) 100vw, 1024px"
     formats={["avif", "webp", "jpeg"]}
+    width={1024}
+    fallbackFormat="jpeg"
     priority
   />
   <div id="header">
@@ -73,7 +75,7 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
     flex-direction: column;
     place-items: center;
 
-    & > picture {
+    picture {
       width: 100%;
       aspect-ratio: 16/9;
 
