@@ -1,13 +1,20 @@
 ---
 import { Picture } from "astro:assets";
+import { ENABLE_IMAGE_ZOOM_FEATURE } from "src/constants";
 
-type Props = Parameters<typeof Picture>[0];
-const props = Astro.props;
+type Props = Parameters<typeof Picture>[0] & { minWidth?: number };
+const { minWidth, ...otherProps } = Astro.props;
 ---
 
-<div data-component="Lightbox">
-  <Picture {...props} />
-</div>
+{
+  ENABLE_IMAGE_ZOOM_FEATURE ? (
+    <div data-component="Lightbox" data-min-width={minWidth}>
+      <Picture {...otherProps} />
+    </div>
+  ) : (
+    <Picture {...otherProps} />
+  )
+}
 
 {/* ---------------------------------[ JS ]--------------------------------- */}
 
@@ -23,6 +30,36 @@ const props = Astro.props;
     const img = picture.querySelector<HTMLImageElement>("img")!;
     const initialSizes = img.sizes;
     const placeholder = document.createElement("div");
+    const minimumWidth = lightbox.dataset.minWidth
+      ? parseInt(lightbox.dataset.minWidth)
+      : undefined;
+
+    const updateEnabled = (newValue: boolean) => {
+      enabled = newValue;
+      if (enabled) {
+        console.log(
+          "[Lightbox] Viewport is larger than",
+          minimumWidth,
+          "px, enabling lightbox"
+        );
+      } else {
+        console.log(
+          "[Lightbox] Viewport is smaller than",
+          minimumWidth,
+          "px, disabling lightbox"
+        );
+      }
+      lightbox.classList.toggle("enabled", enabled);
+    };
+
+    let enabled = true;
+    if (minimumWidth) {
+      const mediaQuery = window.matchMedia(`(min-width: ${minimumWidth}px)`);
+      updateEnabled(mediaQuery.matches);
+      mediaQuery.addEventListener("change", ({ matches }) => {
+        updateEnabled(matches);
+      });
+    }
 
     let previousPictureBoundingBox: DOMRect;
     let previousImageBoundingBox: DOMRect;
@@ -47,6 +84,7 @@ const props = Astro.props;
     };
 
     const openLightbox = () => {
+      if (!enabled) return;
       if (isClickBlocked) return;
       isClickBlocked = true;
 
@@ -168,7 +206,10 @@ const props = Astro.props;
 
 <style>
   [data-component="Lightbox"] {
-    cursor: zoom-in;
+    &.enabled {
+      cursor: zoom-in;
+    }
+
     width: 100%;
 
     &.opened {
@@ -192,12 +233,16 @@ const props = Astro.props;
       }
     }
 
+    &:not(.opened) {
+      & > picture {
+        & > img {
+          transition: border-color 250ms;
+        }
+      }
+    }
+
     & > picture {
       display: block;
-
-      & > img {
-        transition: border-color 250ms;
-      }
     }
   }
 </style>
