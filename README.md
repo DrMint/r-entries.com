@@ -65,6 +65,7 @@ The post slug is used in the url as `/posts/{slug}`.
   - https://docs.astro.build/en/guides/search/
 - RSS feed on mobile
 - Better RSS styling?
+- Customize each tag page (describe a tag)
 
 - Check
   - [`rehype-code-group`](https://github.com/ITZSHOAIB/rehype-code-group) — group code blocks (or any element) with highly customizable tabs.

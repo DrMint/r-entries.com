@@ -114,79 +114,6 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   </body>
 </html>
 
-{/* ---------------------------------[ JS ]--------------------------------- */}
-
-<script>
-  /*
-    Medium-like image zoom on post images.
-    Only enabled when the window is larger than 720px. 
-  */
-
-  import mediumZoom from "medium-zoom";
-  import { ENABLE_IMAGE_ZOOM_FEATURE } from "src/constants";
-
-  const initMediumZoom = () => {
-    console.log("[MediumZoom] Starting");
-
-    const images = document.querySelectorAll<HTMLImageElement>(
-      ".enable-medium-zoom"
-    );
-    console.log("[MediumZoom] Found", images.length, "images");
-
-    images.forEach((image) => {
-      if (image.currentSrc) {
-        image.src = image.currentSrc;
-        image.removeAttribute("srcset");
-        image.removeAttribute("sizes");
-
-        if (image.src.endsWith("jpg")) {
-          image.setAttribute(
-            "data-zoom-src",
-            image.getAttribute("data-zoom-jpg-src")!
-          );
-        } else if (image.src.endsWith("avif")) {
-          image.setAttribute(
-            "data-zoom-src",
-            image.getAttribute("data-zoom-avif-src")!
-          );
-        } else if (image.src.endsWith("webp")) {
-          image.setAttribute(
-            "data-zoom-src",
-            image.getAttribute("data-zoom-webp-src")!
-          );
-        }
-      }
-    });
-
-    const zoom = mediumZoom(undefined, {
-      margin: 50,
-      background: "var(--medium-zoom-overlay-background)",
-    });
-
-    const updateZoom = (smallerThan720: boolean) => {
-      if (smallerThan720) {
-        console.log(
-          "[MediumZoom] Viewport is lesser than 720px width: disabling zoom"
-        );
-        zoom.detach();
-      } else {
-        console.log(
-          "[MediumZoom] Viewport is greater than 720px width: enabled zoom"
-        );
-        zoom.attach(images);
-      }
-    };
-
-    const mediaQuery = window.matchMedia("(max-width: 720px)");
-    updateZoom(mediaQuery.matches);
-    mediaQuery.addEventListener("change", ({ matches }) => updateZoom(matches));
-  };
-
-  if (ENABLE_IMAGE_ZOOM_FEATURE) {
-    initMediumZoom();
-  }
-</script>
-
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
@@ -304,11 +231,6 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     }
 
     --layout-border: var(--foreground-20);
-    --medium-zoom-overlay-background: var(--background-70-transparent);
-
-    @media (prefers-reduced-transparency) {
-      --medium-zoom-overlay-background: var(--background);
-    }
 
     /* Padding */
     --middle-x-padding: clamp(16px, 4vw, 48px);
@@ -324,19 +246,6 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     --font-size-3xl: calc(16px + var(--font-size-increase) * 2.5);
     --font-size-4xl: calc(16px + var(--font-size-increase) * 3.5);
     --font-size-5xl: calc(16px + var(--font-size-increase) * 7.5);
-  }
-
-  .medium-zoom-overlay {
-    backdrop-filter: blur(8px);
-    z-index: 2;
-
-    @media (prefers-reduced-transparency) {
-      backdrop-filter: none;
-    }
-  }
-
-  .medium-zoom-image {
-    z-index: 3;
   }
 
   a {

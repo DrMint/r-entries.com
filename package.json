@@ -20,7 +20,6 @@
     "astro": "^5.10.0",
     "color": "^5.0.0",
     "dotenv": "^16.5.0",
-    "medium-zoom": "^1.1.0",
     "postcss-preset-env": "^10.2.3",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-callouts": "^2.1.1",
