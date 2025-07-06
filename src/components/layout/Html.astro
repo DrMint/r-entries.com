@@ -34,7 +34,11 @@ const description = openGraph?.description ?? DEFAULT_DESCRIPTION;
 const getThumbnail = async () => {
   if (openGraph?.thumbnail) {
     return (
-      await getImage({ src: openGraph.thumbnail, width: 1024, format: "jpeg" })
+      await getImage({
+        src: openGraph.thumbnail,
+        width: Math.min(1024, openGraph.thumbnail.width), // Making sure to not upscale the image
+        format: "jpeg",
+      })
     ).src;
   }
   return getUrl(DEFAULT_THUMBNAIL, true);
@@ -437,6 +441,7 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
   }
 
   p > code[data-rehype-non-mdx],
+  li > code,
   [data-rehype-pretty-code-figure] > code {
     background-color: var(--foreground-10);
     padding: 0.2em 0.5em;

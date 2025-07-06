@@ -8,12 +8,15 @@ interface Props {
 const { post: postName } = Astro.props;
 
 const post = await getEntry("posts", postName);
+if (!post) {
+  throw new Error(`Post ${postName} not found`);
+}
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <div data-component="MdxPostCard">
-  {post ? <PostCard post={post} /> : <div>Post not found</div>}
+  <PostCard post={post} />
 </div>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}

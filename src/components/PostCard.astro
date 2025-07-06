@@ -19,7 +19,9 @@ const { post, ...rest } = Astro.props;
     alt={post.data.coverAlt}
     widths={[280, 480]}
     sizes="(max-width: 600px) 100vw, 280px"
-    formats={["avif", "webp", "jpeg"]}
+    formats={["avif", "webp"]}
+    fallbackFormat="jpeg"
+    width={480}
   />
   <div>
     <h2>{post.data.title}</h2>
@@ -61,6 +63,7 @@ const { post, ...rest } = Astro.props;
       width: 280px;
       height: 100%;
       object-fit: cover;
+      aspect-ratio: 4/3;
 
       mask-image: linear-gradient(
         0deg,
@@ -111,6 +114,7 @@ const { post, ...rest } = Astro.props;
 
       & > picture > img {
         width: 100%;
+        aspect-ratio: 16/9;
       }
 
       & > div {
