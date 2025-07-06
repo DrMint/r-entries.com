@@ -1,18 +1,18 @@
 ---
-import { Picture } from "astro:assets";
 import { ENABLE_IMAGE_ZOOM_FEATURE } from "src/constants";
+import Image from "../Image.astro";
 
-type Props = Parameters<typeof Picture>[0] & { minWidth?: number };
+type Props = Parameters<typeof Image>[0] & { minWidth?: number };
 const { minWidth, ...otherProps } = Astro.props;
 ---
 
 {
   ENABLE_IMAGE_ZOOM_FEATURE ? (
     <div data-component="Lightbox" data-min-width={minWidth}>
-      <Picture {...otherProps} />
+      <Image {...otherProps} />
     </div>
   ) : (
-    <Picture {...otherProps} />
+    <Image {...otherProps} />
   )
 }
 
@@ -59,6 +59,8 @@ const { minWidth, ...otherProps } = Astro.props;
       mediaQuery.addEventListener("change", ({ matches }) => {
         updateEnabled(matches);
       });
+    } else {
+      updateEnabled(true);
     }
 
     let previousPictureBoundingBox: DOMRect;

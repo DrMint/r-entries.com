@@ -7,13 +7,16 @@ import MobileHeader from "src/components/layout/MobileHeader.astro";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_THUMBNAIL,
+  DEFAULT_THUMBNAIL_HEIGHT,
+  DEFAULT_THUMBNAIL_WIDTH,
   DEFAULT_TITLE,
   ENABLE_GO_TO_TOP_FEATURE,
+  TWITTER_HANDLE,
   WEBSITE_NAME,
 } from "src/constants";
 import { getUrl } from "src/utils/navigation";
-import { getImage } from "astro:assets";
 import { generateColorThemeInline } from "src/utils/colors";
+import { getResponsiveImage } from "src/utils/images";
 
 interface OpenGraph {
   title: string;
@@ -31,21 +34,14 @@ const { openGraph, ...otherProps } = props;
 const title = openGraph?.title ?? DEFAULT_TITLE;
 const description = openGraph?.description ?? DEFAULT_DESCRIPTION;
 
-const getThumbnail = async () => {
-  if (openGraph?.thumbnail) {
-    return (
-      await getImage({
-        src: openGraph.thumbnail,
-        width: Math.min(1024, openGraph.thumbnail.width), // Making sure to not upscale the image
-        format: "jpeg",
-      })
-    ).src;
-  }
-  return getUrl(DEFAULT_THUMBNAIL, true);
-};
-
-const thumbnail = await getThumbnail();
-const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
+const thumbnail = openGraph?.thumbnail
+  ? (await getResponsiveImage(openGraph.thumbnail)).openGraph
+  : {
+      src: getUrl(DEFAULT_THUMBNAIL, true),
+      width: DEFAULT_THUMBNAIL_WIDTH,
+      height: DEFAULT_THUMBNAIL_HEIGHT,
+    };
+const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
 ---
 
 <html lang="en" style={generateColorThemeInline()}>
@@ -64,14 +60,22 @@ const thumbnailUrl = new URL(thumbnail, Astro.url).toString();
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={thumbnailUrl} />
+    <meta property="og:image:width" content={thumbnail.width.toString()} />
+    <meta property="og:image:height" content={thumbnail.height.toString()} />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="R-Entries" />
+    <meta property="og:site_name" content={WEBSITE_NAME} />
     <meta property="og:url" content={Astro.url} />
 
     {/* Twitter tags */}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@DrMint4" />
-    <meta name="twitter:creator" content="@DrMint4" />
+    {
+      TWITTER_HANDLE && (
+        <>
+          <meta name="twitter:site" content={TWITTER_HANDLE} />
+          <meta name="twitter:creator" content={TWITTER_HANDLE} />
+        </>
+      )
+    }
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={thumbnailUrl} />

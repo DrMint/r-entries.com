@@ -22,3 +22,6 @@ pnpm-debug.log*
 package-lock.json
 pnpm-lock.yaml
 yarn.lock 
+
+# Disabling prettier on MDX to avoid it trying to fix the code blocks
+*.mdx

@@ -7,20 +7,33 @@ import TwitterLogo from "src/icons/lucide--twitter.svg";
 import Logo from "src/icons/r-entries.svg";
 import type { SocialItem, NavigationItem } from "src/utils/navigation";
 
+export type ResponsiveWidth = (typeof RESPONSIVE_WIDTHS)[number];
+
 /* ------------------------------[ Constants ]------------------------------- */
 
 export const WEBSITE_NAME = "ReSTRICTed_Entries";
 export const WebsiteLogo = Logo;
+export const TWITTER_HANDLE: string | undefined = "@DrMint4";
 
 export const DEFAULT_TITLE = "R-Entries";
 export const DEFAULT_DESCRIPTION = "A collection of entries about R";
+
 export const DEFAULT_THUMBNAIL = "/default-thumbnail.jpg";
+export const DEFAULT_THUMBNAIL_WIDTH = 1435;
+export const DEFAULT_THUMBNAIL_HEIGHT = 793;
 
 /* -------------------------------[ Features ]------------------------------- */
 
 export const ENABLE_GO_TO_TOP_FEATURE = true;
 export const ENABLE_TABLE_OF_CONTENTS_FEATURE = true;
 export const ENABLE_IMAGE_ZOOM_FEATURE = true;
+
+/* ------------------------------[ Responsive ]------------------------------ */
+
+export const RESPONSIVE_WIDTHS = [
+  256, 320, 440, 580, 760, 1024, 1440, 1920, 2560, 3200,
+] as const;
+export const OPEN_GRAPH_WIDTH: ResponsiveWidth = 1024;
 
 /* ------------------------------[ Navigation ]------------------------------ */
 

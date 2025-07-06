@@ -1,9 +1,10 @@
 ---
-import { Picture } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import HashLogo from "src/icons/lucide--hash.svg";
 import PostMeta from "src/components/PostMeta.astro";
 import { getUrl } from "src/utils/navigation";
+import Image from "./Image.astro";
+
 interface Props {
   post: CollectionEntry<"posts">;
 }
@@ -14,14 +15,12 @@ const { post, ...rest } = Astro.props;
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <a data-component="PostCard" href={getUrl(`/posts/${post.slug}`)} {...rest}>
-  <Picture
+  <Image
     src={post.data.cover}
     alt={post.data.coverAlt}
-    widths={[280, 480]}
     sizes="(max-width: 600px) 100vw, 280px"
-    formats={["avif", "webp"]}
-    fallbackFormat="jpeg"
-    width={480}
+    fallbackWidth={320}
+    priority={false}
   />
   <div>
     <h2>{post.data.title}</h2>

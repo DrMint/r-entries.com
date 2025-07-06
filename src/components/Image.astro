@@ -1,0 +1,42 @@
+---
+import type { ResponsiveWidth } from "src/constants";
+import { getResponsiveImage, type ImageType } from "src/utils/images";
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  sizes: string;
+  priority: boolean;
+  fallbackWidth: ResponsiveWidth;
+  type?: ImageType;
+}
+
+const { src, alt, sizes, priority, type, fallbackWidth, ...otherProps } =
+  Astro.props;
+
+const responsiveImage = await getResponsiveImage(src, { type });
+const { srcSets } = responsiveImage;
+const fallback = await responsiveImage.getFallback(fallbackWidth);
+---
+
+<picture {...otherProps}>
+  {
+    srcSets.map(({ type, images }) => (
+      <source
+        srcset={images.map(({ src, width }) => `${src} ${width}w`).join(", ")}
+        type={type}
+        sizes={sizes}
+      />
+    ))
+  }
+  <img
+    src={fallback.src}
+    width={fallback.width}
+    height={fallback.height}
+    alt={alt}
+    loading={priority ? "eager" : "lazy"}
+    decoding={priority ? "sync" : "async"}
+    fetchpriority={priority ? "high" : "auto"}
+    {...otherProps}
+  />
+</picture>
