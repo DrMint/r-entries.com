@@ -1,0 +1,284 @@
+---
+title: "Webdev tips: images"
+cover: "cover.webp"
+coverAlt: ""
+summary: "How to optimize images for the web"
+date: 2025-07-05
+tags:
+  - webdev
+---
+
+## Starting point
+
+Let's say we have a banner image for our webpage's hero section.
+The JPEG image is 1200x300 pixels.
+Here's the simplest possible HTML code to display it:
+
+```html
+<img src="banner.jpg" />
+```
+
+There are a few things we can do to improve it:
+
+- There is no `alt{:.entity.other.attribute}` attribute.
+- There is no `width{:.entity.other.attribute}` and `height{:.entity.other.attribute}` attributes.
+- JPEG is good but dated format.
+  We can use formats with more efficient compression like AVIF or WebP instead.
+- We are only providing one image size.
+  If the user is on a mobile device, we are wasting bandwidth by serving a 1200x300 image.
+  If the user is using a 4K monitor, the image will be blurry because of the low resolution.
+
+## The `alt` attribute
+
+If the image is purely decorative, the `alt{:.entity.other.attribute}` attribute should be an empty string with the `role="presentation"` attribute.
+
+```html {3-4}#ins showLineNumbers
+<img 
+  src="banner.jpg"
+  alt=""
+  role="presentation"
+/>
+```
+
+If the image is not decorative, `alt{:.entity.other.attribute}` should provide a meaningful description of the image.
+
+```html {3}#ins showLineNumbers
+<img
+  src="banner.jpg"
+  alt="A cat looking out the window."
+/>
+```
+
+## The `width` and `height` attributes
+
+It is important for the browser to know the size of the image as soon as possible.
+Otherwise, the browser cannot anticipate the layout of the page. This can lead to heavy layout shifts.
+With proper `width{:.entity.other.attribute}` and `height{:.entity.other.attribute}` attributes, the browser can pre-allocate the space for the image while it is loading.
+
+```html {3-4}#ins showLineNumbers
+<img
+  src="banner.jpg"
+  width="1200"
+  height="300"
+/>
+```
+
+## Provide multiple formats
+
+We can use the `picture{:.entity.name.tag}` element to provide multiple alternative formats.
+
+```html {1-3,9}#ins showLineNumbers
+<picture>
+  <source srcset="banner.avif" type="image/avif" />
+  <source srcset="banner.webp" type="image/webp" />
+  <img
+    src="banner.jpg"
+    width="1200"
+    height="300"
+  />
+</picture>
+```
+
+Now the browser will pick the first format that it supports, starting with AVIF, then WebP, and finally JPEG.
+
+> [!info] Backwards compatibility
+> If the browser doesn't support the `picture{:.entity.name.tag}` or `source{:.entity.name.tag}` elements, it will fallback to the `img{:.entity.name.tag}` child element.
+> This will then behave exactly like the starting point example.
+
+### Fallback format
+
+AVIF and WebP support both transparent and animated images, making them suitable for almost all use cases.
+However, our fallback format need to change depending on the image type:
+
+- If the image is animated, the fallback format should be GIF.
+- If the image is transparent, the fallback format should be PNG.
+- Otherwise, the fallback format should be JPEG.
+
+Example with a transparent image:
+
+```html showLineNumbers
+<picture>
+  <source srcset="banner.avif" type="image/avif" />
+  <source srcset="banner.webp" type="image/webp" />
+  <img
+    src="banner.png"
+    width="1200"
+    height="300"
+  />
+</picture>
+```
+
+## Provide multiple sizes
+
+We can use the `sizes{:.entity.other.attribute}` and `srcset{:.entity.other.attribute}` attributes to provide multiple sizes, and let the browser pick the most appropriate one.
+
+```html {5-9}#ins showLineNumbers
+<img
+  src="banner.jpg"
+  width="1200"
+  height="300"
+  sizes="100vw"
+  srcset="
+    banner-1800w.jpg 1800w,
+    banner-1200w.jpg 1200w,
+    banner-600w.jpg  600w"
+/>
+```
+
+Here we are providing three sizes: `1800px{:.string}`, `1200px{:.string}` and `600px{:.string}` (wide). We could provide more sizes if needed.
+We are also providing the `sizes{:.entity.other.attribute}` attribute to tell the browser the expected width of the image based on the viewport width.
+`100vw{:.string}` means the image will always span the full width of the viewport.
+
+Browsers can employ different strategies to pick the most appropriate size.
+One would be to pick the size that is closest to the expected width of the image in the viewport.
+But depending on the situation, a mobile browser might pick a smaller size, prioritizing bandwidth over resolution.
+
+> [!info] Backwards compatibility
+> If the browser doesn't support the `sizes{:.entity.other.attribute}` attribute or the `srcset{:.entity.other.attribute}` attribute, it will fallback to the `src{:.entity.other.attribute}` attribute.
+> This will then behave exactly like the starting point example.
+
+### More advanced case
+
+Here the same example as before, but with a different `sizes{:.entity.other.attribute}` attribute:
+
+```html {5}#del {6}#ins showLineNumbers
+<img
+  src="banner.jpg"
+  width="1200"
+  height="300"
+  sizes="100vw"
+  sizes="(max-width: 1000px) 100vw, 1000px"
+  srcset="
+    banner-1800w.jpg 1800w,
+    banner-1200w.jpg 1200w,
+    banner-600w.jpg  600w"
+/>
+```
+
+What this means if that the image is expected to be the full width of the viewport until it reaches 1000px.
+After that, if the viewport is any wider, the image will stay at 1000px-wide.
+
+### DPR and zoom level
+
+With that more advanced case, you may be wondering why we are still providing resolutions that are larger than 1000px.
+Well, depending on the device pixel ratio (DPR) and the browser's zoom level, logical pixels may not correspond to physical pixels.
+
+First example: The user has a 1920 × 1080 screen with a DPR of 1, and a zoom level of 100%,
+the viewport is above the 1000px threshold, so `sizes{:.entity.other.attribute}` will be interpreted as `1000px{:.string}`.
+The **1200px**-wide image will be used as it is the closest to the expected 1000px.
+
+But now the user zooms in to 150%, the expected image width will be 1500px, so the **1800px**-wide image will be used.
+
+Second example: The user has a mobile device with a 1320 × 2868 screen, a DPR of 3, and a zoom level of 100%.
+In terms of logical pixels, the viewport is only 440px wide (1320px / 3).
+This means that when interpreting the `sizes{:.entity.other.attribute}` attribute, the `(max-width: 1000px) 100vw{:.string}` rule applies and we consider the image to be 100vw, the full width of the viewport.
+But the browser will also consider the DPR to determine the desired resolution for the image.
+So in the end, the **1200px**-wide image will be used.
+
+> [!warning] Don't upscale images
+> If the original image is **1200px** wide, it isn't necessary to provide any version of the image larger than its original size.
+
+## To lazy load or not to lazy load?
+
+Example of a lazy loaded image:
+
+```html {5-7}#ins showLineNumbers
+<img
+  src="banner.jpg"
+  width="1200"
+  height="300"
+  loading="lazy"
+  decoding="async"
+  fetchpriority="auto"
+/>
+```
+
+We are asking the browser to defer loading the image until it reaches a certain distance from the viewport.
+If the user never scrolls down to the image, it will not be loaded.
+This is a good strategy for images that are further down the page (what we call "below the fold").
+
+For images above the fold, here is the recommended attributes:
+
+```html {5-7}#ins showLineNumbers
+<img
+  src="banner.jpg"
+  width="1200"
+  height="300"
+  loading="eager"
+  decoding="sync"
+  fetchpriority="high"
+/>
+```
+
+> [!info] Backwards compatibility
+> Once again, if the browser doesn't support any of these attributes, it will fallback to the starting point example, where images are loaded immediately.
+
+## In the case of `og:image`
+
+`og:image` is part of the OpenGraph protocol, which is used by social media platforms to display a preview image when a link is shared.
+Because this protocol was introduce before the introduction of WebP or AVIF, you can only be certain that PNG and JPEG are going to be supported.
+That being said, all the major social media platforms currently support WebP. AVIF is only supported on a couple platforms[^1] so I would advise against using it.
+
+As only one image is allowed, you need to pick between using a legacy format that will be supported by all platforms, or a modern format (WebP) that may not be supported everywhere.
+
+My recommendation would be to maximize compatibility and avoid transparency as you don't know how the image will be displayed. So JPEG would be the best choice for your `og:image`.
+
+`twitter:image` on the other hand is a Twitter/X specific property, so it's okay to use WebP[^2].
+
+## Now altogether
+
+With all the tips we've covered, here is the final result:
+
+```html showLineNumbers
+<picture>
+  <source
+    srcset="
+      banner-1800w.avif 1800w,
+      banner-1200w.avif 1200w,
+      banner-600w.avif   600w"
+    type="image/avif"
+    sizes="(max-width: 1000px) 100vw, 1000px"
+  />
+  <source
+    srcset="
+      banner-1800w.webp 1800w,
+      banner-1200w.webp 1200w,
+      banner-600w.webp   600w"
+    type="image/webp"
+    sizes="(max-width: 1000px) 100vw, 1000px"
+  />
+  <source
+    srcset="
+      banner-1800w.jpg 1800w,
+      banner-1200w.jpg 1200w,
+      banner-600w.jpg   600w"
+    type="image/jpeg"
+    sizes="(max-width: 1000px) 100vw, 1000px"
+  />
+  <img
+    src="banner.jpg"
+    alt="A cat looking out the window."
+    width="1200"
+    height="300"
+    loading="eager"
+    decoding="sync"
+    fetchpriority="high"
+  />
+</picture>
+```
+
+## TL;DR
+
+- Always provide an `alt{:.entity.other.attribute}` attribute. If the image is purely decorative, it should be an empty string with the `role="presentation"` attribute. If the image is not decorative, it should provide a meaningful description of the image.
+- Always provide the `width{:.entity.other.attribute}` and `height{:.entity.other.attribute}` attributes to avoid layout shifts.
+- There isn't a single best image format. The best solution is to provide multiple formats and let the browser pick the first one that it supports.
+- AVIF and WebP are the best formats to use as your default, then fallback to whichever legacy format is appropriate for the image (JPEG, PNG, or GIF).
+- The same goes with image sizes. Provide multiple sizes and let the browser pick the most appropriate one.
+- Don't forget to provide resolutions that are larger than the expected width image in the viewport for cases where the DPR is above 1 and/or the zoom level is above 100%.
+- For images above the fold, use `loading="eager"`, `decoding="sync"`, and `fetchpriority="high"` properties.
+- For images below the fold, use `loading="lazy"`, `decoding="async"`, and `fetchpriority="auto"` properties.
+- `og:image` should be a JPEG image. `twitter:image` should use WebP.
+
+[^1]: [Can I safely use AVIF or WebP share images?](https://joost.blog/use-avif-webp-share-images/)
+
+[^2]: [Optimize Tweets with X Cards - Cards markup](https://developer.x.com/en/docs/x-for-websites/cards/overview/markup)
