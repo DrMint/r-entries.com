@@ -6,9 +6,6 @@ import MobileFooter from "src/components/layout/MobileFooter.astro";
 import MobileHeader from "src/components/layout/MobileHeader.astro";
 import {
   DEFAULT_DESCRIPTION,
-  DEFAULT_THUMBNAIL,
-  DEFAULT_THUMBNAIL_HEIGHT,
-  DEFAULT_THUMBNAIL_WIDTH,
   DEFAULT_TITLE,
   ENABLE_GO_TO_TOP_FEATURE,
   TWITTER_HANDLE,
@@ -17,6 +14,7 @@ import {
 import { getUrl } from "src/utils/navigation";
 import { generateColorThemeInline } from "src/utils/colors";
 import { getResponsiveImage } from "src/utils/images";
+import defaultCover from "src/images/default-cover.jpg";
 
 interface OpenGraph {
   title: string;
@@ -34,13 +32,9 @@ const { openGraph, ...otherProps } = props;
 const title = openGraph?.title ?? DEFAULT_TITLE;
 const description = openGraph?.description ?? DEFAULT_DESCRIPTION;
 
-const thumbnail = openGraph?.thumbnail
-  ? (await getResponsiveImage(openGraph.thumbnail)).openGraph
-  : {
-      src: getUrl(DEFAULT_THUMBNAIL, true),
-      width: DEFAULT_THUMBNAIL_WIDTH,
-      height: DEFAULT_THUMBNAIL_HEIGHT,
-    };
+const thumbnail = (
+  await getResponsiveImage(openGraph?.thumbnail ?? defaultCover)
+).openGraph;
 const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
 ---
 

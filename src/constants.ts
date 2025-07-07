@@ -18,10 +18,6 @@ export const TWITTER_HANDLE: string | undefined = "@DrMint4";
 export const DEFAULT_TITLE = "R-Entries";
 export const DEFAULT_DESCRIPTION = "A collection of entries about R";
 
-export const DEFAULT_THUMBNAIL = "/default-thumbnail.jpg";
-export const DEFAULT_THUMBNAIL_WIDTH = 1435;
-export const DEFAULT_THUMBNAIL_HEIGHT = 793;
-
 /* -------------------------------[ Features ]------------------------------- */
 
 export const ENABLE_GO_TO_TOP_FEATURE = true;

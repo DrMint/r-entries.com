@@ -4,6 +4,7 @@ import HashLogo from "src/icons/lucide--hash.svg";
 import PostMeta from "src/components/PostMeta.astro";
 import { getUrl } from "src/utils/navigation";
 import Image from "./Image.astro";
+import defaultCover from "src/images/default-cover.jpg";
 
 interface Props {
   post: CollectionEntry<"posts">;
@@ -16,8 +17,8 @@ const { post, ...rest } = Astro.props;
 
 <a data-component="PostCard" href={getUrl(`/posts/${post.slug}`)} {...rest}>
   <Image
-    src={post.data.cover}
-    alt={post.data.coverAlt}
+    src={post.data.cover?.src ?? defaultCover}
+    alt={post.data.cover?.alt ?? ""}
     sizes="(max-width: 600px) 100vw, 280px"
     fallbackWidth={320}
     priority={false}
