@@ -1,4 +1,3 @@
-import type { ImageOutputFormat } from "astro";
 import { getImage } from "astro:assets";
 import {
   RESPONSIVE_WIDTHS,
@@ -7,21 +6,20 @@ import {
 } from "src/constants";
 
 export type ImageType = "default" | "transparent" | "animated";
+type ImageFormat = "avif" | "webp" | "jpeg" | "png" | "gif";
 
-const fallbackFormats: Record<ImageType, ImageOutputFormat> = {
+const fallbackFormats: Record<ImageType, ImageFormat> = {
   default: "jpeg",
   transparent: "png",
   animated: "gif",
 };
 
-const mimeTypes: Record<ImageOutputFormat, string> = {
+const mimeTypes: Record<ImageFormat, string> = {
   avif: "image/avif",
   webp: "image/webp",
   jpeg: "image/jpeg",
   png: "image/png",
   gif: "image/gif",
-  jpg: "image/jpeg",
-  svg: "image/svg+xml",
 };
 
 type Image = {
@@ -35,7 +33,7 @@ type SrcSets = { type: string; images: Image[] }[];
 class ResponsiveImageSet {
   private readonly acceptableWidths: number[];
   private type: ImageType;
-  private fallbackFormat: ImageOutputFormat;
+  private fallbackFormat: ImageFormat;
 
   private sets:
     | {
@@ -97,7 +95,7 @@ class ResponsiveImageSet {
     return [
       { type: mimeTypes.avif, images: this.sets.avif },
       { type: mimeTypes.webp, images: this.sets.webp },
-      { type: mimeTypes[this.fallbackFormat]!, images: this.sets.legacy },
+      { type: mimeTypes[this.fallbackFormat], images: this.sets.legacy },
     ];
   }
 
@@ -120,7 +118,7 @@ class ResponsiveImageSet {
     return this._openGraph;
   }
 
-  private async getSrcset(format: ImageOutputFormat): Promise<Image[]> {
+  private async getSrcset(format: ImageFormat): Promise<Image[]> {
     return Promise.all(
       this.acceptableWidths.map(async (width) => {
         const image = await getImage({
