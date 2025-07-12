@@ -17,10 +17,10 @@
     "@astrojs/mdx": "^4.3.0",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.4.1",
-    "astro": "^5.10.0",
+    "astro": "^5.11.0",
     "color": "^5.0.0",
-    "dotenv": "^16.5.0",
-    "postcss-preset-env": "^10.2.3",
+    "dotenv": "^17.2.0",
+    "postcss-preset-env": "^10.2.4",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-callouts": "^2.1.1",
     "rehype-pretty-code": "^0.14.1",
@@ -30,7 +30,7 @@
     "@astrojs/check": "^0.9.4",
     "@astrojs/upgrade": "^0.6.0",
     "npm-check-updates": "^18.0.1",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^5.8.3"
   }
