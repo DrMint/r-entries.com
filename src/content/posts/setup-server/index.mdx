@@ -1,0 +1,284 @@
+---
+title: Setup a Debian server
+summary: A guide to setup a Debian server
+date: 2025-08-16
+tags:
+  - server
+---
+
+## Change network to static IP
+
+1. Edit the `network/interface` file, make sure to be **root** beforehand:
+	```bash 
+	nano /etc/network/interfaces
+	```
+
+2. Add the following lines (replace address, netmask and gateway with your own values):
+	```txt 
+	iface eth0 inet static
+		  address 192.168.1.200
+		  netmask 255.255.255.0
+		  gateway 192.168.1.1
+	```
+
+3. Reboot the computer:
+	```bash
+	systemctl reboot
+	```
+
+## SSH Pubkey
+
+> [!summary] Goal
+> Use a private/public key pair to connect to another computer using SSH.
+> We'll also see how to disable the connection with a username/password.
+
+1. Generate the key pair on your local computer:
+	```bash
+	ssh-keygen -t rsa -b 4096
+	```
+2. Copy the public key (the one ending with `.pub`) to the remote server. Preferably to the home directory of the user you want to use to connect.
+
+3. Add key to authorized keys:
+	```bash
+	mkdir ~/.ssh
+	cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+	rm id_rsa.pub
+	chmod 700 ~/.ssh/
+	chmod 600 ~/.ssh/*
+	```
+
+### (Optional) Disable connection with username/password
+1. Modify the file `/etc/ssh/sshd_config`:
+	```bash
+	nano /etc/ssh/sshd_config
+	```
+
+2. Set the following lines:
+	```text
+	PasswordAuthentication no
+	ChallengeResponseAuthentication no
+	UsePAM no
+	```
+
+3. Restart the SSH server:
+	```bash
+	service ssh restart
+	```
+
+## Storage
+
+### Check disk space and usage
+
+You can check how much space is available on each volume using:
+```bash
+ df -h
+```
+
+You can quickly get the size of a folder with:
+```bash
+ du -hs
+```
+
+You can explore a three view of a folder/disk using ncdu:
+```bash
+apt-get install ncdu
+ncdu
+```
+
+
+### Increase disk space
+
+> [!summary] Goal
+> Increase the disk space of the server's storage.
+> Source: [How to Resize a Live Filesystem on Linux](https://www.youtube.com/watch?v=a-MeH95ei1g&t=184s)
+
+> [!warning]
+> **ONLY** follow these steps if it's the only partition on the disk.
+> If there is a swap partition, you need to remove it first.
+
+
+1. Check list of disks:
+	```bash
+	fdisk --l
+	```
+
+2. Find the disk you want to increase the size of (e.g: `/dev/xvda`) and enter:
+	```bash
+	fdisk /dev/xvda
+	```
+
+3. Press `p` to list the partitions. Make sure there's only one.
+4. If so, press `d`, the partition has been deleted.
+5. Press `n` to create a new partition.
+6. Follow what's asked on screen. You probably want Partition type to be `p`, Partition number to be `1`.
+7. Make sure to match the First sector from whatever it was before (typically `2048`).
+8. Last sector is the highest possible by default, to take the entire disk space.
+9. It will find a ext4 signature, **DO NOT REMOVE IT**, so press `n`.
+10. Now press `p` again to list the partitions. Compare the listing with the one you did before you deleted the partition. Make sure the columns Boot, Start, Id, and Type are the same.
+	-  If Boot isn't the same, press `a`.
+11. When absolutely sure, press `w`.
+12. Now extends the partition filesystem using:
+	```bash
+	resize2fs /dev/xvda1
+	```
+13. Check your changes using:
+	```bash
+	df -h
+	```
+
+### Mount new disk
+
+> [!summary] Goal
+> Intialize and mount a brand new empty disk to the server. We'll use the `/data` mount point and the `ext4` filesystem.
+
+1. Check the connected disk using:
+    ```bash
+    fdisk -l
+    ```
+
+2. Find the right one (e.g: `/dev/xvdb`) and do:
+    ```bash
+    cfdisk /dev/xvdb
+    ```
+    Select `GPT`, select `new`, select `write`, select `quit`
+
+3. Now the new partition should show up in fdisk:
+    ```bash
+    fdisk -l /dev/xvdb
+    ```
+
+4. Find the partition (should be something like `/dev/xvdb1`).  
+    Initialize the filesystem:
+    ```bash
+    mkfs.ext4 /dev/xvdb1
+    ```
+
+5. Find the new partition UUID with:
+    ```bash
+    blkid /dev/xvdb1
+    ```
+
+6. Add the following line to the `/etc/fstab` (replace the UUID with the one you found at step 5 and path if necessary):
+    ```txt
+    UUID=a43c3374-7e1a-49a3-b7e8-877827ddb7ed /data ext4 rw 0 0
+    ```
+
+7. Mount the disks using:
+    ```bash
+    mount -a
+    ```
+
+From there on, the disk will be mounted automatically at boot.
+
+
+
+## Setup SMTP server
+
+> [!summary] Goal
+> Setup a SMTP server to send emails.  
+> Source: [StackOverflow](https://stackoverflow.com/questions/10359437/sendmail-how-to-configure-sendmail-on-ubuntu)
+
+1. Change to your mail config directory:
+	```bash
+	cd /etc/mail
+	```
+
+2. Make a auth subdirectory:
+	```bash
+	mkdir auth
+	chmod 700 auth
+	```
+
+3. Create a file with your auth information to the smtp server:
+	```bash
+	cd auth
+	nano client-info
+	```
+
+4. In the file, put the following, matching up to your smtp server:
+	```txt
+	AuthInfo:your.isp.net "U:root" "I:user" "P:password"
+	```
+
+5. Generate the Authentication database, make both files readable only by root:
+	```bash
+	makemap hash client-info < client-info
+	chmod 600 client-info
+	cd ..
+	```
+
+6. Add the following lines to sendmail.mc (`ris:ErrorWarning`the first single quote for each string should be changed to a backtick):
+	```text
+	define(`SMART_HOST',`your.isp.net')dnl
+	define(`confAUTH_MECHANISMS', `EXTERNAL GSSAPI DIGEST-MD5 CRAM-MD5 LOGIN PLAIN')dnl
+	FEATURE(`authinfo',`hash /etc/mail/auth/client-info')dnl
+	```
+
+7. Lastly, run:
+	```bash
+	sudo sendmailconfig
+	```
+
+
+
+## Cloudflared
+
+> [!summary] Goal
+> Setup a Cloudflared tunnel to access your server from the internet.
+
+1. Install the latest version of Cloudflared:
+
+    ```bash
+    wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+    dpkg -i cloudflared-linux-amd64.deb
+    cd /root/.cloudflared
+    ```
+
+2. Login to Cloudflared:
+    ```bash
+    cloudflared tunnel login
+    ```
+    This will open a web browser. Select the domain you want to add Argo to.
+
+3. Generate and download a Cloudflare certificate for the domain
+(see: [Cloudflare Docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/user-side-certificates/#generate-a-cloudflare-root-certificate)):
+    ```bash
+    mv cert.pem cert.pem.[domain name]
+    cloudflared tunnel  --origincert cert.pem.[domain name] create [tunnel name]
+    cloudflared tunnel --origincert cert.pem.[domain name] list
+    cloudflared tunnel --origincert cert.pem.[domain] route dns [tunnel name] [sub.domain]
+    ```
+
+4. Create a configuration file for the tunnel:
+    ```bash
+    nano /etc/cloudflared/[domain].yml
+    ```
+
+    Paste the following content:
+
+    ```txt
+    tunnel: [domain name]
+    credentials-file: /root/.cloudflared/[json file that was create].json
+    logfile: /var/log/cloudflared.[domain name].log
+
+    ingress:
+
+    - hostname: [domain]
+        originRequest:
+        originServerName: [domain]
+        service: https://localhost
+
+    - hostname: "*.[domain]"
+        originRequest:
+        originServerName: [domain]
+        service: https://localhost
+
+    - service: http_status:404
+    ```
+
+5. Enable and start the service:
+    ```bash
+    systemctl enable cloudflared@[domain name]
+    systemctl start cloudflared@[domain name]
+    ```
+
