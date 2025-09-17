@@ -1,0 +1,909 @@
+---
+title: (Re)birth of a home lab
+summary: A journey of a home lab from scratch to a fully functional setup.
+date: 2025-08-25
+---
+
+## Introduction
+
+Hi! Do you enjoy spending time, money, and energy tinkering with servers at home when you could get paid for it?
+Or maybe you already are a sysadmin, but you want to learn and experiment in a more casual environment?
+Oooor maybe, you want to stick it to the tech overlords and take back control on your data and everyday tools?
+
+Whatever your reason, you are not alone.
+I too have certain feelings about how the internet is shaping to be.
+Between the UK's Online Safety Act, the several laws being passed in the US, and the various "Chat Control" proposals in the EU,
+it is clear that anonymity and privacy are dead, all data will be monitored, and whatever could be considered "harmful" will be censored.
+Considering the fines, don't expect platforms to take a risk: they'll go above and beyond to comply.
+
+Anyway, a home lab--and by extension self-hosting--can't solve everything, but it can be a good start towards a more decentralized and cosy internet.
+
+In case you don't know, a home lab is a personal IT setup where you can experiment with servers, applications, and services.
+It goes hand in hand with another concept: self-hosting. This is the practice of hosting services on hardware you control.
+Together, it means that you can build your own IT infrastructure, tailor the tools and services you use to your needs and keep your data safe and private.
+
+For the appetizer, let me give you the list of services I like to run on my home lab:
+
+- [Vaultwarden](https://github.com/dani-garcia/vaultwarden): a password manager, a lightweight alternative to [Bitwarden](https://bitwarden.com).
+- [File browser](https://filebrowser.org): a file manager with access control, file sharing, and more.
+- [Syncthing](https://syncthing.net): synchronize files between 2 or more devices. Useful to backup my personal devices.
+- [Jellyfin](https://jellyfin.org): private movie / series streaming service (Streamyfin client on mobile). Like a private Netflix.
+- [Navidrome](https://navidrome.org): private music streaming service (Symfonium client on mobile). Like a private Spotify.
+- [Immich](https://immich.app): photo / video gallery, tagging, and syncing. Like a private Google Photos.
+- a personal blog: this very blog.
+
+So without further ado, let's start building our home lab!
+
+### My journey with self-hosting
+
+So as the title suggests, this is not the first time I dabble with self-hosting or a home lab.
+At 7 years old, I was already running my Joomla blog, hosted on 1and1 (now known as IONOS).
+
+A few years later, I was hosting a few Minecraft servers on a computer that was running at my father's workplace 24/7.
+We would use LogMeIn Hamachi to connect to it.
+It felt really empowering to be able to play together and to give my friends the ability to continue playing on the server even when I wasn't connected.
+
+In recent years, I got curious about how to host websites, make them accessible from the internet, and the security implications.
+I first started experimenting with virtual machines, networking, containers, and Linux in general.
+
+In my current home lab, I have one server that's running [XCP-ng](https://vates.tech/xcp-ng/) and [Xen Orchestra (XOA)](https://vates.tech/xen-orchestra/).
+The data is stored on 2 × 4&nbsp;TB disks in EXT4, along with a 512GB NVMe SSD.
+I have a few VMs running on it:
+
+- `webhub.local`: a Debian 12 VM used almost like a bastion. All opened ports on my ISP router are pointing to it.
+  It will then use [Caddy](https://caddyserver.com/) as a reverse proxy to send traffic to the other VMs.
+  There is [CrowdSec](https://www.crowdsec.net/) installed to monitor and block malicious traffic.
+- `docker01.local`: also a Debian 12 VM used to run containers using Docker.
+- another VM I'm hosting for a client.
+- `xoa.local`: the VM running Xen Orchestra.
+
+Every Sunday, a backup is made to a NAS running 4 × 4&nbsp;TB disks in RAID5 (12&nbsp;TB of usable storage).
+The NAS is programmed to start half an hour before the scheduled weekly backup, and will automatically shut down 4 hours later.
+
+The server, NAS, and ISP router are powered by a UPS.
+
+There is a few things I don't like with this current setup:
+
+- Any disk failure on the server would result in some data loss.
+- A fire or a burglary could result in losing all data.
+- There is no protection against data corruption. I've already seen some corrupted pictures although I can't be sure when/why it happened.
+- There is a UPS but there is no automatic shutdown if it runs out of battery.
+- There is no network segmentation between the home lab and the rest of the local network.
+- Overall, I'm not able to monitor if things are working as expected. I don't get notified if a job fails.
+
+## Considerations and planning
+
+### Goals
+
+At the highest level, there is a few things I want to achieve with my new home lab (in order of importance):
+
+1. I want my data to be safe. I want to feel reassured that my data can't be lost or corrupted.
+2. I want to keep things simple, reliable, and reproducible.
+3. I want to experiment with new services and tools without feeling limited or scared to break things.
+4. I want to keep my home lab reasonably compact, quiet, and energy efficient.
+5. I want to reduce my reliance on any specific provider and to be able to move effortlessly to another provider or offer if needed.
+
+### Overview
+
+I'm thinking of a 3 part system:
+
+1. A **main server**, the data/computing server of the home lab. This one will be hosted at my place.
+2. A **bastion server**, the entrypoint to the home lab and its services.
+   This part will be hosted at a VPS provider so that I'm guaranteed to have a static IPv4 address.
+3. A **backup server**, where backups will be stored. This one will be hosted at my mom's place.
+
+Then using firewalls (I'm planning on using MikroTik Hex routers), I'll make sure the main server can only communicate with the bastion server.
+Only the bastion server can communicate with the wider internet.
+The MikroTik routers will make sure the main server and backup server are isolated from other local devices.
+
+I'm still thinking about how to handle communication between the main server and the backup server:
+
+- One idea would be to create a Wireguard VPN between them so that the main server has direct access to the backup server.
+  Only the main server should have access to the backup server.
+- Another would be to go through the bastion server.
+  In this case, the bastion server would be the only device the main server and the backup server can reach.
+
+Option 1 makes more sense to me but I'm wondering if this could be a security risk is the main server is compromised.
+We'll see.
+
+Having a backup server located elsewhere is also a great way to protect against disasters or burglaries.
+If the main server is stolen or destroyed, the backup server can be used to restore the latest backups.
+If the backup server is stolen or destroyed, the latest data is still safe on the main server.
+
+At my place and my mom's place, a UPS will power the ISP router, the MikroTik router, and the respective servers.
+Both our ISP routers will have port forwarding and UPnP disabled.
+
+> [!note] Naming the servers
+> Seeing this 3 part system, I'm thinking of naming the servers **Melchior** (main), **Balthasar** (bastion), and **Casper** (backup).
+> This is a reference to the [Magi System](https://evangelion.fandom.com/wiki/Magi) from Neon Genesis Evangelion.
+
+### Entrypoint
+
+I'm thinking of running [Pangolin](https://digpangolin.com/) on the bastion server.
+It's a tunneled reverse proxy that seems to take some inspiration from Cloudflare.
+
+It creates WireGuard tunnels between itself and the nodes.
+You can then expose services without requiring a static IP or opening ports on the ISP router.
+
+You can create rules based on the service, path, IP, and country to either block, allow, or require authentication.
+
+Authentication can take a few forms: a password, pin code, user identity with or without 2FA, or even external providers.
+Sharable links are also supported.
+Users don't need to install anything. They are redirected to the login page when trying access the services in their browser.
+
+Pangolin can also manage SSL certificates with Let's Encrypt as the issuer.
+
+It can also work in tandem with [CrowdSec](https://www.crowdsec.net/), a modern, open-source, collaborative behavior detection engine, integrated with a global IP reputation network.
+It functions as a massively multiplayer firewall, analyzing visitor behavior and responding appropriately to various types of attacks.
+
+Pangolin can be installed on any VPS using Docker.
+Then from its interface, you can generate credentials to be used on the nodes.
+On the nodes you just need to run [Newt](https://github.com/fosrl/newt), a lightweight WireGuard client.
+Again you can use Docker to configure and run Newt.
+
+### Virtualization and containerization
+
+Virtualization offers strong isolation and the ability to run multiple operating systems on the same hardware.
+However it also adds extra overhead and complexicity.
+
+Containerization offers a lighter weight alternative to virtualization. They are fast to deploy, there's barely any overhead, and they are easy to manage.
+However, they don't offer the same level of isolation as virtualization.
+
+In my previous home lab, I was running [XCP-ng](https://xcp-ng.org/) as the hypervisor. Then I had a few VMs running on it. And each would use Docker containers to run services.
+But all the VMs were running Debian, so I'm unsure if it was worth the complexity of running a hypervisor.
+Also I think having to choose how much ressource to allocate to each VM was a bit of a pain, especially when you realize you need to expand the VM's storage.
+
+Thus, my plan is to **run Debian on bare metal** on all three servers. And **use Docker containers** to run services.
+If in the future I decide that virtualization is needed, I can always install [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) on the main server.
+Proxmox is already shipped with Debian so installing it should be simple enough. They have a [guide](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_13_Trixie) for that.
+
+### File system
+
+#### Introduction to ZFS
+
+So I've heard of [ZFS](https://openzfs.org/) before, but I've always thought it looked complicated and intimidating.
+Probably because it does a lot more than your average filesystem.
+
+ZFS, or more specifically OpenZFS, describes itself as an "open-source storage platform".
+Here's a few of its key features:
+
+- Protection against hardware failure with mirroring and RAIDZ.
+- Protection against data corruption with integrity verification and automatic repairs.
+- Built-in snapshots and replication.
+- Transparent compression
+- Support for massive files and massive storage capacities (ZFS stands for Zettabyte File System after all).
+- Support transparent compression and hardware-accelerated native encryption.
+
+#### Protection against hardware failure
+
+Here's a quick overview of how it works.
+What's exposed as storage to the system is pools.
+Pools may include one or more vdevs.
+A vdev may include one or more disks of the same capacity.
+
+A vdev can be of multiple types:
+
+- **single**: it's just a single disk. Offers no redundancy but still detects data corruption.
+- **mirror**: two or more disks are mirrored, meaning the exact same data is written to all disks.
+  If one disks fails, the continues to operate normally while you replace the faulty disk.
+- **RAIDZ1**: three or more disks are used to store data.
+  Parity is computed for each strip (block of data) and then distributed across the disks.
+  If one disk fails, the vdev continues to operate normally while you replace the faulty disk.
+  The total usable capacity is the total capacity of the disks minus one disk worth of parity.
+  This is similar to RAID5.
+- **RAIDZ2**: similar to RAIDZ1 but with two parity strips. This means two disks can fail before data loss occurs.
+
+In general:
+
+- Mirror requires at least 2 disks to operate. Mirroring with `N` disks can sustain `N-1` disk failures.
+  The total usable capacity is the capacity of just one of the disks.
+- RAIDZ`N` requires at least `N+2` disks to operate and can sustain `N` disk failures.
+  The total usable capacity is the sum of the disks' capacities minus `N` disks worth of parity.
+
+For exemple, in RAIDZ2, you need at least 4 disks.
+Let's say you have 6 disks with 1&nbsp;TB of capacity each.
+The total usable capacity is 4&nbsp;TB (1&nbsp;TB × 6 disks - 2&nbsp;TB of parity).
+You could lose 2 disks before data loss occurs.
+
+Anytime a faulty disk is replaced, ZFS will automatically start recreating the data that was on the faulty disk using the other disks.
+In the end, the new disk will be a perfect copy of the faulty disk. This process is called **resilvering**.
+
+Resilvering can take a while, especially when dealing with terabytes of data.
+It also depends on the topology of the vdev, and how much the disks are utilized during the process.
+It's not uncommon to see resilvering take days.
+
+If you choose a vdev type where only one disk can fail, this resilvering period can be very stressful.
+It's unlikely for another disk to fail during this period, but it's still a risk. And it happens, all the data is irrecoverable.
+This is why with larger, more numerous disks it's highly recommended to choose at least RAIDZ2.
+
+> [!warning] Changing vdev type
+> Once a vdev is created, you can't change its type. For exemple, you can't change a RAIDZ1 to a RAIDZ2.
+
+#### Integrity checks and automatic repairs
+
+Protection against hardware failure is cool and all but I think integrity checks and automatic repairs really make ZFS stand out.
+It is achieved by storing a checksum for each block of data.
+During read operations the checksum is verified.
+If the checksum does not match, then ZFS knows that the block is corrupted.
+It will then attempt to repair the data:
+
+- In the case of mirroring, ZFS will use the first copy of the data where the checksum matches to repair the data.
+- In the case of RAIDZ, parity data is used to repair the data.
+  The same way that RAIDZ`N` can sustain `N` disk failures, ZFS can repair a corrupted block as long as one copy of the parity data is available.
+  If more than `N` copies of the data and its parity are corrupted, then the data is irreparable.
+
+Even if ZFS cannot repair the data, it will at least notify you that a block is corrupted.
+
+Furthermore, ZFS doesn't just wait for data to be read to verify the checksum.
+It also periodically perform integrity checks and automatic repairs of all the data.
+This process is called **scrubbing**.
+
+#### Extensibility
+
+ZFS mirror and RAIDZ can be expanded by adding new disks to the vdev. In the case of RAIDZ, this is a recent feature that was introduced in OpenZFS 2.2.
+
+You can also replace the disks in a vdev with larger ones. You need to do that one disk at a time and resilver the vdev after each replacement.
+
+Finally, you can simply add more vdevs to a pool.
+
+#### Hot spares
+
+Disks can be assigned as hot spares for a pool: if a disk fails in any of the vdevs, resilvering can immediately start on one of the spare disks.
+This can be useful if you can't readily access the server to replace the faulty disk (e.g: you're on vacation).
+
+However, if you only have one vdev, I would argue that it's better to opt in for a more resilient vdev type (e.g: choosing RAIDZ2 instead of RAIDZ1).
+
+In general, it's still recommended to have a spare disk on hand in case of a hardware failure.
+This way, you can replace the faulty disk faster and the system will return to a nominal state faster.
+
+#### Portability
+
+Each disk in a pool has ZFS labels written at the start and end of the device.
+Those labels contain the pool name, vdev layout, and GUIDs.
+
+So, if you decide to move the pool to another server, you just need to move the disks to the new server.
+Disk order does not matter (you don’t have to plug them into the same SATA ports, or even the same controller brand).
+As long as all the required disks are present, ZFS can figure out the correct configuration.
+
+#### Compression
+
+Another great feature is that ZFS can transparently compress the data.
+Transparent here means that the data is compressed on write and decompressed on read: the user never realizes that the data is compressed.
+
+It's not necessary to disable compression on datasets which primarily have incompressible data on them, such as folders full of video or audio files.
+ZFS is smart enough to not store data compressed if doing so wouldn't save any on-disk blocks.
+
+It may be counter-intuitive but compression can increase read and write performance.
+Sure the CPU has to compress and decompress the data, but smaller resulting files also means less data to read or write on the disk.
+If disk I/O is the bottleneck (e.g: you're using HDDs), compression will increase effective I/O performance.
+
+### Backups
+
+ZFS is uniquely suited for backups. It's built-in replication and snapshots make it easy to restore data to a previous state.
+
+Snapshots are a frozen, read-only view of the filesystem at a given point in time.
+The data is not duplicated, any modification after the snapshot creation is tracked separately.
+So, to restore the filesystem to a given snapshot, you just need to discard those modifications.
+They are instant to create and space-efficient.
+
+They also offer good protection against user error and ransomware.
+The snapshots are immutable, so even if all your files get encrypted, you can still restore the filesystem to a previous snapshot.
+
+Importantly, restoring a snapshot means restoring the entire filesystem to that point in time.
+This can be useful if an update went wrong or if a ransomware attack encrypted most files.
+If you only need to restore a specific file or folder, this can be achieve as well.
+Snapshots are read-only but they can be browsed and copied from just like any directory.
+
+Replication is the process of copying snapshots from one ZFS pool to another.
+It can be used to backup the data to a remote location.
+Subsequent replications will only copy the differences between the previous snapshot and the current state of the filesystem.
+So it's incremental and network-efficient.
+
+Snapshots can be scheduled to be created at a given frequency.
+Retention policies can be set to automatically delete old snapshots.
+The same can be done for replications. You can decide to only replicate snapshots at a given frequency.
+Replication and retention policies can be set on a folder by folder basis if needed.
+
+Snapshot frequency, replication frequency, and retention should reflect your tolerance for data loss.
+For me, I'm okay with losing a week of data if my home is burned to the ground or a thief breaks in.
+This means I don't need replication to be any more frequent than once a week.
+
+This is the proposed policy for the main server:
+
+- A snapshot is created every hour.
+- Hourly snapshots for the last 24 hours → rollback from accidental deletes or ransomware.
+- Daily snapshots for the last 7 days → covers recent human error.
+- Weekly snapshots for the last 4 weeks → medium-term rollback.
+- Monthly snapshots for the last 6 months → long-term baseline.
+- Replication to the backup server is done weekly.
+
+On the backup server, I can have a longer retention policy:
+
+- Weekly snapshots for the last 12 weeks.
+- Monthly snapshots for the last 24 months.
+- Yearly snapshots kept until the backup server runs out of space.
+
+### Memory
+
+Error-correcting code memory, commonly known as ECC Memory, is a type of RAM known for its data integrity and reliability.
+This specialized type of computer data storage uses a more sophisticated technology than standard RAM to detect and automatically correct internal data corruption.
+
+The ECC procedure typically involves adding a few extra bits to each chunk of data stored in memory.
+These extra bits, known as parity bits, allow the system to determine if the data has been corrupted.
+If an error is detected, the ECC memory can often find the exact bit that is incorrect and restore it to the proper value without the user or the running program even realizing anything happened.
+
+To use ECC memory, we need:
+
+- A **CPU** that supports ECC
+- A **motherboard** that supports ECC
+- A **memory stick** that supports ECC
+
+It needs support at all levels because ECC not only protects the data when in RAM, but also as it travels between the CPU registers and the RAM sticks.
+
+Of course the tradeoff is that ECC memory is more expensive.
+Also, finding a consumer-grade CPU and motherboard that support ECC memory can be difficult.
+
+ECC memory is one more protection against data corruption. It's complementary to the other protection mechanisms provided by ZFS.
+
+### Monitoring
+
+As stated earlier, I'm unhappy about my lack of monitoring and alerting on the previous home lab.
+This time, I want to make sure things are working as expected and be alerted as soon as possible if something goes wrong.
+
+Here's a list of the metrics I want to monitor:
+
+- Servers
+  - Ressource usage: CPU, RAM, storage, disk I/O, network
+  - Temperature: CPU, disks, room
+  - Disks SMART status
+  - System updates
+- UPS
+  - Status
+  - Battery level,temperature, and health
+  - Temperature
+- Costs
+  - Electricity cost
+  - ISP subscription
+  - VPS subscription
+  - Hardware cost
+- CrowdSec
+  - Blocked requests count (total, by scenario)
+  - Blocked IPs (total, by scenario)
+- Traefik
+  - Requests count (total, by domain)
+  - Requests latency (avg, max, min)
+  - Errors count (total, by status code)
+  - Geographic distribution (top 10 countries)
+- ZFS
+  - Pool health, error counts and scrub status
+  - Snapshots jobs and current retention
+  - Replication jobs
+- Services
+  - Ping or health-check uptime
+  - Image updates
+
+Then I can setup alerts when those metrics are outside of acceptable ranges.
+For exemple:
+
+- The scheduled scrub is not running on time
+- Storage is almost full
+- Temperatures have been above a threshold for some time
+- Power surges or outages
+- Services seem unavailable
+
+### Plan
+
+So, in summary what's the plan?
+
+- I'll be running Debian on bare metal on all three servers.
+- Services will be run in Docker containers.
+- ZFS will be used for the filesystem.
+  - I'll be using RAIDZ2 on the main server and RAIDZ1 on the backup server.
+  - Mirror NVMe SSDs for the OS on both servers.
+  - LZ4 compression will be used on all pools.
+- ZFS snapshots and remote replication to the backup server will be used to backup the main server.
+- ECC for the main server, non-ECC for the backup server.
+- Pangolin + CrowdSec will be used for the entrypoint.
+
+### Threats and mitigations
+
+As a recap of everything I've mentioned so far, here's a list of potential threats and how I plan to mitigate them:
+
+- Hardware threats
+  - Disk failures
+    - Covered by RAIDZ on both main and backup servers.
+    - SMART monitoring and alerts for signs of imminent failure.
+    - Alerting when a disk fails so that it can be replaced ASAP.
+    - Spare disks ready to swap in if needed.
+  - Data corruption
+    - Covered by ZFS block checksums.
+    - Self-healing by ZFS.
+    - Checked by monthly scrubbing on both main and backup servers.
+    - ECC memory participating in data integrity on the main server.
+    - UPS for clean shutdowns on both main and backup servers.
+  - Power outages and surges
+    - Covered by UPS on both main and backup servers.
+    - Bi-yearly UPS battery test.
+  - Overheating
+    - Monitor temps including disks temps.
+    - Monitor room temps and adjust fans accordingly.
+    - Use dust filters and clean them regularly.
+    - Ensure positive pressure in the computer cases to recude dust accumulation.
+
+- Provider threats
+  - ISP issues (CGNAT, IPv4 change, outage, blocking ports)
+    - Tunnel to the bastion server using Pangolin.
+    - Could still use my phone or a 4G/5G router as a backup.
+  - VPS provider failure
+    - Backups to the backup server.
+    - If the VPS is unreachable, I could relatively quickly switch to another VPS provider using the latest backup.
+
+- Malicious threats
+  - Bot attacks / DDoS
+    - Covered by the bastion server (Pangolin + CrowdSec).
+    - Reduce attack surface by making sure only a few ports are open.
+  - Ransomware
+    - Recoverable using local ZFS snapshots and remote backups.
+  - Vulnerabilities
+    - Keep packages and Docker images up to date.
+    - Enforce SSH key only authentication on all hosts.
+    - Enforce 2FA on publicly accessible services.
+    - Audit ~/.ssh/authorized_keys and /etc/sudoers regularly.
+    - Network segmentation between containers.
+    - Network segmentation between the home lab and other devices on the local network.
+  - Disaster / theft
+    - Use locks and chains to secure the servers and slow down / discourage thieves.
+    - Offsite backup
+
+- Human threats
+  - Accidental deletion / overwriting
+    - Covered by local ZFS snapshots and remote backups.
+  - Disk misplacement during maintenance
+    - Use stickers to mark the disks and their assigned location.
+    - Refer to that label when alerting about a disk needing to be replaced.
+  - Forgetting my own setup
+    - Scripts to bring a fresh Debian server to a working state.
+    - Docker Compose and documentation for each service.
+    - Infrastructure-as-Code.
+
+- Operational risks
+  - Backup failures
+    - Monthly restoration test.
+    - Monitoring of ZFS replication jobs.
+  - Over-utilized resources: alerting
+  - Alerting failures
+    - Have weekly alerts just to confirm that things are working as expected.
+    - Monthly manual checks.
+
+## Planning the hardware
+
+### Main server
+
+So, for the main server, I have a few requirements:
+
+- Support up to 8 × 3.5" HDDs (although I'm not likely to use more than 6)
+- Support for 2 × NVMe SSDs (or at least SATA SSDs)
+- ECC memory would be nice
+- 32&nbsp;GB of memory (upgradeable to 64&nbsp;GB if needed)
+- Efficiency is very important considering the system will run 24/7
+- Hardware acceleration for video transcoding and AI workloads
+- CPU performance should be sufficient.
+  I like to use PassMark scores to compare CPUs. Let's aim for a score of 20 000 or more.
+- 6 cores / 12 threads minimum
+- 65&nbsp;W TDP for the CPU
+
+#### Cases
+
+The complexity is to find a case that will accomodate at least 6 × 3.5" disks. This is becoming increasingly difficult as nowadays people will likely use a NVMe SSD and maybe one or two 3.5" HDDs.
+
+They are some specialized "PC NAS" cases, but they are typically quite expensive and value compactness.
+This means that the motherboard will typically be Mini-ITX or Micro-ATX, which are typically more expensive and provide less slots and features.
+
+Then they are rack mounted cases, which are also expensive.
+Typically, you can use any size of motherboard but you are still limited by the height of the case.
+This means the CPU cooler and the GPU need to be low profile.
+You can easily find cases with at least 6 × 3.5" bays and some with hot-swappable bays on the front of the case which makes maintenance very convenient.
+
+##### Tower cases
+
+Here's a few I like:
+
+- Jonsbo N3
+  - 8 × 3.5" HDD bays
+  - Mini ITX motherboard
+  - SFX PSU (up to 105&nbsp;mm in length)
+  - Use a HDD backplate, needs 2 molex connectors to power all drives
+  - 2 × 100&nbsp;mm fans + 2 × 80&nbsp;mm fans
+  - 250&nbsp;mm wide, 210&nbsp;mm tall, 374&nbsp;mm deep
+
+- Fractal Design Node 304
+  - 6 × 3.5" HDD bays
+  - Mini ITX, Mini DTX motherboard (avoid angled SATA connectors)
+  - ATX PSU (up to 160&nbsp;mm in length)
+  - No HDD backplate
+  - 2 × 92&nbsp;mm fans + 1 × 140&nbsp;mm fan
+  - 233&nbsp;mm wide, 298&nbsp;mm tall, 262&nbsp;mm deep
+
+- Fractal Design Node 804
+  - 10 × 3.5" HDD bays + 2 × 2.5" SSD bays
+  - Micro ATX, Mini ITX motherboard
+  - ATX PSU (up to 260&nbsp;mm in length)
+  - No HDD backplate
+  - 2 × 92&nbsp;mm fans + 1 × 140&nbsp;mm fan
+  - 344&nbsp;mm wide, 307&nbsp;mm tall, 389&nbsp;mm deep
+
+##### Rack mounted
+
+- "19-inch" is the most common rack width. The minimum opening width is 450&nbsp;mm and the width of the cabinet is 24&nbsp;inches (600&nbsp;mm).
+- Rack mounted equipment also comes in standardized U height units. 1U is 1.75&nbsp;inches (44.45&nbsp;mm).
+  - A 1U server is 44.45&nbsp;mm tall.
+  - A 2U server is 88.9&nbsp;mm tall.
+  - A 3U server is 133.35&nbsp;mm tall.
+  - A 4U server is 177.8&nbsp;mm tall.
+- Racks also comes in U units. So you buy a 16U rack, you can put 16U worth of equipment in it.
+- Racks depth is not standardized. If the rack is enclosed, you have to make sure the equipment fits.
+
+Here's one I like:
+
+- Inter-Tech IPC 3U-3508
+  - https://www.inter-tech.de/productdetails/3U-3508_EN.html
+  - 8 × 3.5" hot-swappable HDD bays
+  - 2 × 2.5" internal SSD bays
+  - Mini-ITX, Micro-ATX, ATX motherboards
+  - ATX PSU
+  - 2 × 80&nbsp;mm fans + 2 × 60&nbsp;mm fans
+  - max. 100&nbsp;mm tall CPU cooler / GPU
+  - max. 244&nbsp;mm long GPU
+  - 480&nbsp;mm wide, 132&nbsp;mm tall, 528&nbsp;mm deep (3U rack)
+
+#### Motherboards
+
+For the motherboard, it's not too difficult to find one with 6 SATA ports.
+If we want more SATA ports, we have a few options:
+
+- Specialized motherboards with more SATA ports (rare, expensive)
+- M.2 to SATA adapter (up to 6 SATA ports)
+- PCIe to SATA adapter
+- PCIe to SAS + SAS to SATA cable (typically 2 SAS ports, which means 8 SATA ports)
+- If you really want to go crazy, you can use a PCIe&nbsp;x16 to 4x4 bifurcation cards to convert a single PCIe&nbsp;x16 slot to 4 × M.2 slots.
+  Then you can use a M.2 to SATA adapter on each M.2 slot. This means 24 SATA ports.
+
+Other recommendations:
+
+- Update the BIOS before installing the CPU: they have been user reporting that their newly bought CPU (e.g: Ryzen 9000 series) got overvolted when installed on a motherboard that didn't support the CPU without a BIOS update.
+- Prefer ASRock or ASUS motherboards if you want to use ECC memory. Most other brands don't support it.
+
+#### ECC Memory
+
+##### CPU
+
+- Ryzen 3000/4000
+  - Without integrated graphics: support ECC memory
+  - With integrated graphics:
+    - Pro variant: support ECC memory
+    - Non-Pro variant: no support
+- Ryzen 5000
+  - Without integrated graphics:
+    - Ryzen 5 5500: no support
+    - Others: support ECC memory
+  - With integrated graphics:
+    - Pro variant: support ECC memory
+    - Non-Pro variant: no support
+- Ryzen 7000: support ECC memory
+- Ryzen 8000
+  - Pro variant: support ECC memory
+  - Non-Pro variant: no support
+- Ryzen 9000: support ECC memory
+
+For the AM5 platform we have this handy [community spreadsheet](https://docs.google.com/spreadsheets/d/1NQHkDEcgDPm34Mns3C93K6SJoBnua-x9O-y_6hv8sPs).
+
+##### Motherboard
+
+In general, Asus and ASRock motherboards support ECC memory. Other brands typically don't.
+
+For the AM5 platform we have this handy [community spreadsheet](https://docs.google.com/spreadsheets/d/1NQHkDEcgDPm34Mns3C93K6SJoBnua-x9O-y_6hv8sPs).
+
+##### Memory stick
+
+Look for ECC UDIMM (Unbuffered DIMM).
+
+- Avoid RDIMM (Registered DIMM), which is only available in workstation / server motherboards.
+- Avoid "on-die ECC" only. It is a required feature on DDR5 memory sticks, but only corrects single-bit errors within the memory chip itself.
+
+#### GPU
+
+A GPU (dedicated or integrated) is not strictly necessary. But it can be useful for:
+
+- Simply to display a video output (accessing the BIOS, debugging, etc...)
+- Image processing (generating thumbnails)
+- Video transcoding (Jellyfin, Plex)
+- AI workloads (Immich face recognition, LLMs)
+
+For video transcoding, [Jellyfin recommends](https://jellyfin.org/docs/general/administration/hardware-selection): - Intel Arc A series or newer - Nvidia GTX16/RTX20 series or newer (Excluding GTX1650) - AMD is **NOT** recommended.
+
+NVIDIA provides a [list](https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new) of supported video encoding and decoding features for their GPUs.
+Overall, NVIDIA GPUs are pricier but well regarded for their gaming and video transcoding capabilities.
+
+Entry-level Intel Arc GPUs are considered mediocre for gaming but provide excellent video transcoding capabilities considering their price, consumption, and size.
+
+AMD GPUs are considered behind the competition when it comes to video transcoding.
+Even when the codecs are supported, performance or image quality may be lacking.
+
+Depending on the choice of case, we may have to look for a low profile GPU.
+
+#### PSU
+
+Considering the rest of the requirements, we can expect the system to draw a maximum of 400&nbsp;W.
+This is because HDDs will draw significantly more power at startup than during normal operation.
+
+During normal operation, the system should draw around 120&nbsp;W.
+
+Any PSU rated for 550&nbsp;W or higher should be sufficient.
+
+Obviously, efficiency is important for a home lab that will run 24/7.
+For example, the _be quiet! PURE POWER 12 M 650&nbsp;W_ advertises a 80+ Gold rating. This means:
+
+- at 20&nbsp;% load, the efficiency is at least 90&nbsp;%.
+- at 50&nbsp;% load, the efficiency is at least 92&nbsp;%.
+- at 100&nbsp;% load, the efficiency is at least 89&nbsp;%.
+
+So the efficient should be above 90&nbsp;% most of the time, which is great. I would recommend at least a 80+ Gold rating.
+
+It can be difficult to find a PSU with sufficient amount of SATA or PATA (aka molex) cables out of the box.
+If the PSU is modular, you should check if the PSU has enough "Drives" / "SATA/PATA" ports.
+If so, maybe the manufacturer provided cables that can be purchased separately.
+
+It's also possible to buy compatible SATA/PATA cables from [cablemod](https://eustore.cablemod.com/configurator) for about 10&nbsp;€ per cable, 15&nbsp;€ for shipping.
+
+Considering that I'm not likely to use more than 6 × 3.5" HDDs, I don't have to worry about how much current is going through the 12&nbsp;V lanes.
+Research into it if you're using more disks.
+
+TODO: add my research on power efficiency
+
+#### Storage
+
+You can easily check what's the best price for different storage types and capacities at [diskprices.com](https://diskprices.com).
+
+For ZFS, it's important that the hard drives are not SMR or else the performance will worsen. This can make resilvering much slower.
+You can use this [list](https://nascompares.com/answer/list-of-wd-cmr-and-smr-hard-drives-hdd/) to check if disk is not SMR. CRM is the preferred type.
+
+#### Complete builds
+
+##### Build A: cheapest AM4, no ECC
+
+| Component   | Name                                |        Price |
+| ----------- | ----------------------------------- | -----------: |
+| Rack        | Inter-Tech IPC 3U-3508              |   200&nbsp;€ |
+| Motherboard | MSI B550-A PRO                      |   100&nbsp;€ |
+| CPU         | Ryzen 5 5500                        |    80&nbsp;€ |
+| Cooler      | Noctua NH-L12Sx77                   |    80&nbsp;€ |
+| RAM         | Integral 32&nbsp;GB DDR4-3200       |    70&nbsp;€ |
+| GPU         | Sparkle Arc A380 GENIE              |   130&nbsp;€ |
+| PSU         | be quiet! Pure Power 12M 750&nbsp;W |   130&nbsp;€ |
+| NVMe        | 2 × Crucial P310 SSD 500&nbsp;GB    |   100&nbsp;€ |
+| HDDs        | 4 × WD Ultrastar DC HC320 8&nbsp;TB |   530&nbsp;€ |
+| Total       |                                     | 1 420&nbsp;€ |
+
+Note: Ryzen 5000 series processors can support DDR4-3200 memory with two sticks but only 2 666&nbsp;MHz on 4.
+
+##### Build B: AM4, with ECC memory
+
+| Component   | Name                                    |        Price |
+| ----------- | --------------------------------------- | -----------: |
+| Rack        | Inter-Tech IPC 3U-3508                  |   200&nbsp;€ |
+| Motherboard | ASROCK B550 Pro4                        |   100&nbsp;€ |
+| CPU         | Ryzen 7 5700X                           |   150&nbsp;€ |
+| Cooler      | Noctua NH-L12Sx77                       |    80&nbsp;€ |
+| RAM         | Timetec Hynix IC DRR4-2666 2x16&nbsp;GB |   100&nbsp;€ |
+| GPU         | Sparkle Arc A380 GENIE                  |   130&nbsp;€ |
+| PSU         | be quiet! Pure Power 12M 750&nbsp;W     |   130&nbsp;€ |
+| NVMe        | 2 × Crucial P310 SSD 500&nbsp;GB        |   100&nbsp;€ |
+| HDDs        | 4 × WD Ultrastar DC HC320 8&nbsp;TB     |   530&nbsp;€ |
+| Total       |                                         | 1 520&nbsp;€ |
+
+##### Build C: AM5, with ECC memory
+
+| Component   | Name                                             |        Price |
+| ----------- | ------------------------------------------------ | -----------: |
+| Rack        | Inter-Tech IPC 3U-3508                           |   200&nbsp;€ |
+| Motherboard | ASROCK B850 Pro RS                               |   200&nbsp;€ |
+| CPU         | Ryzen 7 9700X                                    |   280&nbsp;€ |
+| Cooler      | Noctua NH-L12Sx77                                |    80&nbsp;€ |
+| RAM         | Kingston Server Premier 32&nbsp;GB DDR5-5600 ECC |   200&nbsp;€ |
+| GPU         | Sparkle Arc A380 GENIE                           |   130&nbsp;€ |
+| PSU         | be quiet! Pure Power 12M 750&nbsp;W              |   130&nbsp;€ |
+| NVMe        | 2 × Crucial P310 SSD 500&nbsp;GB                 |   100&nbsp;€ |
+| HDDs        | 4 × WD Ultrastar DC HC320 8&nbsp;TB              |   530&nbsp;€ |
+| Total       |                                                  | 1 850&nbsp;€ |
+
+Let's compare the two ECC options, with similar class CPUs:
+
+| Criteria            | Build A        | Build B        | Build C        |
+| ------------------- | -------------- | -------------- | -------------- |
+| Total price         | 1 420&nbsp;€   | 1 520&nbsp;€   | 1 850&nbsp;€   |
+| Core / Thread       | 6 / 12         | 8 / 16         | 8 / 16         |
+| Single thread score | 3 059          | 3 385          | 4 656          |
+| CPU score           | 19 321         | 26 608         | 37 180         |
+| PCIe slot           | 4.0            | 4.0            | 5.0            |
+| RAM frequency       | 3 200&nbsp;MHz | 2 666&nbsp;MHz | 5 600&nbsp;MHz |
+| ECC                 | ❌             | ✅             | ✅             |
+
+AM4 is almost 10 years old now--and while the platform continues to be supported with new releases like the Ryzen 5 5500X3D in June 2025--AMD has mostly transitioned to AM5.
+The latter is newer, being released in September 2023. AMD officially stated supporting AM5 throughout 2027.
+Thus, the newer platform is more future-proof.
+
+The motherboard offers a PCIe&nbsp;5.0 slot and M.2 Gen5 whereas AM4 is limited to PCIe&nbsp;4.0 and M.2 Gen4.
+We also have a 2.5&nbsp;Gb/s LAN port instead of a 1&nbsp;Gb/s one.
+
+We can start with 4&nbsp;HDDs in RAIZ2, which gives us 16&nbsp;TB of usable storage.
+This can be expanded in the future to
+
+- 24&nbsp;TB with 5&nbsp;HDDs
+- 32&nbsp;TB with 6&nbsp;HDDs
+- 40&nbsp;TB with 7&nbsp;HDDs
+- 48&nbsp;TB with 8&nbsp;HDDs
+
+### Backup server
+
+Here a few ideas for the backup server:
+
+- The short term snapshots can be stored on the main server, the long term snapshots can be stored on the backup server.
+- This means the backup server doesn't have to run 24/7, it can be powered strictly when replication is happening.
+- If we decide that the shortest granularity stored on the backup server is 1 week, we can only power it on once a week.
+
+With only 4&nbsp;HDDs in RAIDZ1, we can use pretty much any case and ATX motherboard.
+I already have a computer I can repurpose for this. However the motherboard doesn't support ECC memory.
+I think I'll consider this an upgrade path in the future but stick to non-ECC memory for now.
+
+| Component   | Name                                          |      Price |
+| ----------- | --------------------------------------------- | ---------: |
+| Case        | Corsair Carbide 175r                          |  --&nbsp;€ |
+| Motherboard | MSI B450 Gaming Plus                          |  --&nbsp;€ |
+| CPU         | Ryzen 5 3600                                  |  --&nbsp;€ |
+| Cooler      | Stock cooler                                  |  --&nbsp;€ |
+| RAM         | Kingston Fury DDR4-2666 16&nbsp;GB            |  --&nbsp;€ |
+| PSU         | Seasonic SSR-650FX FOCUS Plus Gold 650&nbsp;W |  --&nbsp;€ |
+| NVMe        | Samsung Evo 970 Evo plus 512&nbsp;GB          |  --&nbsp;€ |
+| NVMe        | Crucial P310 SSD 500&nbsp;GB                  |  30&nbsp;€ |
+| HDDs        | 4 × Seagate EXOS X16 16&nbsp;TB               | 880&nbsp;€ |
+| Total       |                                               | 910&nbsp;€ |
+
+### Routers
+
+- MikroTik Hex routers
+
+### UPS
+
+- BX1600MI-FR
+
+## Shopping list
+
+For the main server:
+
+| Component   | Name                                             |          Price |
+| ----------- | ------------------------------------------------ | -------------: |
+| Rack        | Inter-Tech IPC 3U-3508                           |  197.71&nbsp;€ |
+| Motherboard | ASROCK B850 Pro RS                               |  194.76&nbsp;€ |
+| CPU         | Ryzen 7 9700X                                    |  279.00&nbsp;€ |
+| Cooler      | Noctua NH-L12Sx77                                |   84.90&nbsp;€ |
+| RAM         | Kingston Server Premier 32&nbsp;GB DDR5-5600 ECC |  203.27&nbsp;€ |
+| GPU         | Sparkle Arc A380 GENIE                           |  144.03&nbsp;€ |
+| PSU         | be quiet! Pure Power 12M 750&nbsp;W              |  127.75&nbsp;€ |
+| NVMe        | Crucial P310 SSD 500&nbsp;GB                     |   34.91&nbsp;€ |
+| HDDs        | 4 × WD Ultrastar DC HC320 8&nbsp;TB              |  535.96&nbsp;€ |
+| Card        | M.2 to SATA3.0 Adapter Card ASM1166              |   19.19&nbsp;€ |
+| Cable       | Sata To Sata Cable 6 Ports 0.5M                  |    6.69&nbsp;€ |
+| Cable       | Sata To Sata Cable 4 Ports 0.5M                  |    4.19&nbsp;€ |
+| Cable       | 5Pin 1 to 3 Port Peripheral 4Pin Molex           |    4.79&nbsp;€ |
+| Total       |                                                  | 1837.15&nbsp;€ |
+
+For the backup server:
+
+| Component | Name                            |         Price |
+| --------- | ------------------------------- | ------------: |
+| NVMe      | Crucial P310 SSD 500&nbsp;GB    |  34.91&nbsp;€ |
+| HDDs      | 4 × Seagate EXOS X16 16&nbsp;TB | 887.43&nbsp;€ |
+| Total     |                                 | 922.34&nbsp;€ |
+
+## Building the servers
+
+- I was surprised that the cooler wasn't aligned with the CPU but offset by 0.7mm.
+  I thought something was wrong but actually it's because the CPU has a chiplet design with most of the heat being produced at the bottom of the chip.
+  See this [video](https://www.youtube.com/watch?v=eRsv1dOuOHk) for more details.
+
+## Software configuration
+
+### Install Debian
+
+- Download the [netinstall image](https://www.debian.org/distrib/)
+- Burn it to a USB stick
+- Boot in installer (not graphical installer)
+- Select the disk you want to install Debian on
+- In tasksel, select:
+  - Debian desktop environment
+  - Gnome
+  - SSH server
+
+### Test ECC
+
+You can run the following command as root/sudo:
+
+```sh
+dmidecode -t memory
+```
+
+```txt {5, 12-13} showLineNumbers
+Handle 0x0010, DMI type 16, 23 bytes
+Physical Memory Array
+        Location: System Board Or Motherboard
+        Use: System Memory
+        Error Correction Type: Multi-bit ECC
+        ...
+
+Handle 0x0019, DMI type 17, 92 bytes
+Memory Device
+        Array Handle: 0x0010
+        Error Information Handle: 0x0018
+        Total Width: 72 bits
+        Data Width: 64 bits
+        ...
+```
+
+This tell us two things:
+- line 5 → the motherboard memory controller supports ECC memory with multi-bit error correction.
+- line 12 and 13 → the memory sticks have more width than data width. This means those extra bits are for parity, which is used to detect and correct errors.
+
+You can also run:
+```sh
+dmesg | grep -i edac
+```
+
+```txt {10}
+[    1.236087] EDAC MC: Ver: 3.0.0
+[    4.970759] systemd-sysv-generator[473]: SysV service '/etc/init.d/edac' lacks a native systemd unit file, automatically generating a unit file for compatibility.
+[    5.310335] EDAC MC0: Giving out device to module amd64_edac controller F1Ah_M40h: DEV 0000:00:18.3 (INTERRUPT)
+[    5.310337] EDAC amd64: F1Ah_M40h detected (node 0).
+[    5.310338] EDAC MC: UMC0 chip selects:
+[    5.310338] EDAC amd64: MC: 0:     0MB 1:     0MB
+[    5.310339] EDAC amd64: MC: 2:     0MB 3:     0MB
+[    5.310339] EDAC MC: UMC1 chip selects:
+[    5.310339] EDAC amd64: MC: 0:     0MB 1:     0MB
+[    5.310339] EDAC amd64: MC: 2: 16384MB 3: 16384MB
+```
+
+Here I can see my two ranks on my one memory stick. EDAC is the Error Detection And Correction linux kernel module.
+All hints that ECC is enabled.
+
+Finally, I can also install rasdaemon to get more detailed information about ECC errors:
+```sh
+apt-get install rasdaemon
+ras-mc-ctl --error-count
+```
+```txt
+Label                   CE      UE
+mc#0csrow#3channel#1    0       0
+mc#0csrow#2channel#1    0       0
+```
+So no correctable or uncorrectable errors yet. It could be good to setup alerts for when those counters go up.
+There is this cool [blog post](https://www.setphaserstostun.org/posts/monitoring-ecc-memory-on-linux-with-rasdaemon/) about rasdaemon which goes in more details.
+
+There are apparently ways to simulate memory errors, but from what I've read it's 
+
+### Install Debian with ZFS on root
+
+https://github.com/svedbox/Debian-13-Trixie-ZFS-Root-Installation/blob/main/install_deb_on_zfs_root
+
+## Showcase
+
+## Conclusion
+
+### Future improvements
+
+- Main server
+  - Upgrade to 64&nbsp;GB of RAM
+  - Add a 5.5" AMOLED touch screen in the full-height 5.5" bay in the front of the rack mounted case
+    - https://fr.aliexpress.com/item/1005004285318699.html
+  - Replace the 2 × 80mm fans with Noctua fans
+  - Add 2 × 60mm fans at the back of the case
+- Backup server
+  - Use ECC memory. This would require a new motherboard and memory sticks. The CPU already supports ECC.
