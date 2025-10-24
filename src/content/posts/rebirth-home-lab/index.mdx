@@ -141,6 +141,62 @@ Then from its interface, you can generate credentials to be used on the nodes.
 On the nodes you just need to run [Newt](https://github.com/fosrl/newt), a lightweight WireGuard client.
 Again you can use Docker to configure and run Newt.
 
+#### VPS
+
+Recommended specs for running Pangolin:
+- CPU: 2 vCPU
+- RAM: 2GB
+- Storage: 20GB SSD
+
+Considering my internet speed, I would like a provider with at least 1 Gb/s speed:
+
+```txt
+Speedtest by Ookla
+
+      Server: BOUYGUES TELECOM CUBIC - Poitiers (id: 53171)
+         ISP: Bouygues Telecom
+Idle Latency:     4.64 ms   (jitter: 0.37ms, low: 4.48ms, high: 4.99ms)
+    Download:  2337.22 Mbps (data used: 1.2 GB)
+                  6.99 ms   (jitter: 5.93ms, low: 5.32ms, high: 225.12ms)
+      Upload:   938.80 Mbps (data used: 469.5 MB)
+                 11.88 ms   (jitter: 0.84ms, low: 4.95ms, high: 12.90ms)
+ Packet Loss:     0.0%
+  Result URL: https://www.speedtest.net/result/c/4dc31e67-dfd6-47dc-bed6-136f30ea4399
+```
+
+Here's a few providers I'm considering:
+- IONOS
+  - 2 vCores CPU
+  - 2&nbsp;Go RAM
+  - 80&nbsp;Go NVMe
+  - 1&nbsp;Gb/s speed with unlimited traffic
+  - Restricted OS options (Ubuntu, Debian, Rocky, Alma)
+  - EU hosting (UK, Spain, Germany)
+  - No backups / snapshots
+  - 60&nbsp;€ / year (monthly bind) or 50&nbsp;€ / year (yearly bind)
+
+- OVH
+  - 6 vCore
+  - 12 Go ram
+  - 100 Go SSD NVMe
+  - 1 Gb/s speed with unlimited traffic
+  - 100&nbsp;€ / year (monthly bind) or 85&nbsp;€ / year (yearly bind)
+
+- o2switch
+  - 8 vCores
+  - 16&nbsp;GB RAM
+  - Unlimited NVMe storage (I/O 16MB/s)
+  - 1 Gb/s speed with unlimited traffic
+  - 100&nbsp;€ / year (yearly bind)
+
+- Contabo
+  - 3 vCPU Cores
+  - 8&nbsp;GB RAM
+  - 75&nbsp;GB NVMe
+  - 1 Snapshot
+  - 200&nbsp;MB/s speed with 32 TB traffic per month
+  - 50&nbsp;€ / year (monthly bind) or 40&nbsp;€ / year (yearly bind)
+
 ### Virtualization and containerization
 
 Virtualization offers strong isolation and the ability to run multiple operating systems on the same hardware.
@@ -323,6 +379,57 @@ On the backup server, I can have a longer retention policy:
 - Monthly snapshots for the last 24 months.
 - Yearly snapshots kept until the backup server runs out of space.
 
+#### The "3-2-1" rule
+
+You've probably heard of the 3-2-1 backup rule. It's a simple backup strategy that ensures you have at least 3 copies of your data, 2 on different media, and 1 offsite.
+So far, we have planned for 2 copies of the data, including 1 offsite.
+
+There are three major media types:
+
+- Magnetic storage: HDD, tape
+- Optical storage: DVD, Blu-ray
+- Solid-state storage: SSD, NVMe
+
+We are already using magnetic storage in the form of HDDs in the main and backup servers. Beside the cost, it would be silly to use SSDs for backup purposes and not for the live data.
+
+That leaves us with optical storage for the third copy. Blu-ray discs have gone down in price. They sit today at around 30&nbsp;€ per TB. The drive/burner itself cost below 100&nbsp;€.
+
+There is also the [Optical Disc Archive](https://en.wikipedia.org/wiki/Optical_Disc_Archive) technology, which promises larger capacity (up to 5.5&nbsp;TB per cartridge) and longer lifespan (up to 100 years).
+But the technology is officially discontinued since 2023. The cartridges are not that much more expensive at 40&nbsp;€ per TB.
+But the drive itself is impossible to buy new, and the used ones are above 1 000&nbsp;€.
+
+Finally we have the M-DISC technology, which are basically Blu-ray discs with a different type of material that's more durable. The claim is that they can last up to 100 years.
+The price is around 180&nbsp;€ per TB. Basically every BD drive can read M-DISC discs, but only compatible drives can burn them. The drive is around 120&nbsp;€.
+
+| Media                | Price per TB | Price of the drive | Average longevity |
+| -------------------- | ------------ | ------------------ | ----------------- |
+| Blu-ray              | 30&nbsp;€    | 100&nbsp;€         | 10-20 years       |
+| Blu-ray M-DISC       | 180&nbsp;€   | 120&nbsp;€         | 100 years         |
+| Optical Disc Archive | 40&nbsp;€    | 1 000&nbsp;€       | 100 years         |
+
+Based on the price per TB, if I have a replacement cycle every 10 years, regular BD would be more cost-effective for the first 60 years.
+In the next 60 years, it's very likely that new technology will be released and make the M-DISC completely obsolete.
+
+Beside, if I replace the set of discs every 10 years, it means I'll technically have more than one copy of the data on optical discs.
+Beside having more copies, it will give me the opportunity to collect empirical data on the disc aging.
+
+So in conclusion, I'll be using Blu-ray discs for the third copy.
+Here's the plan:
+- Verbatim BD-R DataLifePlus 50GB 6X
+- Burn them at low speed with verification and keep checksums of the data on the discs themselves and on the other storage media.
+- Integrity checks of the discs every year.
+- Replace the set of discs every 10 years.
+- Continue monitoring discs from the previous set to learn more about their actual longevity.
+- Keep an eye out for new technologies that could be replace Blu-ray discs for the next replacement cycle.
+
+Other tips:
+
+- Store optical discs vertically in standard jewel cases without additional materials in the case.
+- Only label discs with a water-based permanent marker on the clear inner hub, not the top surface.
+- 20-50% humidity and temperatures between 15-25°C are ideal.
+
+More info at [this article on Optical Discs](https://www.canada.ca/en/conservation-institute/services/conservation-preservation-publications/canadian-conservation-institute-notes/longevity-recordable-cds-dvds.html) by the Canadian Conservation Institute.
+
 ### Memory
 
 Error-correcting code memory, commonly known as ECC Memory, is a type of RAM known for its data integrity and reliability.
@@ -399,7 +506,7 @@ So, in summary what's the plan?
 - Services will be run in Docker containers.
 - ZFS will be used for the filesystem.
   - I'll be using RAIDZ2 on the main server and RAIDZ1 on the backup server.
-  - Mirror NVMe SSDs for the OS on both servers.
+  - I'll also have a mirror pool on the main server for storing databases and other data that would benefit from higher bandwidth.
   - LZ4 compression will be used on all pools.
 - ZFS snapshots and remote replication to the backup server will be used to backup the main server.
 - ECC for the main server, non-ECC for the backup server.
@@ -789,13 +896,15 @@ For the main server:
 | RAM         | Kingston Server Premier 32&nbsp;GB DDR5-5600 ECC |  203.27&nbsp;€ |
 | GPU         | Sparkle Arc A380 GENIE                           |  144.03&nbsp;€ |
 | PSU         | be quiet! Pure Power 12M 750&nbsp;W              |  127.75&nbsp;€ |
-| NVMe        | Crucial P310 SSD 500&nbsp;GB                     |   34.91&nbsp;€ |
+| NVMe        | 2 × Crucial P310 SSD 500&nbsp;GB                 |   69.82&nbsp;€ |
 | HDDs        | 4 × WD Ultrastar DC HC320 8&nbsp;TB              |  535.96&nbsp;€ |
 | Card        | M.2 to SATA3.0 Adapter Card ASM1166              |   19.19&nbsp;€ |
-| Cable       | Sata To Sata Cable 6 Ports 0.5M                  |    6.69&nbsp;€ |
-| Cable       | Sata To Sata Cable 4 Ports 0.5M                  |    4.19&nbsp;€ |
-| Cable       | 5Pin 1 to 3 Port Peripheral 4Pin Molex           |    4.79&nbsp;€ |
-| Total       |                                                  | 1837.15&nbsp;€ |
+| Cable       | 2 × Sata To Sata Cable 4 Ports 0.5M              |    4.19&nbsp;€ |
+| Cable       | Sata To Sata Cable 2 Ports 0.5M                  |    3.95&nbsp;€ |
+| Cable       | 2 × SATA to Molex                                |    9.08&nbsp;€ |
+| Fan         | 2 × Noctua NF-A6x25 PWM 80mm                     |   33.80&nbsp;€ |
+| Fan         | 2 × Noctua NF-A8 PWM 80mm                        |   37.80&nbsp;€ |
+| Total       |                                                  | 1945.21&nbsp;€ |
 
 For the backup server:
 
@@ -813,16 +922,328 @@ For the backup server:
 
 ## Software configuration
 
+### Bastion server
+
+```sh
+sudo apt update
+sudo apt upgrade
+```
+
+```sh
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+```sh
+curl -fsSL https://digpangolin.com/get-installer.sh | bash
+sudo ./installer
+```
+
+```sh
+Do you want to install Pangolin as a cloud-managed (beta) node? (yes/no): no
+Enter your base domain (no subdomain e.g. example.com): barillot.net
+Enter the domain for the Pangolin dashboard (default: pangolin.barillot.net):
+Enter email for Let's Encrypt certificates: letsencrypt@barillot.net
+Do you want to use Gerbil to allow tunneled connections (yes/no) (default: yes):
+
+=== Email Configuration ===
+Enable email functionality (SMTP) (yes/no) (default: no):
+
+=== Advanced Configuration ===
+Is your server IPv6 capable? (yes/no) (default: yes):
+
+=== Generating Configuration Files ===
+
+Configuration files created successfully!
+
+=== Starting installation ===
+Would you like to install and start the containers? (yes/no) (default: yes):
+Would you like to run Pangolin as Docker or Podman containers? (default: docker):
+```
+
 ### Install Debian
 
 - Download the [netinstall image](https://www.debian.org/distrib/)
 - Burn it to a USB stick
 - Boot in installer (not graphical installer)
 - Select the disk you want to install Debian on
-- In tasksel, select:
-  - Debian desktop environment
-  - Gnome
+- In tasksel, select only:
   - SSH server
+
+### Install ZFS
+
+Add backports to your sources.list:
+
+```sh
+codename=$(lsb_release -cs);echo "deb http://deb.debian.org/debian $codename-backports main contrib non-free"|sudo tee -a /etc/apt/sources.list
+```
+
+Install the packages:
+
+```sh
+sudo apt update
+sudo apt install linux-headers-amd64
+sudo apt install -t stable-backports zfsutils-linux
+```
+
+### Configure ZFS
+
+Get the list of disks' UUIDs:
+
+```sh
+ls -l /dev/disk/by-id/
+```
+
+```txt
+lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbe63bb3 -> ../../sdd
+lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbe68f2e -> ../../sdc
+lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbe693ad -> ../../sdb
+lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbf58929 -> ../../sda
+```
+
+Determine the right `ashift` value:
+
+```sh
+lsblk -o NAME,PHY-SeC,SIZE,TYPE /dev/sd[a-d]
+```
+
+```txt
+NAME PHY-SEC  SIZE TYPE
+sda     4096  7.3T disk
+sdb     4096  7.3T disk
+sdc     4096  7.3T disk
+sdd     4096  7.3T disk
+```
+
+We see that the `PHY-SEC` is 4096. This gives us `ashift=12` (2^12 = 4096).
+
+Create the RAIDZ2 pool (this will **erase everything on these drives**. Make sure there's nothing you care about on them):
+
+```sh
+zpool create \
+  -o ashift=12 \
+  -O acltype=posixacl \
+  -O xattr=sa \
+  -O compression=zstd \
+  -O relatime=on \
+  -O normalization=formD \
+  -m /data \
+  data raidz2 \
+  /dev/disk/by-id/wwn-0x5000cca0bbe63bb3 \
+  /dev/disk/by-id/wwn-0x5000cca0bbe68f2e \
+  /dev/disk/by-id/wwn-0x5000cca0bbe693ad \
+  /dev/disk/by-id/wwn-0x5000cca0bbf58929
+```
+
+You can add `-f` to force the creation of the pool (it may be necessary if the disks already have a filesystem on them).
+
+#### Add the NVMe Pool
+
+```sh
+lsblk -f
+```
+
+```txt
+NAME        FSTYPE     FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+sda
+├─sda1      zfs_member 5000  data  3786879799329643345
+└─sda9
+sdb
+├─sdb1      zfs_member 5000  data  3786879799329643345
+└─sdb9
+sdc
+├─sdc1      zfs_member 5000  data  3786879799329643345
+└─sdc9
+sdd
+├─sdd1      zfs_member 5000  data  3786879799329643345
+└─sdd9
+nvme1n1
+nvme2n1
+├─nvme2n1p1 vfat       FAT32       1083-1133                             965.3M     1% /boot/efi
+├─nvme2n1p2 ext4       1.0         0201fa06-8444-490c-ba9d-c926c5010a94  393.7G     4% /
+└─nvme2n1p3 swap       1           5c7b6301-be42-4e3f-9365-6672853ac470                [SWAP]
+nvme0n1
+└─nvme0n1p1 ext4       1.0         c4a339bb-78bc-4156-9232-70e9324a1ff1
+```
+
+Here I can see that my 4 disks are listed as zfs_members.
+
+The OS NVMe is nvme2n1 because that's the one with the mounted partitions (boot and root).
+
+So I'll create a new pool with nvme0n1 and nvme1n1
+
+I can get their ids with this command:
+
+```sh
+ls -l /dev/disk/by-id/ | grep -w nvme[0-1]n1
+```
+
+```txt
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-CT500P310SSD8_25164FAF1C4F -> ../../nvme0n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-CT500P310SSD8_25164FAF1C4F_1 -> ../../nvme0n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-eui.0025385691b4ebc8 -> ../../nvme1n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-eui.00a075014faf1c4f -> ../../nvme0n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B -> ../../nvme1n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B_1 -> ../../nvme1n1
+
+```
+
+For NVMe disks, it's common to find multiple symlinks. Any of them should work.
+I'll choose the human readable ones (CT500 and Samsung) without the "\_1" suffix.
+
+```sh
+zpool create \
+  -o ashift=12 \
+  -O acltype=posixacl \
+  -O xattr=sa \
+  -O compression=zstd \
+  -O atime=off \
+  -O relatime=off \
+  -O normalization=formD \
+  -m /fast \
+  fast mirror \
+  /dev/disk/by-id/nvme-CT500P310SSD8_25164FAF1C4F \
+  /dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B
+```
+
+#### Rename a pool
+
+Warning: export will unmount the pool. Here I'll raname `data` to `hdd`.
+
+```sh
+zpool export data
+zpool import data hdd
+```
+
+#### Change mountpoint
+
+```sh
+zfs set mountpoint=/services ssd
+```
+
+https://jrs-s.net/2018/08/17/zfs-tuning-cheat-sheet/
+
+### Tips
+
+- Disable access time on service datasets
+- Use `smartmontools` to monitor disks SMART status
+- Use `btop` to monitor system resources
+
+### Install Docker
+
+```sh
+apt-get update
+apt-get install ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+You can check the status of the Docker service with:
+
+```sh
+systemctl status docker
+```
+
+### Configure Loki
+
+```sh
+docker plugin install grafana/loki-docker-driver:3.3.2-amd64 --alias loki --grant-all-permissions
+```
+
+Add the following to each docker compose service:
+
+```yml
+logging:
+  driver: loki
+  options:
+    loki-url: "http://localhost:3100/loki/api/v1/push"
+    loki-retries: 2
+    loki-max-backoff: 800ms
+    loki-timeout: 1s
+    keep-file: "true"
+    mode: "non-blocking"
+```
+
+Avoid logging Loki or Grafana's containers as it can create a feedback loop.
+
+### Setup periodic ZFS snapshots and retention policy
+
+Install [sanoid](https://github.com/jimsalterjrs/sanoid)
+
+```sh
+sudo apt install sanoid
+```
+
+If it doesn't already exists, create the sanoid folder in /etc
+
+```sh
+mkdir /etc/sanoid
+```
+
+Edit the config file:
+
+```sh
+nano /etc/sanoid/sanoid.conf
+```
+
+```config
+[hdd]
+    use_template = production
+
+[ssd]
+    use_template = production
+
+[template_production]
+    frequently = 0          # every 15 minutes (disabled)
+    hourly = 24             # keep 24 hourly snapshots
+    daily = 7               # keep 7 daily snapshots
+    weekly = 4              # keep 4 weekly snapshots
+    monthly = 6             # keep 6 monthly snapshots
+    autosnap = yes
+    autoprune = yes
+```
+
+Then enable Sanoid with this command:
+
+```sh
+systemctl enable --now sanoid.timer
+```
+
+Check that it's running properly with
+
+```sh
+systemctl status sanoid.timer
+```
+
+List the snapshots with
+
+```sh
+zfs list -t snapshot
+```
+
+Some info:
+
+- Sanoid runs (by default) every 15 minutes via sanoid.timer.
+- If autosnap is enabled, it will take snapshot periodically. The frequency is determined from the configuration (here, it will take a new snapshot every hour).
+- Sanoid completely ignore manually taken snapshot when it comes to its snapshot sheduling and retention policy. It only cares about snapshot that follow its naming scheme.
+- You can force Sanoid to take a snapshot right now: `sanoid -c /etc/sanoid/sanoid.conf --run hdd`. This one will be subject to Sanoid retention policy.
+- You can test run the config using `sanoid --debug`
 
 ### Test ECC
 
@@ -850,10 +1271,12 @@ Memory Device
 ```
 
 This tell us two things:
+
 - line 5 → the motherboard memory controller supports ECC memory with multi-bit error correction.
 - line 12 and 13 → the memory sticks have more width than data width. This means those extra bits are for parity, which is used to detect and correct errors.
 
 You can also run:
+
 ```sh
 dmesg | grep -i edac
 ```
@@ -875,27 +1298,33 @@ Here I can see my two ranks on my one memory stick. EDAC is the Error Detection 
 All hints that ECC is enabled.
 
 Finally, I can also install rasdaemon to get more detailed information about ECC errors:
+
 ```sh
 apt-get install rasdaemon
 ras-mc-ctl --error-count
 ```
+
 ```txt
 Label                   CE      UE
 mc#0csrow#3channel#1    0       0
 mc#0csrow#2channel#1    0       0
 ```
+
 So no correctable or uncorrectable errors yet. It could be good to setup alerts for when those counters go up.
 There is this cool [blog post](https://www.setphaserstostun.org/posts/monitoring-ecc-memory-on-linux-with-rasdaemon/) about rasdaemon which goes in more details.
 
-There are apparently ways to simulate memory errors, but from what I've read it's 
-
-### Install Debian with ZFS on root
-
-https://github.com/svedbox/Debian-13-Trixie-ZFS-Root-Installation/blob/main/install_deb_on_zfs_root
+There are apparently ways to simulate memory errors, I'll have to look into it.
 
 ## Showcase
 
 ## Conclusion
+
+### Regrets
+
+- Overkill much
+- ECC seems overkill
+- Useless second PCI-e slot because the PSU
+- A slightly longer case would make building it easier and could provide a better airflow.
 
 ### Future improvements
 
@@ -903,7 +1332,5 @@ https://github.com/svedbox/Debian-13-Trixie-ZFS-Root-Installation/blob/main/inst
   - Upgrade to 64&nbsp;GB of RAM
   - Add a 5.5" AMOLED touch screen in the full-height 5.5" bay in the front of the rack mounted case
     - https://fr.aliexpress.com/item/1005004285318699.html
-  - Replace the 2 × 80mm fans with Noctua fans
-  - Add 2 × 60mm fans at the back of the case
 - Backup server
   - Use ECC memory. This would require a new motherboard and memory sticks. The CPU already supports ECC.
