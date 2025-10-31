@@ -22,7 +22,7 @@ export const GET: APIRoute = async (context) => {
         title: post.data.title,
         pubDate: post.data.date,
         description: post.data.summary,
-        link: getUrl(`/posts/${post.slug}/`),
+        link: getUrl(`/posts/${post.slug}`),
         categories: post.data.tags,
         content: await container.renderToString((await post.render()).Content),
       }))
