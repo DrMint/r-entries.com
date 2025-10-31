@@ -430,20 +430,21 @@ const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
     overflow-x: auto;
     outline: 1px solid var(--foreground-20);
     border-radius: 8px;
-  }
 
-  table[data-rehype-non-mdx] {
-    min-width: min-content;
-    border-collapse: collapse;
+    & > table[data-rehype-non-mdx] {
+      width: 100%;
+      min-width: min-content;
+      border-collapse: collapse;
 
-    th,
-    td {
-      padding: 0.5em 1em;
-      border: 1px solid var(--foreground-10);
-    }
+      th,
+      td {
+        padding: 0.5em 1em;
+        border: 1px solid var(--foreground-10);
+      }
 
-    th {
-      background-color: var(--foreground-5);
+      th {
+        background-color: var(--foreground-5);
+      }
     }
   }
 
