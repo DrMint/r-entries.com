@@ -144,6 +144,7 @@ Again you can use Docker to configure and run Newt.
 #### VPS
 
 Recommended specs for running Pangolin:
+
 - CPU: 2 vCPU
 - RAM: 2GB
 - Storage: 20GB SSD
@@ -165,6 +166,7 @@ Idle Latency:     4.64 ms   (jitter: 0.37ms, low: 4.48ms, high: 4.99ms)
 ```
 
 Here's a few providers I'm considering:
+
 - IONOS
   - 2 vCores CPU
   - 2&nbsp;Go RAM
@@ -415,6 +417,7 @@ Beside having more copies, it will give me the opportunity to collect empirical 
 
 So in conclusion, I'll be using Blu-ray discs for the third copy.
 Here's the plan:
+
 - Verbatim BD-R DataLifePlus 50GB 6X
 - Burn them at low speed with verification and keep checksums of the data on the discs themselves and on the other storage media.
 - Integrity checks of the discs every year.
@@ -887,24 +890,24 @@ I think I'll consider this an upgrade path in the future but stick to non-ECC me
 
 For the main server:
 
-| Component   | Name                                             |          Price |
-| ----------- | ------------------------------------------------ | -------------: |
-| Rack        | Inter-Tech IPC 3U-3508                           |  197.71&nbsp;€ |
-| Motherboard | ASROCK B850 Pro RS                               |  194.76&nbsp;€ |
-| CPU         | Ryzen 7 9700X                                    |  279.00&nbsp;€ |
-| Cooler      | Noctua NH-L12Sx77                                |   84.90&nbsp;€ |
-| RAM         | Kingston Server Premier 32&nbsp;GB DDR5-5600 ECC |  203.27&nbsp;€ |
-| GPU         | Sparkle Arc A380 GENIE                           |  144.03&nbsp;€ |
-| PSU         | be quiet! Pure Power 12M 750&nbsp;W              |  127.75&nbsp;€ |
-| NVMe        | 2 × Crucial P310 SSD 500&nbsp;GB                 |   69.82&nbsp;€ |
-| HDDs        | 4 × WD Ultrastar DC HC320 8&nbsp;TB              |  535.96&nbsp;€ |
-| Card        | M.2 to SATA3.0 Adapter Card ASM1166              |   19.19&nbsp;€ |
-| Cable       | 2 × Sata To Sata Cable 4 Ports 0.5M              |    4.19&nbsp;€ |
-| Cable       | Sata To Sata Cable 2 Ports 0.5M                  |    3.95&nbsp;€ |
-| Cable       | 2 × SATA to Molex                                |    9.08&nbsp;€ |
-| Fan         | 2 × Noctua NF-A6x25 PWM 80mm                     |   33.80&nbsp;€ |
-| Fan         | 2 × Noctua NF-A8 PWM 80mm                        |   37.80&nbsp;€ |
-| Total       |                                                  | 1945.21&nbsp;€ |
+| Component   | Name                                             |           Price |
+| ----------- | ------------------------------------------------ | --------------: |
+| Rack        | Inter-Tech IPC 3U-3508                           |   197.71&nbsp;€ |
+| Motherboard | ASROCK B850 Pro RS                               |   194.76&nbsp;€ |
+| CPU         | Ryzen 7 9700X                                    |   279.00&nbsp;€ |
+| Cooler      | Noctua NH-L12Sx77                                |    84.90&nbsp;€ |
+| RAM         | Kingston Server Premier 32&nbsp;GB DDR5-5600 ECC |   203.27&nbsp;€ |
+| GPU         | Sparkle Arc A380 GENIE                           |   144.03&nbsp;€ |
+| PSU         | be quiet! Pure Power 12M 750&nbsp;W              |   127.75&nbsp;€ |
+| NVMe        | 2 × Crucial P310 SSD 500&nbsp;GB                 |    69.82&nbsp;€ |
+| HDDs        | 4 × WD Ultrastar DC HC320 8&nbsp;TB              |   535.96&nbsp;€ |
+| Card        | M.2 to SATA3.0 Adapter Card ASM1166              |    19.19&nbsp;€ |
+| Cable       | 2 × Sata To Sata Cable 4 Ports 0.5M              |     4.19&nbsp;€ |
+| Cable       | Sata To Sata Cable 2 Ports 0.5M                  |     3.95&nbsp;€ |
+| Cable       | 2 × SATA to Molex                                |     9.08&nbsp;€ |
+| Fan         | 2 × Noctua NF-A6x25 PWM 80mm                     |    33.80&nbsp;€ |
+| Fan         | 2 × Noctua NF-A8 PWM 80mm                        |    37.80&nbsp;€ |
+| Total       |                                                  | 1 945.21&nbsp;€ |
 
 For the backup server:
 
@@ -1136,6 +1139,12 @@ https://jrs-s.net/2018/08/17/zfs-tuning-cheat-sheet/
 - Disable access time on service datasets
 - Use `smartmontools` to monitor disks SMART status
 - Use `btop` to monitor system resources
+
+### Install node and npm
+
+```sh
+apt install nodejs npm
+```
 
 ### Install Docker
 

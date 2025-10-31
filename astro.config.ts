@@ -6,6 +6,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypeNumberHeadings } from "./plugins/rehypeNumberHeadings";
 import { rehypeExternalNofollow } from "./plugins/rehypeExternalNofollow";
 import { rehypeMarkNonMDXNodes } from "./plugins/rehypeMarkNonMDXNodes";
+import { rehypeWrapTables } from "./plugins/rehypeWrapTables";
 import type { Element } from "hast";
 import { loadEnv } from "./tools/loadEnv";
 import rehypeCallouts from "rehype-callouts";
@@ -57,6 +58,7 @@ export default defineConfig({
           rel: ["nofollow", "noreferrer", "noopener"],
         },
       ],
+      rehypeWrapTables,
       rehypeMarkNonMDXNodes,
     ],
   },

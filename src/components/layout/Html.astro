@@ -412,10 +412,15 @@ const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
     background-repeat: space;
   }
 
-  table[data-rehype-non-mdx] {
-    width: 100%;
-    overflow: hidden;
+/* Table wrapper for horizontal scrolling */
+  .table-wrapper[data-rehype-non-mdx] {
+        overflow-x: auto;
     outline: 1px solid var(--foreground-20);
+border-radius: 8px;
+  }
+
+  table[data-rehype-non-mdx] {
+    min-width: min-content;
     border-collapse: collapse;
 
     th,
