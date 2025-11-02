@@ -929,82 +929,206 @@ For the backup server:
 - I was surprised that the cooler wasn't aligned with the CPU but offset by 0.7mm.
   I thought something was wrong but actually it's because the CPU has a chiplet design with most of the heat being produced at the bottom of the chip.
   See this [video](https://www.youtube.com/watch?v=eRsv1dOuOHk) for more details.
+- BIOS Flashback: https://www.youtube.com/watch?v=fqKs9fekNNY
 
 ## Software configuration
 
-### Bastion server
+### Install Debian
+
+1. Download the [netinstall image](https://www.debian.org/distrib/)
+2. Burn it to a USB stick
+3. Connect the USB stick to the server, make sure the Ethernet cable is also connected.
+4. Boot into the installer. Select "Install" instead of "Graphical install".
+5. Language: English
+6. Locale: United States (en_US)
+7. Keymap: French
+8. Hostname: melchior
+9. Keep domain name empty
+10. Provide a password for the root user
+11. Confirm the password
+12. Create a new user: tom
+13. Provide a password for the tom user
+14. Use "Guided: use entire disk" to partition the disk
+15. Select the right disk to use, based on the size and name of the disk
+16. Select "All files in one partition (recommended for beginners)"
+17. Write changes to disk: yes
+18. Keep default settings for the installation of the packages
+19. Software selection: only keep "SSH server" selected
+20. Install GRUB boot loader to your primary drive: yes
+21. Select the same disk as before for the boot loader installation
+22. When it says "Installation complete", remove the USB stick and press continue to reboot the server
+
+### Set static IP
 
 ```sh
-sudo apt update
-sudo apt upgrade
+nano /etc/network/interfaces
 ```
 
+You'll see something like this:
+
+```txt
+# The primary network interface
+allow-hotplug enp6s0
+iface enp6s0 inet dhcp
+```
+
+Replace the `dhcp` with `static` and add the following lines:
+
+```txt {3}#del {4-7}#ins
+# The primary network interface
+allow-hotplug enp6s0
+iface enp6s0 inet dhcp
+iface enp6s0 inet static
+        address 192.168.70.67
+        netmask 255.255.255.0
+        gateway 192.168.70.1
+```
+
+Reboot the server to apply the changes.
+
+### Synchronize time
+
 ```sh
-sudo apt-get install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
+apt-get install systemd-timesyncd
+systemctl enable systemd-timesyncd --now
+```
+
+You can check it's synchronized with:
+
+```sh
+timedatectl
+```
+
+```txt
+               Local time: Sun 2025-11-02 16:15:39 CET
+           Universal time: Sun 2025-11-02 15:15:39 UTC
+                 RTC time: Sun 2025-11-02 15:15:38
+                Time zone: Europe/Paris (CET, +0100)
+System clock synchronized: yes
+              NTP service: active
+          RTC in local TZ: no
+
+```
+
+### Install Docker
+
+```sh
+apt-get update
+apt-get install ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
+
+You can check the status of the Docker service with:
 
 ```sh
-curl -fsSL https://digpangolin.com/get-installer.sh | bash
-sudo ./installer
+systemctl status docker
 ```
+
+#### Configure Loki with Docker plugin
 
 ```sh
-Do you want to install Pangolin as a cloud-managed (beta) node? (yes/no): no
-Enter your base domain (no subdomain e.g. example.com): barillot.net
-Enter the domain for the Pangolin dashboard (default: pangolin.barillot.net):
-Enter email for Let's Encrypt certificates: letsencrypt@barillot.net
-Do you want to use Gerbil to allow tunneled connections (yes/no) (default: yes):
-
-=== Email Configuration ===
-Enable email functionality (SMTP) (yes/no) (default: no):
-
-=== Advanced Configuration ===
-Is your server IPv6 capable? (yes/no) (default: yes):
-
-=== Generating Configuration Files ===
-
-Configuration files created successfully!
-
-=== Starting installation ===
-Would you like to install and start the containers? (yes/no) (default: yes):
-Would you like to run Pangolin as Docker or Podman containers? (default: docker):
+docker plugin install grafana/loki-docker-driver:3.3.2-amd64 --alias loki --grant-all-permissions
 ```
 
-### Install Debian
+Add the following to each docker compose service:
 
-- Download the [netinstall image](https://www.debian.org/distrib/)
-- Burn it to a USB stick
-- Boot in installer (not graphical installer)
-- Select the disk you want to install Debian on
-- In tasksel, select only:
-  - SSH server
+```yml
+logging:
+  driver: loki
+  options:
+    loki-url: "http://localhost:3100/loki/api/v1/push"
+    loki-retries: 2
+    loki-max-backoff: 800ms
+    loki-timeout: 1s
+    keep-file: "true"
+    mode: "non-blocking"
+```
 
-### Install ZFS
+Avoid logging Loki or Grafana's containers as it can create a feedback loop.
+
+### Install JavaScript runtimes and tools
+
+```sh
+apt install nodejs npm
+```
+
+To install bun:
+
+```sh
+apt install unzip
+curl -fsSL https://bun.com/install | bash
+```
+
+You'll need to reload your shell to refresh PATH and use bun.
+
+#### PM2 process manager
+
+Install:
+
+```sh
+npm install -g pm2
+```
+
+Logrotate is a module for PM2 that automatically manages and rotates log files to prevent them from consuming too much disk space. 
+
+```sh
+pm2 install pm2-logrotate
+```
+
+To preserve the running services after a reboot:
+
+```sh
+pm2 startup
+pm2 save
+```
+
+Run pm2 save after adding or removing services to preserve the configuration after a reboot.
+
+### Other useful tools
+
+To monitor system resources:
+
+```sh
+apt install lm-sensors smartmontools btop
+```
+
+To easily explore the filesystem and see what's taking up space:
+
+```sh
+apt install ncdu
+```
+
+### Main server (Melchior)
+
+#### Install ZFS
 
 Add backports to your sources.list:
 
 ```sh
-codename=$(lsb_release -cs);echo "deb http://deb.debian.org/debian $codename-backports main contrib non-free"|sudo tee -a /etc/apt/sources.list
+apt install lsb-release
+codename=$(lsb_release -cs);echo "deb http://deb.debian.org/debian $codename-backports main contrib non-free"|tee -a /etc/apt/sources.list
 ```
 
 Install the packages:
 
 ```sh
-sudo apt update
-sudo apt install linux-headers-amd64
-sudo apt install -t stable-backports zfsutils-linux
+apt update
+apt install linux-headers-amd64
+apt install -t stable-backports zfsutils-linux
 ```
 
-### Configure ZFS
+Press Enter in the license agreement prompt.
+
+#### Create the HDD pool
 
 Get the list of disks' UUIDs:
 
@@ -1043,7 +1167,8 @@ zpool create \
   -O acltype=posixacl \
   -O xattr=sa \
   -O compression=zstd \
-  -O relatime=on \
+  -O atime=off \
+  -O relatime=off \
   -O normalization=formD \
   -m /data \
   data raidz2 \
@@ -1055,7 +1180,7 @@ zpool create \
 
 You can add `-f` to force the creation of the pool (it may be necessary if the disks already have a filesystem on them).
 
-#### Add the NVMe Pool
+#### Create the SSD pool
 
 ```sh
 lsblk -f
@@ -1084,11 +1209,9 @@ nvme0n1
 └─nvme0n1p1 ext4       1.0         c4a339bb-78bc-4156-9232-70e9324a1ff1
 ```
 
-Here I can see that my 4 disks are listed as zfs_members.
-
-The OS NVMe is nvme2n1 because that's the one with the mounted partitions (boot and root).
-
-So I'll create a new pool with nvme0n1 and nvme1n1
+Here I can see that my 4 disks are listed as `zfs_members`.
+The OS NVMe is `nvme2n1` because that's the one with the mounted partitions (boot and root).
+So I'll create a new pool with `nvme0n1` and `nvme1n1`.
 
 I can get their ids with this command:
 
@@ -1124,89 +1247,72 @@ zpool create \
   /dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B
 ```
 
-#### Rename a pool
+#### Import the pools
 
-Warning: export will unmount the pool. Here I'll raname `data` to `hdd`.
+If the pools were already created on another server, you can import them with:
+```sh
+zpool import
+```
+
+```txt
+  pool: ssd
+    id: 4664139631714187601
+ state: ONLINE
+status: The pool was last accessed by another system.
+action: The pool can be imported using its name or numeric identifier and
+        the '-f' flag.
+   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
+config:
+
+        ssd                                                      ONLINE
+          mirror-0                                               ONLINE
+            nvme-CT500P310SSD8_25164FAF1C4F                      ONLINE
+            nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B  ONLINE
+
+  pool: hdd
+    id: 3786879799329643345
+ state: ONLINE
+status: The pool was last accessed by another system.
+action: The pool can be imported using its name or numeric identifier and
+        the '-f' flag.
+   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
+config:
+
+        hdd                         ONLINE
+          raidz2-0                  ONLINE
+            wwn-0x5000cca0bbe63bb3  ONLINE
+            wwn-0x5000cca0bbe68f2e  ONLINE
+            wwn-0x5000cca0bbe693ad  ONLINE
+            wwn-0x5000cca0bbf58929  ONLINE
+```
+
+Create the mounting points:
 
 ```sh
-zpool export data
-zpool import data hdd
+mkdir /data /services
 ```
 
-#### Change mountpoint
+Import each pool:
+```sh
+zpool import -f hdd
+zpool import -f ssd
+```
+
+Check that the pools are imported:
 
 ```sh
-zfs set mountpoint=/services ssd
+zpool list
 ```
 
-https://jrs-s.net/2018/08/17/zfs-tuning-cheat-sheet/
+#### Setup ZFS snapshots and retention policy
 
-### Tips
-
-- Disable access time on service datasets
-- Use `smartmontools` to monitor disks SMART status
-- Use `btop` to monitor system resources
-
-### Install node and npm
+Install [sanoid](https://github.com/jimsalterjrs/sanoid):
 
 ```sh
-apt install nodejs npm
+apt install sanoid
 ```
 
-### Install Docker
-
-```sh
-apt-get update
-apt-get install ca-certificates curl
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  tee /etc/apt/sources.list.d/docker.list > /dev/null
-apt-get update
-apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-
-You can check the status of the Docker service with:
-
-```sh
-systemctl status docker
-```
-
-### Configure Loki
-
-```sh
-docker plugin install grafana/loki-docker-driver:3.3.2-amd64 --alias loki --grant-all-permissions
-```
-
-Add the following to each docker compose service:
-
-```yml
-logging:
-  driver: loki
-  options:
-    loki-url: "http://localhost:3100/loki/api/v1/push"
-    loki-retries: 2
-    loki-max-backoff: 800ms
-    loki-timeout: 1s
-    keep-file: "true"
-    mode: "non-blocking"
-```
-
-Avoid logging Loki or Grafana's containers as it can create a feedback loop.
-
-### Setup periodic ZFS snapshots and retention policy
-
-Install [sanoid](https://github.com/jimsalterjrs/sanoid)
-
-```sh
-sudo apt install sanoid
-```
-
-If it doesn't already exists, create the sanoid folder in /etc
+If it doesn't already exists, create the sanoid folder in `/etc`:
 
 ```sh
 mkdir /etc/sanoid
@@ -1261,77 +1367,79 @@ Some info:
 - You can force Sanoid to take a snapshot right now: `sanoid -c /etc/sanoid/sanoid.conf --run hdd`. This one will be subject to Sanoid retention policy.
 - You can test run the config using `sanoid --debug`
 
-### Test ECC
+#### Other useful ZFS commands
 
-You can run the following command as root/sudo:
+##### Rename a pool
 
-```sh
-dmidecode -t memory
-```
-
-```txt {5, 12-13} showLineNumbers
-Handle 0x0010, DMI type 16, 23 bytes
-Physical Memory Array
-        Location: System Board Or Motherboard
-        Use: System Memory
-        Error Correction Type: Multi-bit ECC
-        ...
-
-Handle 0x0019, DMI type 17, 92 bytes
-Memory Device
-        Array Handle: 0x0010
-        Error Information Handle: 0x0018
-        Total Width: 72 bits
-        Data Width: 64 bits
-        ...
-```
-
-This tell us two things:
-
-- line 5 → the motherboard memory controller supports ECC memory with multi-bit error correction.
-- line 12 and 13 → the memory sticks have more width than data width. This means those extra bits are for parity, which is used to detect and correct errors.
-
-You can also run:
+Warning: export will unmount the pool. Here I'll raname `data` to `hdd`.
 
 ```sh
-dmesg | grep -i edac
+zpool export data
+zpool import data hdd
 ```
 
-```txt {10}
-[    1.236087] EDAC MC: Ver: 3.0.0
-[    4.970759] systemd-sysv-generator[473]: SysV service '/etc/init.d/edac' lacks a native systemd unit file, automatically generating a unit file for compatibility.
-[    5.310335] EDAC MC0: Giving out device to module amd64_edac controller F1Ah_M40h: DEV 0000:00:18.3 (INTERRUPT)
-[    5.310337] EDAC amd64: F1Ah_M40h detected (node 0).
-[    5.310338] EDAC MC: UMC0 chip selects:
-[    5.310338] EDAC amd64: MC: 0:     0MB 1:     0MB
-[    5.310339] EDAC amd64: MC: 2:     0MB 3:     0MB
-[    5.310339] EDAC MC: UMC1 chip selects:
-[    5.310339] EDAC amd64: MC: 0:     0MB 1:     0MB
-[    5.310339] EDAC amd64: MC: 2: 16384MB 3: 16384MB
-```
-
-Here I can see my two ranks on my one memory stick. EDAC is the Error Detection And Correction linux kernel module.
-All hints that ECC is enabled.
-
-Finally, I can also install rasdaemon to get more detailed information about ECC errors:
+##### Change mountpoint
 
 ```sh
-apt-get install rasdaemon
-ras-mc-ctl --error-count
+zfs set mountpoint=/services ssd
 ```
 
-```txt
-Label                   CE      UE
-mc#0csrow#3channel#1    0       0
-mc#0csrow#2channel#1    0       0
+##### Import pool from another server
+
+> [!todo]
+> Show how to mount the ZFS pools when migrated to a new server or if we have reinstalled the OS.
+
+### Bastion server
+
+```sh
+apt update
+apt upgrade
 ```
 
-So no correctable or uncorrectable errors yet. It could be good to setup alerts for when those counters go up.
-There is this cool [blog post](https://www.setphaserstostun.org/posts/monitoring-ecc-memory-on-linux-with-rasdaemon/) about rasdaemon which goes in more details.
+```sh
+apt-get install ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
 
-There are apparently ways to simulate memory errors, I'll have to look into it.
+```sh
+curl -fsSL https://digpangolin.com/get-installer.sh | bash
+./installer
+```
+
+```sh
+Do you want to install Pangolin as a cloud-managed (beta) node? (yes/no): no
+Enter your base domain (no subdomain e.g. example.com): barillot.net
+Enter the domain for the Pangolin dashboard (default: pangolin.barillot.net):
+Enter email for Let's Encrypt certificates: letsencrypt@barillot.net
+Do you want to use Gerbil to allow tunneled connections (yes/no) (default: yes):
+
+=== Email Configuration ===
+Enable email functionality (SMTP) (yes/no) (default: no):
+
+=== Advanced Configuration ===
+Is your server IPv6 capable? (yes/no) (default: yes):
+
+=== Generating Configuration Files ===
+
+Configuration files created successfully!
+
+=== Starting installation ===
+Would you like to install and start the containers? (yes/no) (default: yes):
+Would you like to run Pangolin as Docker or Podman containers? (default: docker):
+```
 
 ## Showcase
+
+> [!todo]
+> Add photos and tests that confirm if the homelab is reaching my initial goals.
 
 ## Conclusion
 
@@ -1350,4 +1458,3 @@ There are apparently ways to simulate memory errors, I'll have to look into it.
     - https://fr.aliexpress.com/item/1005004285318699.html
 - Backup server
   - Use ECC memory. This would require a new motherboard and memory sticks. The CPU already supports ECC.
-- Use GitHub webhooks to trigger actions on the main server, such as building and deploying the hosted websites.
