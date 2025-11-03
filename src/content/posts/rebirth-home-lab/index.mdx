@@ -938,7 +938,7 @@ For the backup server:
 1. Download the [netinstall image](https://www.debian.org/distrib/)
 2. Burn it to a USB stick
 3. Connect the USB stick to the server, make sure the Ethernet cable is also connected.
-4. Boot into the installer. Select "Install" instead of "Graphical install".
+4. Boot into the installer. Select either "Install" or "Graphical install".
 5. Language: English
 6. Locale: United States (en_US)
 7. Keymap: French
@@ -957,6 +957,26 @@ For the backup server:
 20. Install GRUB boot loader to your primary drive: yes
 21. Select the same disk as before for the boot loader installation
 22. When it says "Installation complete", remove the USB stick and press continue to reboot the server
+
+### Change the password
+
+```sh
+passwd
+```
+
+### Install and enable Fail2Ban
+
+```sh
+apt install fail2ban
+systemctl enable fail2ban
+systemctl start fail2ban
+```
+
+Check status:
+
+```sh
+systemctl status fail2ban
+```
 
 ### Set static IP
 
@@ -1060,15 +1080,6 @@ Avoid logging Loki or Grafana's containers as it can create a feedback loop.
 ```sh
 apt install nodejs npm
 ```
-
-To install bun:
-
-```sh
-apt install unzip
-curl -fsSL https://bun.com/install | bash
-```
-
-You'll need to reload your shell to refresh PATH and use bun.
 
 #### PM2 process manager
 
@@ -1435,6 +1446,10 @@ Configuration files created successfully!
 Would you like to install and start the containers? (yes/no) (default: yes):
 Would you like to run Pangolin as Docker or Podman containers? (default: docker):
 ```
+
+### Other resources
+
+- https://wiki.crowncloud.net/index.php#Debian+13
 
 ## Showcase
 
