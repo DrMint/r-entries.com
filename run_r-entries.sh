@@ -1,3 +1,6 @@
+# Prevent downloading dev dependencies
+export NODE_ENV="production"
+
 export SITE_URL="https://r-entries.com"
 export BASE_PATH="/"
 export TRAILING_SLASH="never"
