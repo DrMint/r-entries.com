@@ -1,6 +1,6 @@
 ---
-title: (Re)birth of a home lab
-summary: A journey of a home lab from scratch to a fully functional setup.
+title: (Re)birth of a homelab
+summary: A journey of a homelab from scratch to a fully functional setup.
 cover:
   src: "cover.jpg"
   alt: "The main server with the top part of the case removed, showing the motherboard and components."
@@ -11,120 +11,234 @@ tags:
 date: 2025-08-25
 ---
 
+import MdxImage from "src/components/mdx/MdxImage.astro";
+import nonCgnat from "./images/non-cgnat.excalidraw.png";
+import dnsRequest from "./images/dns-request.excalidraw.png";
+import httpRequest from "./images/http-request.excalidraw.png";
+import natRequest from "./images/nat-request.excalidraw.png";
+import cgnatRequest from "./images/cgnat-request.excalidraw.png";
+import tunnelRequest from "./images/tunnel-request.excalidraw.png";
+
 ## Introduction
 
 Hi! Do you enjoy spending time, money, and energy tinkering with servers at home when you could get paid for it?
 Or maybe you already are a sysadmin, but you want to learn and experiment in a more casual environment?
 Oooor maybe, you want to stick it to the tech overlords and take back control on your data and everyday tools?
 
-Whatever your reason, you are not alone.
-I too have certain feelings about how the internet is shaping to be.
-Between the UK's Online Safety Act, the several laws being passed in the US, and the various "Chat Control" proposals in the EU,
-it is clear that anonymity and privacy are dead, all data will be monitored, and whatever could be considered "harmful" will be censored.
-Considering the fines, don't expect platforms to take a risk: they'll go above and beyond to comply.
+Whatever your reason, you are not alone. I've been feeling the same pull toward owning more of my digital life.
+Part of it is the simple joy of building things, but also, I can't help but notice how the internet is changing.
 
-Anyway, a home lab--and by extension self-hosting--can't solve everything, but it can be a good start towards a more decentralized and cosy internet.
+Between the UK's Online Safety Act, the various laws passing in the US,
+and the recurring "Chat Control" proposals in the EU, it's impossible to ignore the trend:
+anonymity and privacy are increasingly under threat.
 
-In case you don't know, a home lab is a personal IT setup where you can experiment with servers, applications, and services.
-It goes hand in hand with another concept: self-hosting. This is the practice of hosting services on hardware you control.
+And on top of that, we're watching major platforms go through the familiar cycle of enshittification.
+Propelled by an established and enthusiastic userbase, they go public or get bought up by a bigger company.
+Months or years later, shareholders or the acquiring company start pushing the platform to squeeze out more profit.
+That's when the decline begins: long-standing features disappear without warning, or get locked behind a “premium” subscription tier.
+Ads creep in, your data becomes training fodder for AI models, and open ecosystems are walled off by blocking third-party clients and tools.
+
+In the wake of such trends, it's up to us to reclaim autonomy over our digital data and the everyday tools we are depending on.
+
+At its core, a homelab is a personal playground where you can learn and experiment with servers, applications, and services.
+It goes hand in hand with another concept, self-hosting: the practice of running services yourself, on hardware you control, instead of relying on big tech.
 Together, it means that you can build your own IT infrastructure, tailor the tools and services you use to your needs and keep your data safe and private.
 
-For the appetizer, let me give you the list of services I like to run on my home lab:
+If this sounds interesting to you, welcome aboard!
+I would like to share my journey with self-hosting, raise awareness about important considerations, and guide you through the process.
+As an appetizer, here's the list of services I like to run on mine:
 
-- [Vaultwarden](https://github.com/dani-garcia/vaultwarden): a password manager, a lightweight alternative to [Bitwarden](https://bitwarden.com).
-- [File browser](https://filebrowser.org): a file manager with access control, file sharing, and more.
-- [Syncthing](https://syncthing.net): synchronize files between 2 or more devices. Useful to backup my personal devices.
-- [Jellyfin](https://jellyfin.org): private movie / series streaming service (Streamyfin client on mobile). Like a private Netflix.
-- [Navidrome](https://navidrome.org): private music streaming service (Symfonium client on mobile). Like a private Spotify.
-- [Immich](https://immich.app): photo / video gallery, tagging, and syncing. Like a private Google Photos.
-- a personal blog: this very blog.
+- [Vaultwarden](https://github.com/dani-garcia/vaultwarden): a lightweight password manager, alternative to [Bitwarden](https://bitwarden.com).
+- [File browser](https://filebrowser.org): organize, share, and control access to your files.
+- [Syncthing](https://syncthing.net): synchronize files between across devices, perfect for personal backups.
+- [Jellyfin](https://jellyfin.org): stream movies and series privately, like a personal [Netflix](https://www.netflix.com).
+- [Navidrome](https://navidrome.org): private music streaming, similar to [Spotify](https://www.spotify.com).
+- [Immich](https://immich.app): manage and organize your photos and videos, like a private [Google Photos](https://photos.google.com).
+- [Sure](https://sure.am/): track and categorize expenses to manage your finances.
+- [This very blog](https://github.com/DrMint/r-entries.com): my own personal space to express myself and share my knowledge.
 
-So without further ado, let's start building our home lab!
+With the basics out of the way and a taste of what's possible, it's time to roll up our sleeves. Let's start building a homelab!
 
-### My journey with self-hosting
-
-So as the title suggests, this is not the first time I dabble with self-hosting or a home lab.
-At 7 years old, I was already running my Joomla blog, hosted on 1and1 (now known as IONOS).
-
-A few years later, I was hosting a few Minecraft servers on a computer that was running at my father's workplace 24/7.
-We would use LogMeIn Hamachi to connect to it.
-It felt really empowering to be able to play together and to give my friends the ability to continue playing on the server even when I wasn't connected.
-
-In recent years, I got curious about how to host websites, make them accessible from the internet, and the security implications.
-I first started experimenting with virtual machines, networking, containers, and Linux in general.
-
-In my current home lab, I have one server that's running [XCP-ng](https://vates.tech/xcp-ng/) and [Xen Orchestra (XOA)](https://vates.tech/xen-orchestra/).
-The data is stored on 2 × 4&nbsp;TB disks in EXT4, along with a 512GB NVMe SSD.
-I have a few VMs running on it:
-
-- `webhub.local`: a Debian 12 VM used almost like a bastion. All opened ports on my ISP router are pointing to it.
-  It will then use [Caddy](https://caddyserver.com/) as a reverse proxy to send traffic to the other VMs.
-  There is [CrowdSec](https://www.crowdsec.net/) installed to monitor and block malicious traffic.
-- `docker01.local`: also a Debian 12 VM used to run containers using Docker.
-- another VM I'm hosting for a client.
-- `xoa.local`: the VM running Xen Orchestra.
-
-Every Sunday, a backup is made to a NAS running 4 × 4&nbsp;TB disks in RAID5 (12&nbsp;TB of usable storage).
-The NAS is programmed to start half an hour before the scheduled weekly backup, and will automatically shut down 4 hours later.
-
-The server, NAS, and ISP router are powered by a UPS.
-
-There is a few things I don't like with this current setup:
-
-- Any disk failure on the server would result in some data loss.
-- A fire or a burglary could result in losing all data.
-- There is no protection against data corruption. I've already seen some corrupted pictures although I can't be sure when/why it happened.
-- There is a UPS but there is no automatic shutdown if it runs out of battery.
-- There is no network segmentation between the home lab and the rest of the local network.
-- Overall, I'm not able to monitor if things are working as expected. I don't get notified if a job fails.
 
 ## Considerations and planning
 
+When starting any large project, it's important to define your goals.
+They will guide you through the entire process and help you make decisions.
+- **Goals** are what you want to achieve with the project. They are meant to be broad and high-level.
+- **Requirements** translate the goals into concrete actions. They may also include additional constraints.
+- **Scope** sets the boundaries of the project. I find it useful to define that boundary by listing what's out of the scope.
+
+Let's start with the goals.
+
 ### Goals
 
-At the highest level, there is a few things I want to achieve with my new home lab (in order of importance):
+As discussed in the intro, **privacy** and **digital autonomy** are key motivations for many people.
+They may have experienced one too many bad experience with enshittification or other egregious decisions made by the companies they rely on.
+They want to use services that are under their control, evolve at their pace, and not vanish because a company changed direction.
+
+But for others, it can also start as a simple **curiosity** and a **desire to learn**:
+a way to deepen your understanding of Linux, networking, coding, or infrastructure by actually running the things you usually only read about.
+A homelab is a safe playground where you can experiment, break things, fix them, and come away with real skills.
+
+The appeal can also be **practical**.
+Maybe you have a media library on a hard drive and you think it would be neat to be able to access it from anywhere, including on the go.
+Or a bunch of photos and videos you want to share with your family and friends.
+Maybe, like me, you want to have a personal corner of the internet where you can express yourself freely.
+
+While typically not the main motivation, self hosting can also be **cost saving**, especially in the long run.
+This is particularly true if you or your family are reliant on a number of subscriptions or if you have copious amounts of data you need to store and access.
+
+Those are some of the broader motivations that often bring people into the homelab/self-hosting world.
+With that in mind, here are the goals that guide the design of my setup (in order of importance):
 
 1. I want my data to be safe. I want to feel reassured that my data can't be lost or corrupted.
-2. I want to keep things simple, reliable, and reproducible.
-3. I want to experiment with new services and tools without feeling limited or scared to break things.
-4. I want to keep my home lab reasonably compact, quiet, and energy efficient.
+2. I want to keep things simple and reliable. I don't want to spend all my free time troubleshooting or fixing things.
+3. At the same time, I want to experiment with new services and tools without feeling limited scared to break existing things.
+4. I want to keep my homelab reasonably compact, quiet, and cost effective.
 5. I want to reduce my reliance on any specific provider and to be able to move effortlessly to another provider or offer if needed.
 
-### Overview
+By clarifying your goals upfront, you create a roadmap for every decision you make—from choosing hardware to picking file systems, containers, and backup strategies.
+Every choice in this guide ties back to these motivations, and yours may differ but having them written down keeps the project focused and intentional.
 
-I'm thinking of a 3 part system:
+### How to make services accessible from the internet
 
-1. A **main server**, the data/computing server of the home lab. This one will be hosted at my place.
-2. A **bastion server**, the entrypoint to the home lab and its services.
-   This part will be hosted at a VPS provider so that I'm guaranteed to have a static IPv4 address.
-3. A **backup server**, where backups will be stored. This one will be hosted at my mom's place.
+Before I start expanding on the requirements, I want to give you a concise explanation of how hosting works and the challenges associated with it.
+That way, we are all on the same page and the rest of the guide will make more sense.
+If you are already familiar with the topic, feel free to skip this section.
 
-Then using firewalls (I'm planning on using MikroTik Hex routers), I'll make sure the main server can only communicate with the bastion server.
-Only the bastion server can communicate with the wider internet.
-The MikroTik routers will make sure the main server and backup server are isolated from other local devices.
+In this example, we will be hosting my blog, [r-entries.com](https://r-entries.com).
 
-I'm still thinking about how to handle communication between the main server and the backup server:
+When a user, let's say Alice, tries to access the blog, their browser will send a request to a <abbr title="Domain Name System">DNS</abbr> server to find the <abbr title="Internet Protocol">IP</abbr> address of the website.
+DNS is like a phone book for the internet. In this case, let's say the returned IP address is `12.34.56.78`.
 
-- One idea would be to create a Wireguard VPN between them so that the main server has direct access to the backup server.
-  Only the main server should have access to the backup server.
-- Another would be to go through the bastion server.
-  In this case, the bastion server would be the only device the main server and the backup server can reach.
+<MdxImage src={dnsRequest} />
 
-Option 1 makes more sense to me but I'm wondering if this could be a security risk is the main server is compromised.
-We'll see.
+Now that the browser knows the address, it will prepare and send a request to that address.
+In an ideal world, the server is directly accessible from the internet, so it receives the request, process it, and sends the response back to the browser.
 
-Having a backup server located elsewhere is also a great way to protect against disasters or burglaries.
+The browser then receives the response and displays the content of the blog.
+
+<MdxImage src={httpRequest} />
+
+And that's it! Quite simple, don't you think?
+
+> [!question] How Alice's browser knows the DNS server's IP?
+> No chicken or the egg dilemma here!
+> DNS servers are pre-configured either by the home router, in the device settings or the browser settings.
+> They are configured with an IP address and not a domain name, removing the circular dependency.
+
+But in reality, it's highly unlikely that the server is directly accessible from the internet.
+When we say "IP" we typically mean IPv4. It's the protocol used to uniquely identify devices on the internet.
+It was first deployed in the 1980s at a time where the "internet" was still a small community of researchers and universities.
+With a little over 4.2 billion possible addresses, it was far enough to cover the needs of the time.
+But as the internet grew, the possibility of running out of addresses became more and more imminent.
+
+If the mid 90s, <abbr title="Network Address Translation">NAT</abbr> was introduced to help alleviate the address exhaustion problem.
+Before the introduction of NAT, every connected device had a globally unique IPv4 address, just like the earlier example with Alice.
+With NAT, devices behind a router will be assigned a local IPv4 address, and the router itself will only use a single public IPv4 address.
+
+>[!summary] A quick analogy about NAT
+> Businesses typically have a single public phone number, instead of dedicated landlines for each employee.
+> When you call it, the receptionist answers and then routes you to the right person.
+> Internally, they may have a local network of phones, with internal numbers for each employee.
+> These internal numbers are unknown to the public, and even if they were, they couldn't be used to call an employee directly.
+>
+> So NAT is really the same idea but applied to computers on the internet.
+> Instead of a receptionist, you can configure the NAT table to forward different requests to different internal devices.
+
+Let's update the diagram to reflect the introduction of NAT:
+
+<MdxImage src={natRequest} />
+
+When the router receives the request, it will look up the destination IP address in the NAT table.
+If you configure it correctly, it will find the local IP address (e.g: `192.168.1.200`) of the server and forward the request to it.
+
+You'll also notice that the router--sitting right on the edge between the internet and the local network--posseses both a public and a local IPv4 address.
+The internal address is used by devices within the local network to reach the router. Meanwhile, external devices use the public address to contact the router.
+
+Unfortunately, this is not enough. With the adoption of mobile devices, the number of devices connected to the internet exploded.
+Mobile carriers had to find a way to accommodate for the flood of new devices and decided to introduce <abbr title="Carrier-grade NAT">CGNAT</abbr>.
+It's carrier grade because it's not done at the level of the home router, but at the level of an entire network of routers.
+
+When applied to home <abbr title="Internet Service Providers">ISPs</abbr>, it means that you are no longer assigned a public IPv4 address, but a local one.
+Nested layers of local networks with NAT placed at each boundary to forward requests appropriately.
+
+This doesn't impact the average user, but it has major implications for self-hosting.
+The problem is that you don't have access to the carrier's NAT table.
+And even if you did, it basically means only one customer could make use of the public IPv4 address.
+
+<MdxImage src={cgnatRequest} />
+
+So... self-hosting is no longer possible in modern, IPv4-exhausted, internet?
+
+There are actually several solutions to circumvent this issue:
+- **Ask your ISP** to move you from a CGNAT network and provide you with a dedicated public IPv4 address.
+  They may tell you such feature is not available on your standard plan and you need to upgrade to a business-oriented plan.
+  This typically costs several times more than a standard plan.
+
+- **Support IPv6 only**. IPv6 address space is so much larger than IPv4, it doesn't have the same address exhaustion problem.
+  With IPv6, say goodbye to NAT and CGNAT: every device has a unique global IPv6 address, just like it used to be with IPv4.
+  It's the future of the internet, but unfortunately, not all ISPs support IPv6 yet.
+  The adoption is still still [under 50%](https://www.google.com/intl/en/ipv6/statistics.html) worldwide.
+  If it continues at this rate, it may take another 15 years to reach near-universal adoption.
+
+- Use some form of **tunneling**.
+  Tunneling is a technique to encrypt and forward traffic through a secure channel, crossing the NAT and CGNAT boundaries.
+
+I won't go into the details of how tunneling works, but if you ever used a <abbr title="Virtual Private Network">VPN</abbr>, that's what they use.
+With a tunnel, you recreate a standard NAT setup, completely bypassing the CGNAT:
+
+<MdxImage src={tunnelRequest} caption="The server is technically on both the VPN and the house local network, I just wanted to focus on the part that's relevant for hosting the services." />
+
+It exists a few different types of tunneling:
+
+- **Reverse tunnel** services like Cloudflare Tunnel.
+  However, you have to trust the provider to not snoop on your traffic which is temporarily decrypted on their end.
+  Personally, I'm not comfortable with this solution: I find their free-tier far too generous and that makes me doubt their intentions.
+
+- **Use a VPN service** like NordVPN, TorGuard, or Windscribe.
+  Look for a provider that can offer a dedicated public IPv4 address (which typically comes with an extra cost).
+
+- **Rent a <abbr title="Virtual Private Server">VPS</abbr>** from a provider.
+  No need to go into the details, what matters is that it's a server that can be remotely accessed and controlled.
+  This is the solution I'm going to use to make my services accessible from the internet. I'll explain the reasoning behind this choice in the next section.
+  Make sure they provide a public IPv4 address as part of the service.
+
+And that's it for the foundational networking knowledge.
+I hope you found it interesting and informative. It will be useful for understanding same of the decisions I'll be making later on.
+
+### Requirements overview
+
+To achieve the goals I've outlined earlier, I'm planning to use a 3 part system:
+
+1. A **main server**, the data/computing server of the homelab. It will be hosted at my place.
+2. A **bastion server**, the entrypoint to the homelab and its services. It will be hosted at a VPS provider.
+3. A **backup server**, where offsite backups will be stored. It will be hosted at my mom's place.
+
+What I mean by a [bastion server](https://en.wikipedia.org/wiki/Bastion_host) is a server that is used to access the homelab and its services from the internet.
+As explained earlier, because of CGNAT and other network restrictions, the main server cannot be directly accessed from the internet.
+So we need a bastion server to act like a gateway and to tunnel the requests to the main server.
+
+I could have choosen another type of tunneling, like a VPN service that offers a dedicated public IPv4 address.
+But I think a VPS is more sensible and flexible. Entry-level VPS starts under 5€/month, which is on par with VPN services.
+Beside, you can get a lot more from a VPS. It's a full-fledged server after all.
+Also, unlike a VPN or Reverse tunnel service, you typically have full control over the server's software.
+Sometimes you even get to install the OS yourself.
+In conclusion, a VPS seems like the best option among the available solutions.
+
+And lastly we have the **backup server**. As I stated in my goals, data safety is my top priority.
+Having a backup server located elsewhere is a great way to protect against disasters or home break-ins.
 If the main server is stolen or destroyed, the backup server can be used to restore the latest backups.
 If the backup server is stolen or destroyed, the latest data is still safe on the main server.
 
-At my place and my mom's place, a UPS will power the ISP router, the MikroTik router, and the respective servers.
-Both our ISP routers will have port forwarding and UPnP disabled.
+Let's in the following sections, I'll explore different aspects of the project and which choice best aligns with my goals.
 
 > [!note] Naming the servers
 > Seeing this 3 part system, I'm thinking of naming the servers **Melchior** (main), **Balthasar** (bastion), and **Casper** (backup).
 > This is a reference to the [Magi System](https://evangelion.fandom.com/wiki/Magi) from Neon Genesis Evangelion.
 
-### Entrypoint
+
+### Tunneling solution
 
 I'm thinking of running [Pangolin](https://digpangolin.com/) on the bastion server.
 It's a tunneled reverse proxy that seems to take some inspiration from Cloudflare.
@@ -508,19 +622,6 @@ For exemple:
 - Power surges or outages
 - Services seem unavailable
 
-### Plan
-
-So, in summary what's the plan?
-
-- I'll be running Debian on bare metal on all three servers.
-- Services will be run in Docker containers.
-- ZFS will be used for the filesystem.
-  - I'll be using RAIDZ2 on the main server and RAIDZ1 on the backup server.
-  - I'll also have a mirror pool on the main server for storing databases and other data that would benefit from higher bandwidth.
-  - LZ4 compression will be used on all pools.
-- ZFS snapshots and remote replication to the backup server will be used to backup the main server.
-- ECC for the main server, non-ECC for the backup server.
-- Pangolin + CrowdSec will be used for the entrypoint.
 
 ### Threats and mitigations
 
