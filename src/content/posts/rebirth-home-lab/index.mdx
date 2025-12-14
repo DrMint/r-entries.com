@@ -55,15 +55,16 @@ As an appetizer, here's the list of services I like to run on mine:
 - [Navidrome](https://navidrome.org): private music streaming, similar to [Spotify](https://www.spotify.com).
 - [Immich](https://immich.app): manage and organize your photos and videos, like a private [Google Photos](https://photos.google.com).
 - [Sure](https://sure.am/): track and categorize expenses to manage your finances.
+- [Paperless](https://docs.paperless-ngx.com/): organize, search, and share documents, perfect for archiving invoices, medical records, and other important files.
 - [This very blog](https://github.com/DrMint/r-entries.com): my own personal space to express myself and share my knowledge.
 
 With the basics out of the way and a taste of what's possible, it's time to roll up our sleeves. Let's start building a homelab!
-
 
 ## Considerations and planning
 
 When starting any large project, it's important to define your goals.
 They will guide you through the entire process and help you make decisions.
+
 - **Goals** are what you want to achieve with the project. They are meant to be broad and high-level.
 - **Requirements** translate the goals into concrete actions. They may also include additional constraints.
 - **Scope** sets the boundaries of the project. I find it useful to define that boundary by listing what's out of the scope.
@@ -137,7 +138,7 @@ If the mid 90s, <abbr title="Network Address Translation">NAT</abbr> was introdu
 Before the introduction of NAT, every connected device had a globally unique IPv4 address, just like the earlier example with Alice.
 With NAT, devices behind a router will be assigned a local IPv4 address, and the router itself will only use a single public IPv4 address.
 
->[!summary] A quick analogy about NAT
+> [!summary] A quick analogy about NAT
 > Businesses typically have a single public phone number, instead of dedicated landlines for each employee.
 > When you call it, the receptionist answers and then routes you to the right person.
 > Internally, they may have a local network of phones, with internal numbers for each employee.
@@ -172,6 +173,7 @@ And even if you did, it basically means only one customer could make use of the 
 So... self-hosting is no longer possible in modern, IPv4-exhausted, internet?
 
 There are actually several solutions to circumvent this issue:
+
 - **Ask your ISP** to move you from a CGNAT network and provide you with a dedicated public IPv4 address.
   They may tell you such feature is not available on your standard plan and you need to upgrade to a business-oriented plan.
   This typically costs several times more than a standard plan.
@@ -188,7 +190,10 @@ There are actually several solutions to circumvent this issue:
 I won't go into the details of how tunneling works, but if you ever used a <abbr title="Virtual Private Network">VPN</abbr>, that's what they use.
 With a tunnel, you recreate a standard NAT setup, completely bypassing the CGNAT:
 
-<MdxImage src={tunnelRequest} caption="The server is technically on both the VPN and the house local network, I just wanted to focus on the part that's relevant for hosting the services." />
+<MdxImage
+src={tunnelRequest}
+caption="The server is technically on both the VPN and the house local network, I just wanted to focus on the part that's relevant for hosting the services."
+/>
 
 It exists a few different types of tunneling:
 
@@ -237,14 +242,11 @@ Let's in the following sections, I'll explore different aspects of the project a
 > Seeing this 3 part system, I'm thinking of naming the servers **Melchior** (main), **Balthasar** (bastion), and **Casper** (backup).
 > This is a reference to the [Magi System](https://evangelion.fandom.com/wiki/Magi) from Neon Genesis Evangelion.
 
-
 ### Tunneling solution
 
-I'm thinking of running [Pangolin](https://digpangolin.com/) on the bastion server.
+I'm thinking of running [Pangolin](https://pangolin.net/) on the bastion server.
 It's a tunneled reverse proxy that seems to take some inspiration from Cloudflare.
-
 It creates WireGuard tunnels between itself and the nodes.
-You can then expose services without requiring a static IP or opening ports on the ISP router.
 
 You can create rules based on the service, path, IP, and country to either block, allow, or require authentication.
 
@@ -264,71 +266,53 @@ Again you can use Docker to configure and run Newt.
 
 #### VPS
 
-Recommended specs for running Pangolin:
+I'm going to use a VPS provider for the bastion server.
+All I really need is a server with:
 
-- CPU: 2 vCPU
-- RAM: 2GB
-- Storage: 20GB SSD
+- Debian 13
+- SSH access
+- a public IPv4 address
+- at least 2 vCores
+- at least 2&nbsp;GB of RAM
+- at least 20&nbsp;GB of storage
+- European location
 
-Considering my internet speed, I would like a provider with at least 1 Gb/s speed:
+My internet speed is pretty fast with 2300&nbsp;Mbps download and about 1000&nbsp;Mbps upload.
+A provider with 1&nbsp;Gb/s speed would be ideal for fast downloads.
+But I'm also thinking that a lower speed--on top of reducing the cost--would reserve more bandwidth for my own home internet usage.
 
-```txt
-Speedtest by Ookla
+| Offer               | CPU      | RAM        | Storage     | Speed         | Price (no commitment) | Price (12 months commitment) |
+| ------------------- | -------- | ---------- | ----------- | ------------- | --------------------- | ---------------------------- |
+| Contabo (VPS 10)    | 4 vCores | 8&nbsp;GB  | 75&nbsp;GB  | 200&nbsp;Mb/s | 4.50&nbsp;€ / month   | 3.60&nbsp;€ / month          |
+| IONOS (VPS Linux S) | 2 vCores | 2&nbsp;GB  | 80&nbsp;GB  | 1&nbsp;Gb/s   | 6.80&nbsp;€ / month   | 4.20&nbsp;€ / month          |
+| OVH (VPS-1)         | 4 vCores | 8&nbsp;GB  | 75&nbsp;GB  | 400&nbsp;Mb/s | 5.39&nbsp;€ / month   | 4.58&nbsp;€ / month          |
+| OVH (VPS-2)         | 6 vCores | 12&nbsp;GB | 100&nbsp;GB | 1&nbsp;Gb/s   | 8.39&nbsp;€ / month   | 7.14&nbsp;€ / month          |
+| o2switch (Grow)     | 8 vCores | 16&nbsp;GB | Unlimited   | 1&nbsp;Gb/s   | Not available         | 8.40&nbsp;€ / year           |
 
-      Server: BOUYGUES TELECOM CUBIC - Poitiers (id: 53171)
-         ISP: Bouygues Telecom
-Idle Latency:     4.64 ms   (jitter: 0.37ms, low: 4.48ms, high: 4.99ms)
-    Download:  2337.22 Mbps (data used: 1.2 GB)
-                  6.99 ms   (jitter: 5.93ms, low: 5.32ms, high: 225.12ms)
-      Upload:   938.80 Mbps (data used: 469.5 MB)
-                 11.88 ms   (jitter: 0.84ms, low: 4.95ms, high: 12.90ms)
- Packet Loss:     0.0%
-  Result URL: https://www.speedtest.net/result/c/4dc31e67-dfd6-47dc-bed6-136f30ea4399
-```
+In the end, I decided to go with OVH. Specifically their VPS-1 offering:
 
-Here's a few providers I'm considering:
-
-- IONOS
-  - 2 vCores CPU
-  - 2&nbsp;Go RAM
-  - 80&nbsp;Go NVMe
-  - 1&nbsp;Gb/s speed with unlimited traffic
-  - Restricted OS options (Ubuntu, Debian, Rocky, Alma)
-  - EU hosting (UK, Spain, Germany)
-  - No backups / snapshots
-  - 60&nbsp;€ / year (monthly bind) or 50&nbsp;€ / year (yearly bind)
-
-- OVH
-  - 6 vCore
-  - 12 Go ram
-  - 100 Go SSD NVMe
-  - 1 Gb/s speed with unlimited traffic
-  - 100&nbsp;€ / year (monthly bind) or 85&nbsp;€ / year (yearly bind)
-
-- o2switch
-  - 8 vCores
-  - 16&nbsp;GB RAM
-  - Unlimited NVMe storage (I/O 16MB/s)
-  - 1 Gb/s speed with unlimited traffic
-  - 100&nbsp;€ / year (yearly bind)
-
-- Contabo
-  - 3 vCPU Cores
-  - 8&nbsp;GB RAM
-  - 75&nbsp;GB NVMe
-  - 1 Snapshot
-  - 200&nbsp;MB/s speed with 32 TB traffic per month
-  - 50&nbsp;€ / year (monthly bind) or 40&nbsp;€ / year (yearly bind)
+- **CPU**: 4 vCores
+  - **Memory**: 8&nbsp;GB
+- **Storage**: 75&nbsp;GB (NVMe)
+- **Bandwidth**: 400 Mbit/s
+- **Traffic**: Unlimited
+- **Price**: 5.39&nbsp;€ / month (no commitment)
+- **Backups**: Daily, keep one (keep 7 for 2.20&nbsp;€ / month)
+- **Snapshots**: No snapshots (one snapshot for 0.60&nbsp;€ / month)
+- **SLA**: 99.9% uptime
+- **OS**: Fedora (40, 42), AlmaLinux (8, 9, 10), CloudLinux (9), Debian (11, 12, 13), Rocky Linux (8, 9, 10), Ubuntu (22.04, 24.04, 24.10, 25.04), FreeBSD (14.3)
+- Comes with a public IPv4 and IPv6 addresses
+- SSH access
 
 ### Virtualization and containerization
 
 Virtualization offers strong isolation and the ability to run multiple operating systems on the same hardware.
 However it also adds extra overhead and complexicity.
 
-Containerization offers a lighter weight alternative to virtualization. They are fast to deploy, there's barely any overhead, and they are easy to manage.
+Containerization offers a lighter alternative to virtualization. They are fast to deploy, there's barely any overhead, and they are easy to manage.
 However, they don't offer the same level of isolation as virtualization.
 
-In my previous home lab, I was running [XCP-ng](https://xcp-ng.org/) as the hypervisor. Then I had a few VMs running on it. And each would use Docker containers to run services.
+In my previous homelab, I was running [XCP-ng](https://xcp-ng.org/) as the hypervisor. Then I had a few VMs running on it. And each would use Docker containers to run services.
 But all the VMs were running Debian, so I'm unsure if it was worth the complexity of running a hypervisor.
 Also I think having to choose how much ressource to allocate to each VM was a bit of a pain, especially when you realize you need to expand the VM's storage.
 
@@ -349,7 +333,6 @@ Here's a few of its key features:
 - Protection against hardware failure with mirroring and RAIDZ.
 - Protection against data corruption with integrity verification and automatic repairs.
 - Built-in snapshots and replication.
-- Transparent compression
 - Support for massive files and massive storage capacities (ZFS stands for Zettabyte File System after all).
 - Support transparent compression and hardware-accelerated native encryption.
 
@@ -544,7 +527,7 @@ Here's the plan:
 - Integrity checks of the discs every year.
 - Replace the set of discs every 10 years.
 - Continue monitoring discs from the previous set to learn more about their actual longevity.
-- Keep an eye out for new technologies that could be replace Blu-ray discs for the next replacement cycle.
+- Keep an eye out for new technologies that could replace Blu-ray discs for the next replacement cycle.
 
 Other tips:
 
@@ -622,6 +605,11 @@ For exemple:
 - Power surges or outages
 - Services seem unavailable
 
+### Scope
+
+Things that are out of scope:
+
+- High availability
 
 ### Threats and mitigations
 
