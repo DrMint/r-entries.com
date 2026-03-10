@@ -2,13 +2,7 @@ import rss from "@astrojs/rss";
 import type { APIRoute } from "astro";
 import { getUrl } from "src/utils/navigation";
 import { WEBSITE_NAME, DEFAULT_DESCRIPTION } from "src/constants";
-import { experimental_AstroContainer } from "astro/container";
-import { loadRenderers } from "astro:container";
-import { getContainerRenderer } from "@astrojs/mdx";
 import { getPosts } from "src/utils/collections";
-
-const renderers = await loadRenderers([getContainerRenderer()]);
-const container = await experimental_AstroContainer.create({ renderers });
 
 export const GET: APIRoute = async (context) => {
   const posts = await getPosts({ includingNested: true });
@@ -22,9 +16,9 @@ export const GET: APIRoute = async (context) => {
         title: post.data.title,
         pubDate: post.data.date,
         description: post.data.summary,
-        link: getUrl(`/posts/${post.slug}`),
+        link: getUrl(`/posts/${post.id}`),
         categories: post.data.tags,
-        content: await container.renderToString((await post.render()).Content),
+        content: "TODO",
       }))
     ),
   });

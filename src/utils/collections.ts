@@ -10,7 +10,7 @@ export const getPosts = async (options?: {
   let posts = await getCollection("posts");
   posts = posts.filter((post) => !post.data.draft);
   if (!options?.includingNested) {
-    posts = posts.filter((post) => !post.slug.includes("/"));
+    posts = posts.filter((post) => !post.id.includes("/"));
   }
 
   if (!options) return posts;
@@ -28,12 +28,12 @@ export const getPosts = async (options?: {
 
 export const getPostsTree = async () => {
   const allPosts = await getPosts({ includingNested: true });
-  const posts = allPosts.filter((post) => !post.slug.includes("/"));
-  const nestedPosts = allPosts.filter((post) => post.slug.includes("/"));
+  const posts = allPosts.filter((post) => !post.id.includes("/"));
+  const nestedPosts = allPosts.filter((post) => post.id.includes("/"));
 
   return posts.map((post) => ({
     ...post,
-    nestedPosts: nestedPosts.filter((p) => p.slug.startsWith(post.slug)),
+    nestedPosts: nestedPosts.filter((p) => p.id.startsWith(post.id)),
   }));
 };
 

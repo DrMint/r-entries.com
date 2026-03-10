@@ -15,17 +15,14 @@ export const loadEnv = () => {
   const result = z
     .object({
       PORT: z.coerce.number(),
-      SITE_URL: z.string().url(),
+      SITE_URL: z.url(),
       BASE_PATH: z.string().startsWith("/"),
       TRAILING_SLASH: z.enum(["always", "never", "ignore"]),
     })
     .safeParse(process.env);
 
   if (!result.success) {
-    console.error(
-      "❌ Invalid environment variables",
-      result.error.flatten().fieldErrors
-    );
+    console.error("❌ Invalid environment variables", result.error.message);
     process.exit(1);
   }
 

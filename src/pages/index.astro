@@ -4,10 +4,11 @@ import Html from "src/components/layout/Html.astro";
 import PostCard from "src/components/PostCard.astro";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
 import { getPosts, getPage } from "src/utils/collections";
+import { render } from "astro:content";
 
 const homePage = await getPage("home");
 const { title, summary } = homePage.data;
-const { Content } = await homePage.render();
+const { Content } = await render(homePage);
 
 const latestPosts = await getPosts({
   maxCount: 3,

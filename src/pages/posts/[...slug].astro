@@ -13,7 +13,7 @@ import defaultCover from "src/images/default-cover.jpg";
 export const getStaticPaths = async () => {
   const posts = await getPosts({ includingNested: true });
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: { post },
   }));
 };

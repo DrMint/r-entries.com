@@ -22,12 +22,12 @@ const tags = await getTags({ sort: "name", order: "asc" });
           <ul>
             {posts.map((post) => (
               <li>
-                <a href={getUrl(`/posts/${post.slug}`)}>{post.data.title}</a>
+                <a href={getUrl(`/posts/${post.id}`)}>{post.data.title}</a>
                 {post.nestedPosts.length > 0 && (
                   <ul>
                     {post.nestedPosts.map((nestedPost) => (
                       <li>
-                        <a href={getUrl(`/posts/${nestedPost.slug}`)}>
+                        <a href={getUrl(`/posts/${nestedPost.id}`)}>
                           {nestedPost.data.title}
                         </a>
                       </li>

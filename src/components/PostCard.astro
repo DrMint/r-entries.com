@@ -15,7 +15,7 @@ const { post, ...rest } = Astro.props;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<a data-component="PostCard" href={getUrl(`/posts/${post.slug}`)} {...rest}>
+<a data-component="PostCard" href={getUrl(`/posts/${post.id}`)} {...rest}>
   <Image
     src={post.data.cover?.src ?? defaultCover}
     alt={post.data.cover?.alt ?? ""}
