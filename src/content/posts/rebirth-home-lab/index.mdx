@@ -60,6 +60,12 @@ As an appetizer, here's the list of services I like to run on mine:
 
 With the basics out of the way and a taste of what's possible, it's time to roll up our sleeves. Let's start building a homelab!
 
+> [!hint] About this guide
+> I wrote this guide as a way to document my journey.
+> As such, it was written over the course of multiple months while building the homelab.
+> I ended having some troubles, especially with my hardware choices.
+> **Make sure to read the [conclusion](#conclusion) section before making any decisions.**
+
 ## Considerations and planning
 
 When starting any large project, it's important to define your goals.
@@ -1547,7 +1553,75 @@ Would you like to run Pangolin as Docker or Podman containers? (default: docker)
 
 ## Conclusion
 
-### Regrets
+Somewhere, talk about NAT loopback / hairpin NAT / NAT reflection.
+
+### Reflections
+
+#### The ASRock AM5 fiasco
+
+So, about a month after I built the main server, I decided to reinstall the OS to make sure every step was perfectly documented.
+Unfortunately, the server never POSTed after that. The POST status checker LEDs for the CPU and DRAM were constantly on.
+I tried all the usual troubleshooting steps: 
+- unplugging the PSU and waiting a few minutes
+- clearing the CMOS
+- reflashing the BIOS
+- trying another PSU
+- taking the motherboard out of the case
+- trying a minimal setup with only one stick of RAM, the PSU, CPU and motherboard
+
+At that point I grew desperate. It was clear either the CPU, motherboard or RAM was faulty.
+I even took it to a local repair shop to get it checked.
+They didn't go to great lengths to diagnose the issue, but on the other hand, they also didn't charge me anything: so it's hard to complain.
+Their conclusion was that the motherboard was at fault. I was also of the opinion that a motherboard failure was more likely.
+
+After that, I resorted to contacting ASRock support.
+They told me to try isolating the faulty component by trying another known good CPU and RAM on the motherboard.
+Ideally yes, that's also something I wanted to do, but this is my first AM5 system ever.
+And I wasn't going to buy another CPU and RAM just to test it.
+They recommended me to contact the retailer I bought the motherboard from, which was Amazon.
+
+I went to Amazon's customer service to ask for a replacement motherboard.
+Unfortunately, the new motherboard was still not working. I still had the exact same symptoms.
+
+In conclusion, the motherboard was not the issue. Could it be the CPU? The RAM?
+At that point, I finally decided to check online if anyone else was having the same issue with their AM5 system.
+
+What I found was that I had been living under a rock. Since early 2025, there has been reports of Ryzen 9000 series CPUs failing, especially on ASRock motherboards.
+There is a [megathread](https://www.reddit.com/r/ASRock/comments/1q3ff0t/9000series_cpu_failures_deaths_megathread_4/?utm_source=chatgpt.com) on ASRock's subreddit that nicely summarizes the situation:
+- Since February 2025, there has been pictures posted online of scorched CPU pins and motherboard sockets.
+  The initial investigation suggested that only X3D CPUs and ASRock motherboards were affected.
+  ASRock initially blamed the issue on user error or aggressive overclocking, but later made a statement that overvoltage due to bad PBO implementations could be the cause.
+  They later released a few BIOS updates to address the issue.
+- Unfortunately, since then, users still reported cases of CPUs failing on BIOS updates released after the initial investigation. Meaning the **root cause is still not identified**.
+- Beside the scorched pins, the reported symptoms match my case perfectly:
+  the system was working fine until a reboot.
+  And since then, the POST status checker LEDs for the CPU and DRAM were constantly on.
+  Seemingly, the motherboard is not damaged, it's always a CPU failure.
+- A Korean user reported having the same problem with a B850 Pro RS motherboard and a grand total of 3 Ryzen 7 9700X CPUs:
+  so it seems the problem is not a rare defect in the CPU, but **a systemic issue with the motherboard.**
+- Asus also had similar reports, and made an official statement about the issue.
+- There has been a few cases of CPU failures on other motherboard brands, and even on the 7000-series CPUs.
+  But the low report rate could indicate that these failures are within a normal defect rate.
+
+In conclusion, even a year later, ASRock has not identified the root cause of the issue.
+I initially chose ASRock because I've had good experiences with their products in the past and--along with Asus--they are one of the few manufacturers that support ECC memory on consumer-grade motherboards.
+
+While the failure rate is low, it's still unacceptable that hardware costing hundreds of dollars could just burn or stop POSTing randomly.
+I'm not incline to be ASRock's beta tester for this long-standing issue.
+
+Also I'm a little salty that the ASRock technician responding to my ticket didn't mention any of this to me.
+The symptoms I described match almost perfectly with the other users' reports.
+I would have saved myself the hassle of getting a replacement motherboard just to send it back afterwards.
+Good thing Amazon's return policy is pretty generous.
+
+> [!warning] Recommendation
+> Stay away from 9000-series CPUs until reports of the issue are cleared.
+> If you must buy one, avoid ASRock motherboards and Asus motherboards. Keep your motherboard BIOS up to date.
+
+So what about the homelab? After this catastophic failure, I ended up canabalizing my gaming PC to keep the homelab running.
+Now the server is running on a Ryzen 5 5500 CPU and an Asus TUF Gaming B550-PLUS motherboard.
+
+#### Other things
 
 - Overkill much
 - ECC seems overkill
