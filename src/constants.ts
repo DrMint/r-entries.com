@@ -17,6 +17,8 @@ export const TWITTER_HANDLE: string | undefined = "@DrMint4";
 
 export const DEFAULT_TITLE = "R-Entries";
 export const DEFAULT_DESCRIPTION = "A collection of entries about R";
+export const WEBSITE_COPYRIGHT_STARTING_YEAR = 2018;
+export const WEBSITE_COPYRIGHT_NAME = "R-Entries";
 
 /* -------------------------------[ Features ]------------------------------- */
 

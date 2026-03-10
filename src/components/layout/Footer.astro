@@ -2,6 +2,11 @@
 import RssLogo from "src/icons/lucide--rss.svg";
 import SitemapLogo from "src/icons/lucide--map.svg";
 import { getUrl } from "src/utils/navigation";
+import {
+  WEBSITE_COPYRIGHT_STARTING_YEAR,
+  WEBSITE_COPYRIGHT_NAME,
+} from "src/constants";
+
 const props = Astro.props;
 ---
 
@@ -9,7 +14,10 @@ const props = Astro.props;
 
 <footer data-component="Footer" {...props}>
   <div>
-    <p>© {new Date().getFullYear()} All rights reserved.</p>
+    <p>
+      © {WEBSITE_COPYRIGHT_STARTING_YEAR}-{new Date().getFullYear()}
+      {WEBSITE_COPYRIGHT_NAME}. All rights reserved.
+    </p>
     <div class="social-links">
       <a href={getUrl("/sitemap")} title="Sitemap">
         <SitemapLogo width={16} height={16} />
