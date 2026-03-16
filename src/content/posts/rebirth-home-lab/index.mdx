@@ -1084,6 +1084,20 @@ For the backup server:
   See this [video](https://www.youtube.com/watch?v=eRsv1dOuOHk) for more details.
 - BIOS Flashback: https://www.youtube.com/watch?v=fqKs9fekNNY
 
+Drive location for the main server:
+
+| Row   | Column 1 | Column 2 |
+| ----- | :------: | :------: |
+| Row 1 | VDJR3AGK | VDJRVSZK |
+| Row 2 |    --    |    --    |
+| Row 3 |    --    |    --    |
+| Row 4 | VDKTSX3K | VDJRUKVK |
+
+SSD location for the main server:
+
+- The CT500P310SSD8 is placed at the bottom right M.2 slot, right under the chipset.
+- The Samsung SSD 970 EVO Plus 500GB is placed on a PCIe to M.2 adapter card.
+
 > [!error] This section is a work in progress.
 > Show diagrams of the networking and the power delivery through the UPS + smart plug.
 
@@ -1231,12 +1245,631 @@ What I'm looking for in a Docker management tool/orchestrator:
 > [!error] This section is a work in progress.
 > Come back later :)
 
-#### Tips for maintainability and configuration management
+### Configuration for the main server
+
+#### Install ZFS
+
+Add backports to your sources.list:
+
+```sh
+apt install lsb-release
+codename=$(lsb_release -cs);echo "deb http://deb.debian.org/debian $codename-backports main contrib non-free"|tee -a /etc/apt/sources.list
+```
+
+Install the packages:
+
+```sh
+apt update
+apt install linux-headers-amd64
+apt install -t stable-backports zfsutils-linux
+```
+
+Press Enter in the license agreement prompt.
+
+#### Create the HDD pool
+
+Get the list of disks' UUIDs:
+
+```sh
+ls -l /dev/disk/by-id/
+```
+
+```txt
+lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbe63bb3 -> ../../sdd
+lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbe68f2e -> ../../sdc
+lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbe693ad -> ../../sdb
+lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbf58929 -> ../../sda
+```
+
+Determine the right `ashift` value:
+
+```sh
+lsblk -o NAME,PHY-SeC,SIZE,TYPE /dev/sd[a-d]
+```
+
+```txt
+NAME PHY-SEC  SIZE TYPE
+sda     4096  7.3T disk
+sdb     4096  7.3T disk
+sdc     4096  7.3T disk
+sdd     4096  7.3T disk
+```
+
+We see that the `PHY-SEC` is 4096. This gives us `ashift=12` (2^12 = 4096).
+
+Create the RAIDZ2 pool (this will **erase everything on these drives**. Make sure there's nothing you care about on them):
+
+```sh
+zpool create \
+  -o ashift=12 \
+  -O acltype=posixacl \
+  -O xattr=sa \
+  -O compression=zstd \
+  -O atime=off \
+  -O relatime=off \
+  -O normalization=formD \
+  -m /data \
+  data raidz2 \
+  /dev/disk/by-id/wwn-0x5000cca0bbe63bb3 \
+  /dev/disk/by-id/wwn-0x5000cca0bbe68f2e \
+  /dev/disk/by-id/wwn-0x5000cca0bbe693ad \
+  /dev/disk/by-id/wwn-0x5000cca0bbf58929
+```
+
+You can add `-f` to force the creation of the pool (it may be necessary if the disks already have a filesystem on them).
+
+#### Create the SSD pool
+
+```sh
+lsblk -f
+```
+
+```txt
+NAME        FSTYPE     FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+sda
+├─sda1      zfs_member 5000  data  3786879799329643345
+└─sda9
+sdb
+├─sdb1      zfs_member 5000  data  3786879799329643345
+└─sdb9
+sdc
+├─sdc1      zfs_member 5000  data  3786879799329643345
+└─sdc9
+sdd
+├─sdd1      zfs_member 5000  data  3786879799329643345
+└─sdd9
+nvme1n1
+nvme2n1
+├─nvme2n1p1 vfat       FAT32       1083-1133                             965.3M     1% /boot/efi
+├─nvme2n1p2 ext4       1.0         0201fa06-8444-490c-ba9d-c926c5010a94  393.7G     4% /
+└─nvme2n1p3 swap       1           5c7b6301-be42-4e3f-9365-6672853ac470                [SWAP]
+nvme0n1
+└─nvme0n1p1 ext4       1.0         c4a339bb-78bc-4156-9232-70e9324a1ff1
+```
+
+Here I can see that my 4 disks are listed as `zfs_members`.
+The OS NVMe is `nvme2n1` because that's the one with the mounted partitions (boot and root).
+So I'll create a new pool with `nvme0n1` and `nvme1n1`.
+
+I can get their ids with this command:
+
+```sh
+ls -l /dev/disk/by-id/ | grep -w nvme[0-1]n1
+```
+
+```txt
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-CT500P310SSD8_25164FAF1C4F -> ../../nvme0n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-CT500P310SSD8_25164FAF1C4F_1 -> ../../nvme0n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-eui.0025385691b4ebc8 -> ../../nvme1n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-eui.00a075014faf1c4f -> ../../nvme0n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B -> ../../nvme1n1
+lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B_1 -> ../../nvme1n1
+
+```
+
+For NVMe disks, it's common to find multiple symlinks. Any of them should work.
+I'll choose the human readable ones (CT500 and Samsung) without the "\_1" suffix.
+
+```sh
+zpool create \
+  -o ashift=12 \
+  -O acltype=posixacl \
+  -O xattr=sa \
+  -O compression=zstd \
+  -O atime=off \
+  -O relatime=off \
+  -O normalization=formD \
+  -m /fast \
+  fast mirror \
+  /dev/disk/by-id/nvme-CT500P310SSD8_25164FAF1C4F \
+  /dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B
+```
+
+#### Import the pools
+
+If the pools were already created on another server, you can import them with:
+```sh
+zpool import
+```
+
+```txt
+  pool: ssd
+    id: 4664139631714187601
+ state: ONLINE
+status: The pool was last accessed by another system.
+action: The pool can be imported using its name or numeric identifier and
+        the '-f' flag.
+   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
+config:
+
+        ssd                                                      ONLINE
+          mirror-0                                               ONLINE
+            nvme-CT500P310SSD8_25164FAF1C4F                      ONLINE
+            nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B  ONLINE
+
+  pool: hdd
+    id: 3786879799329643345
+ state: ONLINE
+status: The pool was last accessed by another system.
+action: The pool can be imported using its name or numeric identifier and
+        the '-f' flag.
+   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
+config:
+
+        hdd                         ONLINE
+          raidz2-0                  ONLINE
+            wwn-0x5000cca0bbe63bb3  ONLINE
+            wwn-0x5000cca0bbe68f2e  ONLINE
+            wwn-0x5000cca0bbe693ad  ONLINE
+            wwn-0x5000cca0bbf58929  ONLINE
+```
+
+Create the mounting points:
+
+```sh
+mkdir /data /services
+```
+
+Import each pool:
+```sh
+zpool import -f hdd
+zpool import -f ssd
+```
+
+Check that the pools are imported:
+
+```sh
+zpool list
+```
+
+#### Setup ZFS snapshots and retention policy
+
+Install [sanoid](https://github.com/jimsalterjrs/sanoid):
+
+```sh
+apt install sanoid
+```
+
+If it doesn't already exists, create the sanoid folder in `/etc`:
+
+```sh
+mkdir /etc/sanoid
+```
+
+Edit the config file:
+
+```sh
+nano /etc/sanoid/sanoid.conf
+```
+
+```config
+[hdd]
+    use_template = production
+
+[ssd]
+    use_template = production
+
+[template_production]
+    frequently = 0          # every 15 minutes (disabled)
+    hourly = 24             # keep 24 hourly snapshots
+    daily = 7               # keep 7 daily snapshots
+    weekly = 4              # keep 4 weekly snapshots
+    monthly = 6             # keep 6 monthly snapshots
+    autosnap = yes
+    autoprune = yes
+```
+
+Then enable Sanoid with this command:
+
+```sh
+systemctl enable --now sanoid.timer
+```
+
+Check that it's running properly with
+
+```sh
+systemctl status sanoid.timer
+```
+
+List the snapshots with
+
+```sh
+zfs list -t snapshot
+```
+
+Some info:
+
+- Sanoid runs (by default) every 15 minutes via sanoid.timer.
+- If autosnap is enabled, it will take snapshot periodically. The frequency is determined from the configuration (here, it will take a new snapshot every hour).
+- Sanoid completely ignore manually taken snapshot when it comes to its snapshot sheduling and retention policy. It only cares about snapshot that follow its naming scheme.
+- You can force Sanoid to take a snapshot right now: `sanoid -c /etc/sanoid/sanoid.conf --run hdd`. This one will be subject to Sanoid retention policy.
+- You can test run the config using `sanoid --debug`
+
+#### Other useful ZFS commands
+
+##### Rename a pool
+
+Warning: export will unmount the pool. Here I'll raname `data` to `hdd`.
+
+```sh
+zpool export data
+zpool import data hdd
+```
+
+##### Change mountpoint
+
+```sh
+zfs set mountpoint=/services ssd
+```
+
+##### Import pool from another server
+
+> [!todo]
+> Show how to mount the ZFS pools when migrated to a new server or if we have reinstalled the OS.
+
+#### JavaScript
+
+```sh
+apt install nodejs npm
+```
+
+#### PM2 process manager
+
+Install:
+
+```sh
+npm install -g pm2
+```
+
+Logrotate is a module for PM2 that automatically manages and rotates log files to prevent them from consuming too much disk space. 
+
+```sh
+pm2 install pm2-logrotate
+```
+
+To preserve the running services after a reboot:
+
+```sh
+pm2 startup
+pm2 save
+```
+
+Run pm2 save after adding or removing services to preserve the configuration after a reboot.
+
+#### Other useful tools
+
+To monitor system resources:
+
+```sh
+apt install lm-sensors smartmontools btop
+```
+
+To easily explore the filesystem and see what's taking up space:
+
+```sh
+apt install ncdu
+```
+
+### Configuration for the bastion server
+
+```sh
+apt update
+apt upgrade
+```
+
+```sh
+apt-get install ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+```sh
+curl -fsSL https://digpangolin.com/get-installer.sh | bash
+./installer
+```
+
+```sh
+Do you want to install Pangolin as a cloud-managed (beta) node? (yes/no): no
+Enter your base domain (no subdomain e.g. example.com): barillot.net
+Enter the domain for the Pangolin dashboard (default: pangolin.barillot.net):
+Enter email for Let's Encrypt certificates: letsencrypt@barillot.net
+Do you want to use Gerbil to allow tunneled connections (yes/no) (default: yes):
+
+=== Email Configuration ===
+Enable email functionality (SMTP) (yes/no) (default: no):
+
+=== Advanced Configuration ===
+Is your server IPv6 capable? (yes/no) (default: yes):
+
+=== Generating Configuration Files ===
+
+Configuration files created successfully!
+
+=== Starting installation ===
+Would you like to install and start the containers? (yes/no) (default: yes):
+Would you like to run Pangolin as Docker or Podman containers? (default: docker):
+```
+
+### Deploying services
 
 > [!error] This section is a work in progress.
 > Come back later :)
 
-### Deploying services
+#### Hardening
+
+```yaml
+services:
+  service-name:
+    image: image-name:latest
+    container_name: service-name
+    depend
+    restart: unless-stopped
+
+    user: "1000:1000"
+
+    mem_limit: 512m
+    cpus: 0.5
+    pids_limit: 100
+
+    read_only: true
+    tty: false
+    stdin_open: false
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=128m,uid=1000,gid=1000,mode=1777
+
+    volumes:
+      - ./volume-name:/volume-name
+
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-retries: 2
+        loki-max-backoff: 800ms
+        loki-timeout: 1s
+        keep-file: "true"
+        mode: "non-blocking"
+
+    networks:
+      - pangolin_net
+
+
+networks:
+  pangolin_net:
+    external: true
+```
+
+About tmpfs params:
+
+- `noexec`: Prevents execution of binaries.
+- `nosuid`: Prevents escalation of privileges.
+- `nodev`: Prevents character/block devices from being created.
+- `size`: Limits the maximum size, help prevent a process from filling up the host memory.
+
+##### Nginx
+
+```conf
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+```yaml
+tmpfs:
+  - /tmp:rw,noexec,nosuid,nodev,size=128m,uid=1000,gid=1000,mode=1777
+  - /var/cache/nginx:rw,noexec,nosuid,nodev,size=128m,uid=1000,gid=1000,mode=0755
+  - /var/run:rw,nosuid,nodev,size=128m,uid=1000,gid=1000,mode=0755
+
+volumes:
+  - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+```
+
+
+
+
+### Monitoring and alerting
+
+#### The Prometheus/Grafana/Loki stack
+
+> [!error] This section is a work in progress.
+> Come back later :)
+
+#### Configure Loki with Docker plugin
+
+```sh
+docker plugin install grafana/loki-docker-driver:3.3.2-amd64 --alias loki --grant-all-permissions
+```
+
+Add the following to each docker compose service:
+
+```yml
+logging:
+  driver: loki
+  options:
+    loki-url: "http://localhost:3100/loki/api/v1/push"
+    loki-retries: 2
+    loki-max-backoff: 800ms
+    loki-timeout: 1s
+    keep-file: "true"
+    mode: "non-blocking"
+```
+
+Avoid logging Loki or Grafana's containers as it can create a feedback loop.
+
+#### Sensors and IoT
+
+- SONOFF Zigbee 3.0 USB Dongle Plus MG24, Gateway with EFR32MG24
+- SONOFF S60ZBTPF Zigbee Smart Plug
+- SONOFF SNZB-02D Mini ZigBee Smart Temperature Humidity Sensor
+
+You should see the dongle listed in:
+
+```sh
+ls -l /dev/serial/by-id
+```
+
+```txt
+lrwxrwxrwx 1 root root 13 Mar 15 12:22 usb-SONOFF_SONOFF_Dongle_Plus_MG24_a4df9b88eba2ef11a7a7906661ce3355-if00-port0 -> ../../ttyUSB0
+```
+
+Create a `docker-compose.yml` file:
+
+```yml
+services:
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    image: ghcr.io/koenkk/zigbee2mqtt
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+      - /run/udev:/run/udev:ro
+    ports:
+      # Frontend port
+      - 52526:8080
+    environment:
+      - TZ=Europe/Berlin
+    devices:
+      - /dev/serial/by-id/usb-SONOFF_SONOFF_Dongle_Plus_MG24_a4df9b88eba2ef11a7a7906661ce3355-if00-port0
+```
+
+Connect to the frontend at http://localhost:52526
+
+- Select the dongle in the "Found Devices" dropdown
+
+## Documentation
+
+### Labeling the drives
+
+In the event of a drive failure, it's important to be able to identify the drive quickly.
+If you accidentally replace the wrong drive, you could end up with data loss.
+When a drive fails, ZFS will point out the faulty drive by its ID.
+So we need to match the ID with the drive serial number and location in the server.
+
+```sh
+zpool status
+```
+
+```txt
+  pool: hdd
+ state: ONLINE
+status: Some supported and requested features are not enabled on the pool.
+        The pool can still be used, but some features are unavailable.
+action: Enable all features using 'zpool upgrade'. Once this is done,
+        the pool may no longer be accessible by software that does not support
+        the features. See zpool-features(7) for details.
+  scan: scrub repaired 0B in 02:06:26 with 0 errors on Sun Mar  8 02:30:27 2026
+config:
+
+        NAME                        STATE     READ WRITE CKSUM
+        hdd                         ONLINE       0     0     0
+          raidz2-0                  ONLINE       0     0     0
+            wwn-0x5000cca0bbe63bb3  ONLINE       0     0     0
+            wwn-0x5000cca0bbe68f2e  ONLINE       0     0     0
+            wwn-0x5000cca0bbe693ad  ONLINE       0     0     0
+            wwn-0x5000cca0bbf58929  ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: ssd
+ state: ONLINE
+status: Some supported and requested features are not enabled on the pool.
+        The pool can still be used, but some features are unavailable.
+action: Enable all features using 'zpool upgrade'. Once this is done,
+        the pool may no longer be accessible by software that does not support
+        the features. See zpool-features(7) for details.
+  scan: scrub repaired 0B in 00:00:35 with 0 errors on Sun Mar  8 00:24:44 2026
+config:
+
+        NAME                                                     STATE     READ WRITE CKSUM
+        ssd                                                      ONLINE       0     0     0
+          mirror-0                                               ONLINE       0     0     0
+            nvme-CT500P310SSD8_25164FAF1C4F                      ONLINE       0     0     0
+            nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B  ONLINE       0     0     0
+
+```
+
+Let's check what is the serial number of the drives:
+
+```sh
+apt-get install hdparm
+```
+
+```sh
+hdparm -I /dev/disk/by-id/wwn-0x5000cca0bbe63bb3 | grep Number:
+```
+
+For NVMe you can use:
+
+```sh
+smartctl -a /dev/disk/by-id/nvme-CT500P310SSD8_25164FAF1C4F | grep Number:
+```
+
+So now we can match the ID with the drive serial number.
+
+| Zpool | ID                          | Model Number                   | Serial Number   |
+| ----- | --------------------------- | ------------------------------ | --------------- |
+| hdd   | wwn-0x5000cca0bbe63bb3      | HGST HUS728T8TALE604           | VDJR3AGK        |
+| hdd   | wwn-0x5000cca0bbe68f2e      | HGST HUS728T8TALE604           | VDJRUKVK        |
+| hdd   | wwn-0x5000cca0bbe693ad      | HGST HUS728T8TALE604           | VDJRVSZK        |
+| hdd   | wwn-0x5000cca0bbf58929      | HGST HUS728T8TALE604           | VDKTSX3K        |
+| ssd   | nvme-CT500P310SSD8...       | CT500P310SSD8                  | 25164FAF1C4F    |
+| ssd   | nvme-Samsung_SSD_970_EVO... | Samsung SSD 970 EVO Plus 500GB | S4EVNF0M698680B |
+
+To match the serial number with the location in the server, we need to carefully note in which bay the drive was inserted.
+
+| Row   | Column 1 | Column 2 |
+| ----- | :------: | :------: |
+| Row 1 | VDJR3AGK | VDJRVSZK |
+| Row 2 |    --    |    --    |
+| Row 3 |    --    |    --    |
+| Row 4 | VDKTSX3K | VDJRUKVK |
+
+And finally, we can do the same for the SSDs:
+
+- The CT500P310SSD8 is placed at the bottom right M.2 slot, right under the chipset.
+- The Samsung SSD 970 EVO Plus 500GB is placed on a PCIe to M.2 adapter card.
+
+Now if a disk fails, let's say wwn-0x5000cca0bbe63bb3, we will be able to know that its serial number is VDJR3AGK and it is located in the first row, first column.
+We can safely replace it with the spare disk and start the resilvering process.
 
 ## Showcase
 
@@ -1334,3 +1967,7 @@ Now the server is running on a Ryzen 5 5500 CPU and an Asus TUF Gaming B550-PLUS
 ### The end is never the end is never...
 
 - Experiment with NixOS
+
+### Other resources
+
+- https://wiki.crowncloud.net/index.php#Debian+13
