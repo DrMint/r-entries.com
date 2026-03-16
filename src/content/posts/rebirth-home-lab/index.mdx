@@ -187,7 +187,7 @@ There are actually several solutions to circumvent this issue:
 - **Support IPv6 only**. IPv6 address space is so much larger than IPv4, it doesn't have the same address exhaustion problem.
   With IPv6, say goodbye to NAT and CGNAT: every device has a unique global IPv6 address, just like it used to be with IPv4.
   It's the future of the internet, but unfortunately, not all ISPs support IPv6 yet.
-  The adoption is still still [under 50%](https://www.google.com/intl/en/ipv6/statistics.html) worldwide.
+  The adoption is still [under 50%](https://www.google.com/intl/en/ipv6/statistics.html) worldwide.
   If it continues at this rate, it may take another 15 years to reach near-universal adoption.
 
 - Use some form of **tunneling**.
@@ -216,13 +216,13 @@ It exists a few different types of tunneling:
   Make sure they provide a public IPv4 address as part of the service.
 
 And that's it for the foundational networking knowledge.
-I hope you found it interesting and informative. It will be useful for understanding same of the decisions I'll be making later on.
+I hope you found it interesting and informative. It will be useful for understanding some of the decisions I'll be making later on.
 
 ### Requirements overview
 
 To achieve the goals I've outlined earlier, I'm planning to use a 3 part system:
 
-1. A **main server**, the data/computing server of the homelab. It will be hosted at my place.
+1. A **main server** to host the services and store my data. It will be hosted at my place.
 2. A **bastion server**, the entrypoint to the homelab and its services. It will be hosted at a VPS provider.
 3. A **backup server**, where offsite backups will be stored. It will be hosted at my mom's place.
 
@@ -242,7 +242,7 @@ Having a backup server located elsewhere is a great way to protect against disas
 If the main server is stolen or destroyed, the backup server can be used to restore the latest backups.
 If the backup server is stolen or destroyed, the latest data is still safe on the main server.
 
-Let's in the following sections, I'll explore different aspects of the project and which choice best aligns with my goals.
+In the following sections, I'll explore different aspects of the project and which choice best aligns with my goals.
 
 > [!note] Naming the servers
 > Seeing this 3 part system, I'm thinking of naming the servers **Melchior** (main), **Balthasar** (bastion), and **Casper** (backup).
@@ -250,25 +250,46 @@ Let's in the following sections, I'll explore different aspects of the project a
 
 ### Tunneling solution
 
-I'm thinking of running [Pangolin](https://pangolin.net/) on the bastion server.
-It's a tunneled reverse proxy that seems to take some inspiration from Cloudflare.
-It creates WireGuard tunnels between itself and the nodes.
+On my homelab, I would like to host two types of services:
+- **Private services** (such as Immich) that should only be accessible by a limited number of users (mostly me).
+- **Public services** (such as r-entries.com) that should be directly accessible without any authentication.
 
-You can create rules based on the service, path, IP, and country to either block, allow, or require authentication.
+This is typically handled by a **reverse proxy**, a service that act like an entrypoint for other services.
+A reverse proxy typically handles routing, filtering requests, authentication, TLS/HTTPS, logging, and more.
 
-Authentication can take a few forms: a password, pin code, user identity with or without 2FA, or even external providers.
-Sharable links are also supported.
-Users don't need to install anything. They are redirected to the login page when trying access the services in their browser.
+On the other hand, the **tunneling solution** is responsible for creating a secure channel between two servers, the bastion and the main server in our case.
 
-Pangolin can also manage SSL certificates with Let's Encrypt as the issuer.
+Both functions can be completely separate, but in my case I think I'm going to use [Pangolin](https://pangolin.net/),
+a tunneled reverse proxy.
+
+Setup is pretty straightforward:
+- On the bastion server, you install **Pangolin**.
+- On the main server, you install **Newt**, a lightweight WireGuard client.
+
+Even if you are behind a CGNAT, you can now access your services from the internet.
+By default, Pangolin consider all services as private.
+When you try to reach a service, you will be redirected to the Pangolin login page.
+Once logged in, the URL reverts to the service you were trying to access.
+
+While Pangolin also offers a Cloud option, we will focus on the self-hosted version where everything is handled locally.
+
+> [!info] Authentication vs Authorization
+> **Authentication** is verifying who the user is.
+> **Authorization** determines what the user is allowed to do.
+> Both can be used in tandem, or you can have one without the other.
+
+You have a full range of options to either limit or extend access to your services.
+- You can make services completely opened to the public.
+- You can ditch authentication and just use authorization with a password, pin code, or a sharable link.
+- Or keep it as default, requiring both authentication and authorization. 
+
+Furthermore, you can define ranked rules to either block or allow access from specific IPs, geolocation, URL paths, and more.
+
+If you choose to keep authentication, you can have Role-Based Access Control (RBAC) to grant or block access to services based on the user's role.
+This gives you further control over who can access what. And contrary to other solutions like Tailscale, you don't need to install anything on the user's side.
 
 It can also work in tandem with [CrowdSec](https://www.crowdsec.net/), a modern, open-source, collaborative behavior detection engine, integrated with a global IP reputation network.
 It functions as a massively multiplayer firewall, analyzing visitor behavior and responding appropriately to various types of attacks.
-
-Pangolin can be installed on any VPS using Docker.
-Then from its interface, you can generate credentials to be used on the nodes.
-On the nodes you just need to run [Newt](https://github.com/fosrl/newt), a lightweight WireGuard client.
-Again you can use Docker to configure and run Newt.
 
 #### VPS
 
@@ -281,7 +302,7 @@ All I really need is a server with:
 - at least 2 vCores
 - at least 2&nbsp;GB of RAM
 - at least 20&nbsp;GB of storage
-- European location
+- a European company and data center
 
 My internet speed is pretty fast with 2300&nbsp;Mbps download and about 1000&nbsp;Mbps upload.
 A provider with 1&nbsp;Gb/s speed would be ideal for fast downloads.
@@ -324,7 +345,7 @@ Also I think having to choose how much ressource to allocate to each VM was a bi
 
 Thus, my plan is to **run Debian on bare metal** on all three servers. And **use Docker containers** to run services.
 If in the future I decide that virtualization is needed, I can always install [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) on the main server.
-Proxmox is already shipped with Debian so installing it should be simple enough. They have a [guide](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_13_Trixie) for that.
+Proxmox is already shipped with Debian so installing it should be simple enough. They even have a [guide](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_13_Trixie) for that.
 
 ### File system
 
@@ -538,7 +559,7 @@ Here's the plan:
 Other tips:
 
 - Store optical discs vertically in standard jewel cases without additional materials in the case.
-- Only label discs with a water-based permanent marker on the clear inner hub, not the top surface.
+- If you want to label the discs, use a water-based permanent marker on the clear inner hub, not the top surface.
 - 20-50% humidity and temperatures between 15-25°C are ideal.
 
 More info at [this article on Optical Discs](https://www.canada.ca/en/conservation-institute/services/conservation-preservation-publications/canadian-conservation-institute-notes/longevity-recordable-cds-dvds.html) by the Canadian Conservation Institute.
@@ -564,6 +585,11 @@ Of course the tradeoff is that ECC memory is more expensive.
 Also, finding a consumer-grade CPU and motherboard that support ECC memory can be difficult.
 
 ECC memory is one more protection against data corruption. It's complementary to the other protection mechanisms provided by ZFS.
+
+### Uninterruptible Power Supply (UPS)
+
+> [!error] This section is a work in progress.
+> Come back later :)
 
 ### Monitoring
 
@@ -617,6 +643,10 @@ Things that are out of scope:
 
 - High availability
 
+> [!error] This section is a work in progress.
+> Come back later :)
+
+
 ### Threats and mitigations
 
 As a recap of everything I've mentioned so far, here's a list of potential threats and how I plan to mitigate them:
@@ -640,7 +670,7 @@ As a recap of everything I've mentioned so far, here's a list of potential threa
     - Monitor temps including disks temps.
     - Monitor room temps and adjust fans accordingly.
     - Use dust filters and clean them regularly.
-    - Ensure positive pressure in the computer cases to recude dust accumulation.
+    - Ensure positive pressure in the computer cases to reduce dust accumulation.
 
 - Provider threats
   - ISP issues (CGNAT, IPv4 change, outage, blocking ports)
@@ -1041,8 +1071,8 @@ For the backup server:
 9. Keep domain name empty
 10. Provide a password for the root user
 11. Confirm the password
-12. Create a new user: tom
-13. Provide a password for the tom user
+12. Create a new user: [USERNAME]
+13. Provide a password for the [USERNAME] user
 14. Use "Guided: use entire disk" to partition the disk
 15. Select the right disk to use, based on the size and name of the disk
 16. Select "All files in one partition (recommended for beginners)"
@@ -1562,6 +1592,7 @@ Somewhere, talk about NAT loopback / hairpin NAT / NAT reflection.
 So, about a month after I built the main server, I decided to reinstall the OS to make sure every step was perfectly documented.
 Unfortunately, the server never POSTed after that. The POST status checker LEDs for the CPU and DRAM were constantly on.
 I tried all the usual troubleshooting steps: 
+
 - unplugging the PSU and waiting a few minutes
 - clearing the CMOS
 - reflashing the BIOS
@@ -1588,6 +1619,7 @@ At that point, I finally decided to check online if anyone else was having the s
 
 What I found was that I had been living under a rock. Since early 2025, there has been reports of Ryzen 9000 series CPUs failing, especially on ASRock motherboards.
 There is a [megathread](https://www.reddit.com/r/ASRock/comments/1q3ff0t/9000series_cpu_failures_deaths_megathread_4/?utm_source=chatgpt.com) on ASRock's subreddit that nicely summarizes the situation:
+
 - Since February 2025, there has been pictures posted online of scorched CPU pins and motherboard sockets.
   The initial investigation suggested that only X3D CPUs and ASRock motherboards were affected.
   ASRock initially blamed the issue on user error or aggressive overclocking, but later made a statement that overvoltage due to bad PBO implementations could be the cause.
@@ -1636,3 +1668,7 @@ Now the server is running on a Ryzen 5 5500 CPU and an Asus TUF Gaming B550-PLUS
     - https://fr.aliexpress.com/item/1005004285318699.html
 - Backup server
   - Use ECC memory. This would require a new motherboard and memory sticks. The CPU already supports ECC.
+
+### The end is never the end is never...
+
+- Experiment with NixOS
