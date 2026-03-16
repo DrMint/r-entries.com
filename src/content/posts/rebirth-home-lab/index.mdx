@@ -197,8 +197,8 @@ I won't go into the details of how tunneling works, but if you ever used a <abbr
 With a tunnel, you recreate a standard NAT setup, completely bypassing the CGNAT:
 
 <MdxImage
-src={tunnelRequest}
-caption="The server is technically on both the VPN and the house local network, I just wanted to focus on the part that's relevant for hosting the services."
+  src={tunnelRequest}
+  caption="The server is technically on both the VPN and the house local network, I just wanted to focus on the part that's relevant for hosting the services."
 />
 
 It exists a few different types of tunneling:
@@ -248,50 +248,12 @@ In the following sections, I'll explore different aspects of the project and whi
 > Seeing this 3 part system, I'm thinking of naming the servers **Melchior** (main), **Balthasar** (bastion), and **Casper** (backup).
 > This is a reference to the [Magi System](https://evangelion.fandom.com/wiki/Magi) from Neon Genesis Evangelion.
 
-### Tunneling solution
+### Operating System (OS)
 
-On my homelab, I would like to host two types of services:
-- **Private services** (such as Immich) that should only be accessible by a limited number of users (mostly me).
-- **Public services** (such as r-entries.com) that should be directly accessible without any authentication.
+> [!error] This section is a work in progress.
+> Come back later :)
 
-This is typically handled by a **reverse proxy**, a service that act like an entrypoint for other services.
-A reverse proxy typically handles routing, filtering requests, authentication, TLS/HTTPS, logging, and more.
-
-On the other hand, the **tunneling solution** is responsible for creating a secure channel between two servers, the bastion and the main server in our case.
-
-Both functions can be completely separate, but in my case I think I'm going to use [Pangolin](https://pangolin.net/),
-a tunneled reverse proxy.
-
-Setup is pretty straightforward:
-- On the bastion server, you install **Pangolin**.
-- On the main server, you install **Newt**, a lightweight WireGuard client.
-
-Even if you are behind a CGNAT, you can now access your services from the internet.
-By default, Pangolin consider all services as private.
-When you try to reach a service, you will be redirected to the Pangolin login page.
-Once logged in, the URL reverts to the service you were trying to access.
-
-While Pangolin also offers a Cloud option, we will focus on the self-hosted version where everything is handled locally.
-
-> [!info] Authentication vs Authorization
-> **Authentication** is verifying who the user is.
-> **Authorization** determines what the user is allowed to do.
-> Both can be used in tandem, or you can have one without the other.
-
-You have a full range of options to either limit or extend access to your services.
-- You can make services completely opened to the public.
-- You can ditch authentication and just use authorization with a password, pin code, or a sharable link.
-- Or keep it as default, requiring both authentication and authorization. 
-
-Furthermore, you can define ranked rules to either block or allow access from specific IPs, geolocation, URL paths, and more.
-
-If you choose to keep authentication, you can have Role-Based Access Control (RBAC) to grant or block access to services based on the user's role.
-This gives you further control over who can access what. And contrary to other solutions like Tailscale, you don't need to install anything on the user's side.
-
-It can also work in tandem with [CrowdSec](https://www.crowdsec.net/), a modern, open-source, collaborative behavior detection engine, integrated with a global IP reputation network.
-It functions as a massively multiplayer firewall, analyzing visitor behavior and responding appropriately to various types of attacks.
-
-#### VPS
+### Virtual Private Server (VPS)
 
 I'm going to use a VPS provider for the bastion server.
 All I really need is a server with:
@@ -319,7 +281,7 @@ But I'm also thinking that a lower speed--on top of reducing the cost--would res
 In the end, I decided to go with OVH. Specifically their VPS-1 offering:
 
 - **CPU**: 4 vCores
-  - **Memory**: 8&nbsp;GB
+- **Memory**: 8&nbsp;GB
 - **Storage**: 75&nbsp;GB (NVMe)
 - **Bandwidth**: 400 Mbit/s
 - **Traffic**: Unlimited
@@ -330,6 +292,52 @@ In the end, I decided to go with OVH. Specifically their VPS-1 offering:
 - **OS**: Fedora (40, 42), AlmaLinux (8, 9, 10), CloudLinux (9), Debian (11, 12, 13), Rocky Linux (8, 9, 10), Ubuntu (22.04, 24.04, 24.10, 25.04), FreeBSD (14.3)
 - Comes with a public IPv4 and IPv6 addresses
 - SSH access
+
+### Tunneling solution
+
+On my homelab, I would like to host two types of services:
+
+- **Private services** (such as Immich) that should only be accessible by a limited number of users (mostly me).
+- **Public services** (such as r-entries.com) that should be directly accessible without any authentication.
+
+This is typically handled by a **reverse proxy**, a service that act like an entrypoint for other services.
+A reverse proxy typically handles routing, filtering requests, authentication, TLS/HTTPS, logging, and more.
+
+On the other hand, the **tunneling solution** is responsible for creating a secure channel between two servers, the bastion and the main server in our case.
+
+Both functions can be completely separate, but in my case I think I'm going to use [Pangolin](https://pangolin.net/),
+a tunneled reverse proxy.
+
+Setup is pretty straightforward:
+
+- On the bastion server, you install **Pangolin**.
+- On the main server, you install **Newt**, a lightweight WireGuard client.
+
+Even if you are behind a CGNAT, you can now access your services from the internet.
+By default, Pangolin consider all services as private.
+When you try to reach a service, you will be redirected to the Pangolin login page.
+Once logged in, the URL reverts to the service you were trying to access.
+
+While Pangolin also offers a Cloud option, we will focus on the self-hosted version where everything is handled locally.
+
+> [!info] Authentication vs Authorization
+> **Authentication** is verifying who the user is.
+> **Authorization** determines what the user is allowed to do.
+> Both can be used in tandem, or you can have one without the other.
+
+You have a full range of options to either limit or extend access to your services.
+
+- You can make services completely opened to the public.
+- You can ditch authentication and just use authorization with a password, pin code, or a sharable link.
+- Or keep it as default, requiring both authentication and authorization.
+
+Furthermore, you can define ranked rules to either block or allow access from specific IPs, geolocation, URL paths, and more.
+
+If you choose to keep authentication, you can have Role-Based Access Control (RBAC) to grant or block access to services based on the user's role.
+This gives you further control over who can access what. And contrary to other solutions like Tailscale, you don't need to install anything on the user's side.
+
+It can also work in tandem with [CrowdSec](https://www.crowdsec.net/), a modern, open-source, collaborative behavior detection engine, integrated with a global IP reputation network.
+It functions as a massively multiplayer firewall, analyzing visitor behavior and responding appropriately to various types of attacks.
 
 ### Virtualization and containerization
 
@@ -534,11 +542,11 @@ But the drive itself is impossible to buy new, and the used ones are above 1 0
 Finally we have the M-DISC technology, which are basically Blu-ray discs with a different type of material that's more durable. The claim is that they can last up to 100 years.
 The price is around 180&nbsp;€ per TB. Basically every BD drive can read M-DISC discs, but only compatible drives can burn them. The drive is around 120&nbsp;€.
 
-| Media                | Price per TB | Price of the drive | Average longevity |
-| -------------------- | ------------ | ------------------ | ----------------- |
-| Blu-ray              | 30&nbsp;€    | 100&nbsp;€         | 10-20 years       |
-| Blu-ray M-DISC       | 180&nbsp;€   | 120&nbsp;€         | 100 years         |
-| Optical Disc Archive | 40&nbsp;€    | 1 000&nbsp;€       | 100 years         |
+| Media                | Price per TB | Price of the drive | Advertised longevity |
+| -------------------- | ------------ | ------------------ | -------------------- |
+| Blu-ray              | 30&nbsp;€    | 100&nbsp;€         | 10-20 years          |
+| Blu-ray M-DISC       | 180&nbsp;€   | 120&nbsp;€         | 100 years            |
+| Optical Disc Archive | 40&nbsp;€    | 1 000&nbsp;€       | 100 years            |
 
 Based on the price per TB, if I have a replacement cycle every 10 years, regular BD would be more cost-effective for the first 60 years.
 In the next 60 years, it's very likely that new technology will be released and make the M-DISC completely obsolete.
@@ -646,7 +654,6 @@ Things that are out of scope:
 > [!error] This section is a work in progress.
 > Come back later :)
 
-
 ### Threats and mitigations
 
 As a recap of everything I've mentioned so far, here's a list of potential threats and how I plan to mitigate them:
@@ -717,31 +724,153 @@ As a recap of everything I've mentioned so far, here's a list of potential threa
     - Have weekly alerts just to confirm that things are working as expected.
     - Monthly manual checks.
 
-## Planning the hardware
+## Choosing and setting up the hardware
 
-### Main server
+### Buying prebuilt vs building your own
 
-So, for the main server, I have a few requirements:
+> [!error] This section is a work in progress.
+> Come back later :)
 
-- Support up to 8 × 3.5" HDDs (although I'm not likely to use more than 6)
+### Core components for the main server
+
+I have a few requirements:
+
+- I'll start with 4 × 3.5" HDDs but in terms of upgradability, I'll aim for 6 × 3.5" HDDs.
 - Support for 2 × NVMe SSDs (or at least SATA SSDs)
-- ECC memory would be nice
 - 32&nbsp;GB of memory (upgradeable to 64&nbsp;GB if needed)
 - Efficiency is very important considering the system will run 24/7
-- Hardware acceleration for video transcoding and AI workloads
 - CPU performance should be sufficient.
   I like to use PassMark scores to compare CPUs. Let's aim for a score of 20 000 or more.
-- 6 cores / 12 threads minimum
-- 65&nbsp;W TDP for the CPU
+
+And for the nice to have:
+
+- ECC memory
+- Hardware acceleration for video transcoding and AI workloads
+
+#### CPU
+
+> [!error] This section is a work in progress.
+> Come back later :)
+
+#### GPU
+
+A GPU (dedicated or integrated) is not strictly necessary. But it can be useful for:
+
+- Simply to display a video output (accessing the BIOS, debugging, etc...)
+- Image processing (generating thumbnails)
+- Video transcoding (Jellyfin, Plex)
+- AI workloads (Immich face recognition, LLMs)
+
+For video transcoding, [Jellyfin recommends](https://jellyfin.org/docs/general/administration/hardware-selection): - Intel Arc A series or newer - Nvidia GTX16/RTX20 series or newer (Excluding GTX1650) - AMD is **NOT** recommended.
+
+NVIDIA provides a [list](https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new) of supported video encoding and decoding features for their GPUs.
+Overall, NVIDIA GPUs are pricier but well regarded for their gaming and video transcoding capabilities.
+
+Entry-level Intel Arc GPUs are considered mediocre for gaming but provide excellent video transcoding capabilities considering their price, consumption, and size.
+
+AMD GPUs are considered behind the competition when it comes to video transcoding.
+Even when the codecs are supported, performance or image quality may be lacking.
+
+Depending on the choice of case, we may have to look for a low profile GPU.
+
+#### Motherboard
+
+For the motherboard, it's not _too_ difficult to find one with 6 SATA ports.
+If we want more SATA ports, we have a few options:
+
+- Specialized motherboards with more SATA ports (rare, expensive)
+- M.2 to SATA adapter (up to 6 SATA ports)
+- PCIe to SATA adapter
+- PCIe to SAS + SAS to SATA cable (typically 2 SAS ports, which means 8 SATA ports)
+- If you really want to go crazy, you can use a PCIe&nbsp;x16 to 4x4 bifurcation cards to convert a single PCIe&nbsp;x16 slot to 4 × M.2 slots.
+  Then you can use a M.2 to SATA adapter on each M.2 slot. This means 24 SATA ports.
+
+Other recommendations:
+
+- Update the BIOS before installing the CPU: they have been user reporting that their newly bought CPU (e.g: Ryzen 9000 series) got overvolted when installed on a motherboard that didn't support the CPU without a BIOS update.
+- Prefer ASRock or ASUS motherboards if you want to use ECC memory. Most other brands don't support it.
+
+#### Memory
+
+##### CPU
+
+- Ryzen 3000/4000
+  - Without integrated graphics: support ECC memory
+  - With integrated graphics:
+    - Pro variant: support ECC memory
+    - Non-Pro variant: no support
+- Ryzen 5000
+  - Without integrated graphics:
+    - Ryzen 5 5500: no support
+    - Others: support ECC memory
+  - With integrated graphics:
+    - Pro variant: support ECC memory
+    - Non-Pro variant: no support
+- Ryzen 7000: support ECC memory
+- Ryzen 8000
+  - Pro variant: support ECC memory
+  - Non-Pro variant: no support
+- Ryzen 9000: support ECC memory
+
+For the AM5 platform we have this handy [community spreadsheet](https://docs.google.com/spreadsheets/d/1NQHkDEcgDPm34Mns3C93K6SJoBnua-x9O-y_6hv8sPs).
+
+##### Motherboard
+
+In general, Asus and ASRock motherboards support ECC memory. Other brands typically don't.
+
+For the AM5 platform we have this handy [community spreadsheet](https://docs.google.com/spreadsheets/d/1NQHkDEcgDPm34Mns3C93K6SJoBnua-x9O-y_6hv8sPs).
+
+##### Memory stick
+
+Look for ECC UDIMM (Unbuffered DIMM).
+
+- Avoid RDIMM (Registered DIMM), which is only available in workstation / server motherboards.
+- Avoid "on-die ECC" only. It is a required feature on DDR5 memory sticks, but only corrects single-bit errors within the memory chip itself.
+
+#### Storage
+
+You can easily check what's the best price for different storage types and capacities at [diskprices.com](https://diskprices.com).
+
+For ZFS, it's important that the hard drives are not SMR or else the performance will worsen. This can make resilvering much slower.
+You can use this [list](https://nascompares.com/answer/list-of-wd-cmr-and-smr-hard-drives-hdd/) to check if disk is not SMR. CRM is the preferred type.
+
+#### PSU
+
+Considering the rest of the requirements, we can expect the system to draw a maximum of 400&nbsp;W.
+This is because HDDs will draw significantly more power at startup than during normal operation.
+
+During normal operation, the system should draw around 120&nbsp;W.
+
+Any PSU rated for 550&nbsp;W or higher should be sufficient.
+
+Obviously, efficiency is important for a home lab that will run 24/7.
+For example, the _be quiet! PURE POWER 12 M 650&nbsp;W_ advertises a 80+ Gold rating. This means:
+
+- at 20&nbsp;% load, the efficiency is at least 90&nbsp;%.
+- at 50&nbsp;% load, the efficiency is at least 92&nbsp;%.
+- at 100&nbsp;% load, the efficiency is at least 89&nbsp;%.
+
+So the efficient should be above 90&nbsp;% most of the time, which is great. I would recommend at least a 80+ Gold rating.
+
+It can be difficult to find a PSU with sufficient amount of SATA or PATA (aka molex) cables out of the box.
+If the PSU is modular, you should check if the PSU has enough "Drives" / "SATA/PATA" ports.
+If so, maybe the manufacturer provided cables that can be purchased separately.
+
+It's also possible to buy compatible SATA/PATA cables from [cablemod](https://eustore.cablemod.com/configurator) for about 10&nbsp;€ per cable, 15&nbsp;€ for shipping.
+
+Considering that I'm not likely to use more than 6 × 3.5" HDDs, I don't have to worry about how much current is going through the 12&nbsp;V lanes.
+Research into it if you're using more disks.
+
+TODO: add my research on power efficiency
 
 #### Cases
 
 The complexity is to find a case that will accomodate at least 6 × 3.5" disks. This is becoming increasingly difficult as nowadays people will likely use a NVMe SSD and maybe one or two 3.5" HDDs.
 
 They are some specialized "PC NAS" cases, but they are typically quite expensive and value compactness.
-This means that the motherboard will typically be Mini-ITX or Micro-ATX, which are typically more expensive and provide less slots and features.
+This means that the motherboard will be Mini-ITX or Micro-ATX, which are typically more expensive and provide less slots and features.
 
-Then they are rack mounted cases, which are also expensive.
+Then there are rack mounted cases, which are also expensive.
 Typically, you can use any size of motherboard but you are still limited by the height of the case.
 This means the CPU cooler and the GPU need to be low profile.
 You can easily find cases with at least 6 × 3.5" bays and some with hot-swappable bays on the front of the case which makes maintenance very convenient.
@@ -797,117 +926,6 @@ Here's one I like:
   - max. 100&nbsp;mm tall CPU cooler / GPU
   - max. 244&nbsp;mm long GPU
   - 480&nbsp;mm wide, 132&nbsp;mm tall, 528&nbsp;mm deep (3U rack)
-
-#### Motherboards
-
-For the motherboard, it's not too difficult to find one with 6 SATA ports.
-If we want more SATA ports, we have a few options:
-
-- Specialized motherboards with more SATA ports (rare, expensive)
-- M.2 to SATA adapter (up to 6 SATA ports)
-- PCIe to SATA adapter
-- PCIe to SAS + SAS to SATA cable (typically 2 SAS ports, which means 8 SATA ports)
-- If you really want to go crazy, you can use a PCIe&nbsp;x16 to 4x4 bifurcation cards to convert a single PCIe&nbsp;x16 slot to 4 × M.2 slots.
-  Then you can use a M.2 to SATA adapter on each M.2 slot. This means 24 SATA ports.
-
-Other recommendations:
-
-- Update the BIOS before installing the CPU: they have been user reporting that their newly bought CPU (e.g: Ryzen 9000 series) got overvolted when installed on a motherboard that didn't support the CPU without a BIOS update.
-- Prefer ASRock or ASUS motherboards if you want to use ECC memory. Most other brands don't support it.
-
-#### ECC Memory
-
-##### CPU
-
-- Ryzen 3000/4000
-  - Without integrated graphics: support ECC memory
-  - With integrated graphics:
-    - Pro variant: support ECC memory
-    - Non-Pro variant: no support
-- Ryzen 5000
-  - Without integrated graphics:
-    - Ryzen 5 5500: no support
-    - Others: support ECC memory
-  - With integrated graphics:
-    - Pro variant: support ECC memory
-    - Non-Pro variant: no support
-- Ryzen 7000: support ECC memory
-- Ryzen 8000
-  - Pro variant: support ECC memory
-  - Non-Pro variant: no support
-- Ryzen 9000: support ECC memory
-
-For the AM5 platform we have this handy [community spreadsheet](https://docs.google.com/spreadsheets/d/1NQHkDEcgDPm34Mns3C93K6SJoBnua-x9O-y_6hv8sPs).
-
-##### Motherboard
-
-In general, Asus and ASRock motherboards support ECC memory. Other brands typically don't.
-
-For the AM5 platform we have this handy [community spreadsheet](https://docs.google.com/spreadsheets/d/1NQHkDEcgDPm34Mns3C93K6SJoBnua-x9O-y_6hv8sPs).
-
-##### Memory stick
-
-Look for ECC UDIMM (Unbuffered DIMM).
-
-- Avoid RDIMM (Registered DIMM), which is only available in workstation / server motherboards.
-- Avoid "on-die ECC" only. It is a required feature on DDR5 memory sticks, but only corrects single-bit errors within the memory chip itself.
-
-#### GPU
-
-A GPU (dedicated or integrated) is not strictly necessary. But it can be useful for:
-
-- Simply to display a video output (accessing the BIOS, debugging, etc...)
-- Image processing (generating thumbnails)
-- Video transcoding (Jellyfin, Plex)
-- AI workloads (Immich face recognition, LLMs)
-
-For video transcoding, [Jellyfin recommends](https://jellyfin.org/docs/general/administration/hardware-selection): - Intel Arc A series or newer - Nvidia GTX16/RTX20 series or newer (Excluding GTX1650) - AMD is **NOT** recommended.
-
-NVIDIA provides a [list](https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new) of supported video encoding and decoding features for their GPUs.
-Overall, NVIDIA GPUs are pricier but well regarded for their gaming and video transcoding capabilities.
-
-Entry-level Intel Arc GPUs are considered mediocre for gaming but provide excellent video transcoding capabilities considering their price, consumption, and size.
-
-AMD GPUs are considered behind the competition when it comes to video transcoding.
-Even when the codecs are supported, performance or image quality may be lacking.
-
-Depending on the choice of case, we may have to look for a low profile GPU.
-
-#### PSU
-
-Considering the rest of the requirements, we can expect the system to draw a maximum of 400&nbsp;W.
-This is because HDDs will draw significantly more power at startup than during normal operation.
-
-During normal operation, the system should draw around 120&nbsp;W.
-
-Any PSU rated for 550&nbsp;W or higher should be sufficient.
-
-Obviously, efficiency is important for a home lab that will run 24/7.
-For example, the _be quiet! PURE POWER 12 M 650&nbsp;W_ advertises a 80+ Gold rating. This means:
-
-- at 20&nbsp;% load, the efficiency is at least 90&nbsp;%.
-- at 50&nbsp;% load, the efficiency is at least 92&nbsp;%.
-- at 100&nbsp;% load, the efficiency is at least 89&nbsp;%.
-
-So the efficient should be above 90&nbsp;% most of the time, which is great. I would recommend at least a 80+ Gold rating.
-
-It can be difficult to find a PSU with sufficient amount of SATA or PATA (aka molex) cables out of the box.
-If the PSU is modular, you should check if the PSU has enough "Drives" / "SATA/PATA" ports.
-If so, maybe the manufacturer provided cables that can be purchased separately.
-
-It's also possible to buy compatible SATA/PATA cables from [cablemod](https://eustore.cablemod.com/configurator) for about 10&nbsp;€ per cable, 15&nbsp;€ for shipping.
-
-Considering that I'm not likely to use more than 6 × 3.5" HDDs, I don't have to worry about how much current is going through the 12&nbsp;V lanes.
-Research into it if you're using more disks.
-
-TODO: add my research on power efficiency
-
-#### Storage
-
-You can easily check what's the best price for different storage types and capacities at [diskprices.com](https://diskprices.com).
-
-For ZFS, it's important that the hard drives are not SMR or else the performance will worsen. This can make resilvering much slower.
-You can use this [list](https://nascompares.com/answer/list-of-wd-cmr-and-smr-hard-drives-hdd/) to check if disk is not SMR. CRM is the preferred type.
 
 #### Complete builds
 
@@ -985,7 +1003,7 @@ This can be expanded in the future to
 - 40&nbsp;TB with 7&nbsp;HDDs
 - 48&nbsp;TB with 8&nbsp;HDDs
 
-### Backup server
+### Core components for the backup server
 
 Here a few ideas for the backup server:
 
@@ -1010,15 +1028,24 @@ I think I'll consider this an upgrade path in the future but stick to non-ECC me
 | HDDs        | 4 × Seagate EXOS X16 16&nbsp;TB               | 880&nbsp;€ |
 | Total       |                                               | 910&nbsp;€ |
 
-### Routers
+> [!error] This section is a work in progress.
+> Come back later :)
+
+### Networking and connectivity
 
 - MikroTik Hex routers
+
+> [!error] This section is a work in progress.
+> Come back later :)
 
 ### UPS
 
 - BX1600MI-FR
 
-## Shopping list
+> [!error] This section is a work in progress.
+> Come back later :)
+
+### Complete shopping list
 
 For the main server:
 
@@ -1049,16 +1076,25 @@ For the backup server:
 | HDDs      | 4 × Seagate EXOS X16 16&nbsp;TB | 887.43&nbsp;€ |
 | Total     |                                 | 922.34&nbsp;€ |
 
-## Building the servers
+### Setting up the physical hardware
 
+- Take a picture of the drives before inserting them into the server. Note which bay they are in.
 - I was surprised that the cooler wasn't aligned with the CPU but offset by 0.7mm.
   I thought something was wrong but actually it's because the CPU has a chiplet design with most of the heat being produced at the bottom of the chip.
   See this [video](https://www.youtube.com/watch?v=eRsv1dOuOHk) for more details.
 - BIOS Flashback: https://www.youtube.com/watch?v=fqKs9fekNNY
 
-## Software configuration
+> [!error] This section is a work in progress.
+> Show diagrams of the networking and the power delivery through the UPS + smart plug.
 
-### Install Debian
+## Configuring the software
+
+### Base OS and environment
+
+#### Installing Debian
+
+> [!error] This section is a work in progress.
+> Make another post on how to install and use Ventoy
 
 1. Download the [netinstall image](https://www.debian.org/distrib/)
 2. Burn it to a USB stick
@@ -1083,13 +1119,13 @@ For the backup server:
 21. Select the same disk as before for the boot loader installation
 22. When it says "Installation complete", remove the USB stick and press continue to reboot the server
 
-### Change the password
+#### Change the password
 
 ```sh
 passwd
 ```
 
-### Install and enable Fail2Ban
+#### Install and enable Fail2Ban
 
 ```sh
 apt install fail2ban
@@ -1103,7 +1139,7 @@ Check status:
 systemctl status fail2ban
 ```
 
-### Set static IP
+#### Set static IP
 
 ```sh
 nano /etc/network/interfaces
@@ -1131,7 +1167,7 @@ iface enp6s0 inet static
 
 Reboot the server to apply the changes.
 
-### Synchronize time
+#### Synchronize time
 
 ```sh
 apt-get install systemd-timesyncd
@@ -1155,7 +1191,9 @@ System clock synchronized: yes
 
 ```
 
-### Install Docker
+### Containerization setup
+
+#### Installing Docker
 
 ```sh
 apt-get update
@@ -1178,403 +1216,27 @@ You can check the status of the Docker service with:
 systemctl status docker
 ```
 
-#### Configure Loki with Docker plugin
+#### Container orchestration
 
-```sh
-docker plugin install grafana/loki-docker-driver:3.3.2-amd64 --alias loki --grant-all-permissions
-```
+What I'm looking for in a Docker management tool/orchestrator:
 
-Add the following to each docker compose service:
+- List containers, images, networks, volumes
+- View utilization stats: CPU, memory, storage, network
+- View logs, enter terminal inside the container when possible
+- Create, view, edit projects (docker compose)
+- Perform simple operations like build, start, pause, stop, restart, on containers and projects
+- List and get notified of image updates
+- (Nice to have) Support for multiple hosts
 
-```yml
-logging:
-  driver: loki
-  options:
-    loki-url: "http://localhost:3100/loki/api/v1/push"
-    loki-retries: 2
-    loki-max-backoff: 800ms
-    loki-timeout: 1s
-    keep-file: "true"
-    mode: "non-blocking"
-```
+> [!error] This section is a work in progress.
+> Come back later :)
 
-Avoid logging Loki or Grafana's containers as it can create a feedback loop.
+#### Tips for maintainability and configuration management
 
-### Install JavaScript runtimes and tools
+> [!error] This section is a work in progress.
+> Come back later :)
 
-```sh
-apt install nodejs npm
-```
-
-#### PM2 process manager
-
-Install:
-
-```sh
-npm install -g pm2
-```
-
-Logrotate is a module for PM2 that automatically manages and rotates log files to prevent them from consuming too much disk space. 
-
-```sh
-pm2 install pm2-logrotate
-```
-
-To preserve the running services after a reboot:
-
-```sh
-pm2 startup
-pm2 save
-```
-
-Run pm2 save after adding or removing services to preserve the configuration after a reboot.
-
-### Other useful tools
-
-To monitor system resources:
-
-```sh
-apt install lm-sensors smartmontools btop
-```
-
-To easily explore the filesystem and see what's taking up space:
-
-```sh
-apt install ncdu
-```
-
-### Main server (Melchior)
-
-#### Install ZFS
-
-Add backports to your sources.list:
-
-```sh
-apt install lsb-release
-codename=$(lsb_release -cs);echo "deb http://deb.debian.org/debian $codename-backports main contrib non-free"|tee -a /etc/apt/sources.list
-```
-
-Install the packages:
-
-```sh
-apt update
-apt install linux-headers-amd64
-apt install -t stable-backports zfsutils-linux
-```
-
-Press Enter in the license agreement prompt.
-
-#### Create the HDD pool
-
-Get the list of disks' UUIDs:
-
-```sh
-ls -l /dev/disk/by-id/
-```
-
-```txt
-lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbe63bb3 -> ../../sdd
-lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbe68f2e -> ../../sdc
-lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbe693ad -> ../../sdb
-lrwxrwxrwx 1 root root  9 Sep 21 13:41 wwn-0x5000cca0bbf58929 -> ../../sda
-```
-
-Determine the right `ashift` value:
-
-```sh
-lsblk -o NAME,PHY-SeC,SIZE,TYPE /dev/sd[a-d]
-```
-
-```txt
-NAME PHY-SEC  SIZE TYPE
-sda     4096  7.3T disk
-sdb     4096  7.3T disk
-sdc     4096  7.3T disk
-sdd     4096  7.3T disk
-```
-
-We see that the `PHY-SEC` is 4096. This gives us `ashift=12` (2^12 = 4096).
-
-Create the RAIDZ2 pool (this will **erase everything on these drives**. Make sure there's nothing you care about on them):
-
-```sh
-zpool create \
-  -o ashift=12 \
-  -O acltype=posixacl \
-  -O xattr=sa \
-  -O compression=zstd \
-  -O atime=off \
-  -O relatime=off \
-  -O normalization=formD \
-  -m /data \
-  data raidz2 \
-  /dev/disk/by-id/wwn-0x5000cca0bbe63bb3 \
-  /dev/disk/by-id/wwn-0x5000cca0bbe68f2e \
-  /dev/disk/by-id/wwn-0x5000cca0bbe693ad \
-  /dev/disk/by-id/wwn-0x5000cca0bbf58929
-```
-
-You can add `-f` to force the creation of the pool (it may be necessary if the disks already have a filesystem on them).
-
-#### Create the SSD pool
-
-```sh
-lsblk -f
-```
-
-```txt
-NAME        FSTYPE     FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
-sda
-├─sda1      zfs_member 5000  data  3786879799329643345
-└─sda9
-sdb
-├─sdb1      zfs_member 5000  data  3786879799329643345
-└─sdb9
-sdc
-├─sdc1      zfs_member 5000  data  3786879799329643345
-└─sdc9
-sdd
-├─sdd1      zfs_member 5000  data  3786879799329643345
-└─sdd9
-nvme1n1
-nvme2n1
-├─nvme2n1p1 vfat       FAT32       1083-1133                             965.3M     1% /boot/efi
-├─nvme2n1p2 ext4       1.0         0201fa06-8444-490c-ba9d-c926c5010a94  393.7G     4% /
-└─nvme2n1p3 swap       1           5c7b6301-be42-4e3f-9365-6672853ac470                [SWAP]
-nvme0n1
-└─nvme0n1p1 ext4       1.0         c4a339bb-78bc-4156-9232-70e9324a1ff1
-```
-
-Here I can see that my 4 disks are listed as `zfs_members`.
-The OS NVMe is `nvme2n1` because that's the one with the mounted partitions (boot and root).
-So I'll create a new pool with `nvme0n1` and `nvme1n1`.
-
-I can get their ids with this command:
-
-```sh
-ls -l /dev/disk/by-id/ | grep -w nvme[0-1]n1
-```
-
-```txt
-lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-CT500P310SSD8_25164FAF1C4F -> ../../nvme0n1
-lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-CT500P310SSD8_25164FAF1C4F_1 -> ../../nvme0n1
-lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-eui.0025385691b4ebc8 -> ../../nvme1n1
-lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-eui.00a075014faf1c4f -> ../../nvme0n1
-lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B -> ../../nvme1n1
-lrwxrwxrwx 1 root root 13 Oct  1 20:19 nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B_1 -> ../../nvme1n1
-
-```
-
-For NVMe disks, it's common to find multiple symlinks. Any of them should work.
-I'll choose the human readable ones (CT500 and Samsung) without the "\_1" suffix.
-
-```sh
-zpool create \
-  -o ashift=12 \
-  -O acltype=posixacl \
-  -O xattr=sa \
-  -O compression=zstd \
-  -O atime=off \
-  -O relatime=off \
-  -O normalization=formD \
-  -m /fast \
-  fast mirror \
-  /dev/disk/by-id/nvme-CT500P310SSD8_25164FAF1C4F \
-  /dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B
-```
-
-#### Import the pools
-
-If the pools were already created on another server, you can import them with:
-```sh
-zpool import
-```
-
-```txt
-  pool: ssd
-    id: 4664139631714187601
- state: ONLINE
-status: The pool was last accessed by another system.
-action: The pool can be imported using its name or numeric identifier and
-        the '-f' flag.
-   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
-config:
-
-        ssd                                                      ONLINE
-          mirror-0                                               ONLINE
-            nvme-CT500P310SSD8_25164FAF1C4F                      ONLINE
-            nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B  ONLINE
-
-  pool: hdd
-    id: 3786879799329643345
- state: ONLINE
-status: The pool was last accessed by another system.
-action: The pool can be imported using its name or numeric identifier and
-        the '-f' flag.
-   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
-config:
-
-        hdd                         ONLINE
-          raidz2-0                  ONLINE
-            wwn-0x5000cca0bbe63bb3  ONLINE
-            wwn-0x5000cca0bbe68f2e  ONLINE
-            wwn-0x5000cca0bbe693ad  ONLINE
-            wwn-0x5000cca0bbf58929  ONLINE
-```
-
-Create the mounting points:
-
-```sh
-mkdir /data /services
-```
-
-Import each pool:
-```sh
-zpool import -f hdd
-zpool import -f ssd
-```
-
-Check that the pools are imported:
-
-```sh
-zpool list
-```
-
-#### Setup ZFS snapshots and retention policy
-
-Install [sanoid](https://github.com/jimsalterjrs/sanoid):
-
-```sh
-apt install sanoid
-```
-
-If it doesn't already exists, create the sanoid folder in `/etc`:
-
-```sh
-mkdir /etc/sanoid
-```
-
-Edit the config file:
-
-```sh
-nano /etc/sanoid/sanoid.conf
-```
-
-```config
-[hdd]
-    use_template = production
-
-[ssd]
-    use_template = production
-
-[template_production]
-    frequently = 0          # every 15 minutes (disabled)
-    hourly = 24             # keep 24 hourly snapshots
-    daily = 7               # keep 7 daily snapshots
-    weekly = 4              # keep 4 weekly snapshots
-    monthly = 6             # keep 6 monthly snapshots
-    autosnap = yes
-    autoprune = yes
-```
-
-Then enable Sanoid with this command:
-
-```sh
-systemctl enable --now sanoid.timer
-```
-
-Check that it's running properly with
-
-```sh
-systemctl status sanoid.timer
-```
-
-List the snapshots with
-
-```sh
-zfs list -t snapshot
-```
-
-Some info:
-
-- Sanoid runs (by default) every 15 minutes via sanoid.timer.
-- If autosnap is enabled, it will take snapshot periodically. The frequency is determined from the configuration (here, it will take a new snapshot every hour).
-- Sanoid completely ignore manually taken snapshot when it comes to its snapshot sheduling and retention policy. It only cares about snapshot that follow its naming scheme.
-- You can force Sanoid to take a snapshot right now: `sanoid -c /etc/sanoid/sanoid.conf --run hdd`. This one will be subject to Sanoid retention policy.
-- You can test run the config using `sanoid --debug`
-
-#### Other useful ZFS commands
-
-##### Rename a pool
-
-Warning: export will unmount the pool. Here I'll raname `data` to `hdd`.
-
-```sh
-zpool export data
-zpool import data hdd
-```
-
-##### Change mountpoint
-
-```sh
-zfs set mountpoint=/services ssd
-```
-
-##### Import pool from another server
-
-> [!todo]
-> Show how to mount the ZFS pools when migrated to a new server or if we have reinstalled the OS.
-
-### Bastion server
-
-```sh
-apt update
-apt upgrade
-```
-
-```sh
-apt-get install ca-certificates curl
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  tee /etc/apt/sources.list.d/docker.list > /dev/null
-apt-get update
-apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-
-```sh
-curl -fsSL https://digpangolin.com/get-installer.sh | bash
-./installer
-```
-
-```sh
-Do you want to install Pangolin as a cloud-managed (beta) node? (yes/no): no
-Enter your base domain (no subdomain e.g. example.com): barillot.net
-Enter the domain for the Pangolin dashboard (default: pangolin.barillot.net):
-Enter email for Let's Encrypt certificates: letsencrypt@barillot.net
-Do you want to use Gerbil to allow tunneled connections (yes/no) (default: yes):
-
-=== Email Configuration ===
-Enable email functionality (SMTP) (yes/no) (default: no):
-
-=== Advanced Configuration ===
-Is your server IPv6 capable? (yes/no) (default: yes):
-
-=== Generating Configuration Files ===
-
-Configuration files created successfully!
-
-=== Starting installation ===
-Would you like to install and start the containers? (yes/no) (default: yes):
-Would you like to run Pangolin as Docker or Podman containers? (default: docker):
-```
-
-### Other resources
-
-- https://wiki.crowncloud.net/index.php#Debian+13
+### Deploying services
 
 ## Showcase
 
@@ -1591,7 +1253,7 @@ Somewhere, talk about NAT loopback / hairpin NAT / NAT reflection.
 
 So, about a month after I built the main server, I decided to reinstall the OS to make sure every step was perfectly documented.
 Unfortunately, the server never POSTed after that. The POST status checker LEDs for the CPU and DRAM were constantly on.
-I tried all the usual troubleshooting steps: 
+I tried all the usual troubleshooting steps:
 
 - unplugging the PSU and waiting a few minutes
 - clearing the CMOS
