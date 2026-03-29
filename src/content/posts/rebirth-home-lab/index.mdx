@@ -12,6 +12,7 @@ date: 2025-08-25
 ---
 
 import MdxImage from "src/components/mdx/MdxImage.astro";
+
 import nonCgnat from "./images/non-cgnat.excalidraw.png";
 import dnsRequest from "./images/dns-request.excalidraw.png";
 import httpRequest from "./images/http-request.excalidraw.png";
@@ -832,7 +833,11 @@ Look for ECC UDIMM (Unbuffered DIMM).
 You can easily check what's the best price for different storage types and capacities at [diskprices.com](https://diskprices.com).
 
 For ZFS, it's important that the hard drives are not SMR or else the performance will worsen. This can make resilvering much slower.
-You can use this [list](https://nascompares.com/answer/list-of-wd-cmr-and-smr-hard-drives-hdd/) to check if disk is not SMR. CRM is the preferred type.
+You can use this [list](https://nascompares.com/answer/list-of-wd-cmr-and-smr-hard-drives-hdd/) to check if disk is not SMR. CMR is the preferred type.
+
+##### Shucking drives
+
+https://www.ifixit.com/Guide/How+to+Shuck+a+WD+Elements+External+Hard+Drive/137646
 
 #### PSU
 
@@ -1005,31 +1010,17 @@ This can be expanded in the future to
 
 ### Core components for the backup server
 
-Here a few ideas for the backup server:
+I'm going to use a ZimaBlade 3760, an inexpensive single board x86 computer.
+The small form factor is reminiscent of the Raspberry Pi, but it as many advantages over it:
 
-- The short term snapshots can be stored on the main server, the long term snapshots can be stored on the backup server.
-- This means the backup server doesn't have to run 24/7, it can be powered strictly when replication is happening.
-- If we decide that the shortest granularity stored on the backup server is 1 week, we can only power it on once a week.
+- The price is basically the same as a Raspberry Pi 4, but it's way more powerful.
+- Same power consumption at IDLE, slightly higher than a Raspberry Pi 4 when under load.
+- x86 architecture which means it's highly compatible.
+- It has a PCIe 2.0 x4 slot, 2 SATA ports, and a DDR4 SO-DIMM slot for extensibility.
+- It has a regular UEFI BIOS, which makes installing another OS easy.
 
-With only 4&nbsp;HDDs in RAIDZ1, we can use pretty much any case and ATX motherboard.
-I already have a computer I can repurpose for this. However the motherboard doesn't support ECC memory.
-I think I'll consider this an upgrade path in the future but stick to non-ECC memory for now.
-
-| Component   | Name                                          |      Price |
-| ----------- | --------------------------------------------- | ---------: |
-| Case        | Corsair Carbide 175r                          |  --&nbsp;€ |
-| Motherboard | MSI B450 Gaming Plus                          |  --&nbsp;€ |
-| CPU         | Ryzen 5 3600                                  |  --&nbsp;€ |
-| Cooler      | Stock cooler                                  |  --&nbsp;€ |
-| RAM         | Kingston Fury DDR4-2666 16&nbsp;GB            |  --&nbsp;€ |
-| PSU         | Seasonic SSR-650FX FOCUS Plus Gold 650&nbsp;W |  --&nbsp;€ |
-| NVMe        | Samsung Evo 970 Evo plus 512&nbsp;GB          |  --&nbsp;€ |
-| NVMe        | Crucial P310 SSD 500&nbsp;GB                  |  30&nbsp;€ |
-| HDDs        | 4 × Seagate EXOS X16 16&nbsp;TB               | 880&nbsp;€ |
-| Total       |                                               | 910&nbsp;€ |
-
-> [!error] This section is a work in progress.
-> Come back later :)
+So as long as the use case is a nice low-power server, this is a better choice than a Raspberry Pi.
+The Pi is better suited for a home automation server with it's IO capabilities.
 
 ### Networking and connectivity
 
@@ -1133,26 +1124,6 @@ SSD location for the main server:
 21. Select the same disk as before for the boot loader installation
 22. When it says "Installation complete", remove the USB stick and press continue to reboot the server
 
-#### Change the password
-
-```sh
-passwd
-```
-
-#### Install and enable Fail2Ban
-
-```sh
-apt install fail2ban
-systemctl enable fail2ban
-systemctl start fail2ban
-```
-
-Check status:
-
-```sh
-systemctl status fail2ban
-```
-
 #### Set static IP
 
 ```sh
@@ -1202,8 +1173,167 @@ timedatectl
 System clock synchronized: yes
               NTP service: active
           RTC in local TZ: no
-
 ```
+
+#### Setup SSH and local login
+
+SSH should already be installed and running because we selected it during the installation.
+But let's secure it further.
+
+##### Use a SSH key instead of a password
+
+```sh
+ssh-keygen
+```
+
+Give it a name: `id_melchior`
+
+I would also recommend to use a passphrase for the key as a second factor of authentication.
+If your device is ever stolen, the attacker will not be able to use the key without the passphrase.
+
+Copy the public key to the server:
+
+```sh
+ssh-copy-id tom@192.168.70.67
+```
+
+Test connecting with the key.
+
+If everything is working, let's now disable password authentication.
+
+```sh
+nano /etc/ssh/sshd_config
+```
+
+- Uncomment `LoginGraceTime` and set it to `20s`
+- Uncomment `PermitRootLogin` and change it to `no`
+- Uncomment `StrictModes yes`
+- Uncomment `MaxAuthTries` and set it to `3`
+- Uncomment `PubkeyAuthentication yes`
+- Add `AuthenticationMethods publickey` right below
+- Set `PasswordAuthentication` to `no`
+- Keep `KbdInteractiveAuthentication no`
+- Set `UsePAM` to `no`
+- Set `X11Forwarding` to `no`
+
+Validate syntax first:
+
+```sh
+sshd -t
+```
+
+Restart the service:
+
+```sh
+systemctl restart ssh
+```
+
+> [!warning] Do not close the current SSH connection
+> In case something goes wrong, we want to be able to revert the changes.
+> Only close the SSH connection if you validated everything is working.
+
+Try in a new terminal:
+
+```sh
+ssh tom@192.168.70.67
+```
+
+It should say something like:
+
+```txt
+tom@192.168.70.67: Permission denied (publickey).
+```
+
+Now try with the key:
+
+```sh
+ssh -i ~/.ssh/id_melchior tom@192.168.70.67
+```
+
+Enter the passphrase if you used one.
+
+If it works, we are good to go. We know that password authentication is disabled and that we can still connect with the key.
+To make it easier to connect, we can add a shortcut to the `~/.ssh/config` file.
+
+```sh
+nano ~/.ssh/config
+```
+
+Add the following:
+
+```conf
+Host melchior
+    Hostname 192.168.70.67
+    User tom
+    IdentityFile ~/.ssh/id_melchior
+```
+
+Now you can connect with just:
+
+```sh
+ssh melchior
+```
+
+##### Change the non-root and root passwords
+
+```sh
+passwd
+```
+
+Consider that you may have to enter these passwords without access to the clipboard.
+I would recommend using passphrase for these passwords to make entering them easier while keeping the strength high.
+
+##### Install and enable Fail2Ban
+
+Fail2Ban is a tool that bans IPs that try to brute force SSH.
+In our case, we already disabled password authentication, so its usefulness is limited.
+Still, it's a low effort setup that can help protect against malformed requests and other hammering attacks.
+
+```sh
+apt install fail2ban
+```
+
+Let's configure it:
+
+```sh
+nano /etc/fail2ban/jail.local
+```
+
+Add the following:
+
+```config
+[sshd]
+    enabled  = true
+    port     = ssh
+    maxretry = 5
+    findtime = 10m
+    bantime  = 1h
+```
+
+It will ban an IP for 1 hour after 5 failed attempts within a 10-minute window.
+
+Enable and start the service:
+
+```sh
+systemctl enable fail2ban
+systemctl start fail2ban
+```
+
+Check status of the service:
+
+```sh
+systemctl status fail2ban
+```
+
+You can check if any IP is banned with:
+
+```sh
+fail2ban-client status sshd
+```
+
+If you are willing to be locked out of your server for 1 hours, you can try to wrongly connect 5 times to see if fail2ban works.
+This time, keeping a SSH connection open to test Fail2Ban will not work because it's your IP that is banned, which is the same across your terminals.
+Alternatively, if you stuck yourself and you can't wait, you can restart the server using the power button. Bans are not persisted across restarts.
 
 ### Containerization setup
 
@@ -1388,6 +1518,7 @@ zpool create \
 #### Import the pools
 
 If the pools were already created on another server, you can import them with:
+
 ```sh
 zpool import
 ```
@@ -1431,6 +1562,7 @@ mkdir /data /services
 ```
 
 Import each pool:
+
 ```sh
 zpool import -f hdd
 zpool import -f ssd
@@ -1541,7 +1673,7 @@ Install:
 npm install -g pm2
 ```
 
-Logrotate is a module for PM2 that automatically manages and rotates log files to prevent them from consuming too much disk space. 
+Logrotate is a module for PM2 that automatically manages and rotates log files to prevent them from consuming too much disk space.
 
 ```sh
 pm2 install pm2-logrotate
@@ -1617,6 +1749,419 @@ Would you like to install and start the containers? (yes/no) (default: yes):
 Would you like to run Pangolin as Docker or Podman containers? (default: docker):
 ```
 
+### Configuration for the backup server
+
+- Same OS installation procedure
+- Same SSH and local login setup
+- Same procedure for installing ZFS
+
+```sh
+ls -l /dev/disk/by-id/
+total 0
+lrwxrwxrwx 1 root root  9 Mar 25 20:12 ata-Samsung_SSD_860_EVO_250GB_S3YJNX0M510252Z -> ../../sda
+lrwxrwxrwx 1 root root 10 Mar 25 20:12 ata-Samsung_SSD_860_EVO_250GB_S3YJNX0M510252Z-part1 -> ../../sda1
+lrwxrwxrwx 1 root root 10 Mar 25 20:12 ata-Samsung_SSD_860_EVO_250GB_S3YJNX0M510252Z-part2 -> ../../sda2
+lrwxrwxrwx 1 root root 10 Mar 25 20:12 ata-Samsung_SSD_860_EVO_250GB_S3YJNX0M510252Z-part3 -> ../../sda3
+lrwxrwxrwx 1 root root  9 Mar 25 20:12 ata-WDC_WD200EDGZ-11CNKA0_SCH0RX2S -> ../../sdb
+lrwxrwxrwx 1 root root 10 Mar 25 20:12 ata-WDC_WD200EDGZ-11CNKA0_SCH0RX2S-part1 -> ../../sdb1
+lrwxrwxrwx 1 root root 13 Mar 25 20:12 mmc-C9A551_0xec1635d0 -> ../../mmcblk0
+lrwxrwxrwx 1 root root 15 Mar 25 20:12 mmc-C9A551_0xec1635d0-part1 -> ../../mmcblk0p1
+lrwxrwxrwx 1 root root 15 Mar 25 20:12 mmc-C9A551_0xec1635d0-part2 -> ../../mmcblk0p2
+lrwxrwxrwx 1 root root 15 Mar 25 20:12 mmc-C9A551_0xec1635d0-part3 -> ../../mmcblk0p3
+lrwxrwxrwx 1 root root  9 Mar 25 20:12 usb-WD_Elements_25A3_5343483052583253-0:0 -> ../../sdb
+lrwxrwxrwx 1 root root 10 Mar 25 20:12 usb-WD_Elements_25A3_5343483052583253-0:0-part1 -> ../../sdb1
+lrwxrwxrwx 1 root root  9 Mar 25 20:12 wwn-0x5000cca425ce6d7d -> ../../sdb
+lrwxrwxrwx 1 root root 10 Mar 25 20:12 wwn-0x5000cca425ce6d7d-part1 -> ../../sdb1
+lrwxrwxrwx 1 root root  9 Mar 25 20:12 wwn-0x5002538e40fbbf28 -> ../../sda
+lrwxrwxrwx 1 root root 10 Mar 25 20:12 wwn-0x5002538e40fbbf28-part1 -> ../../sda1
+lrwxrwxrwx 1 root root 10 Mar 25 20:12 wwn-0x5002538e40fbbf28-part2 -> ../../sda2
+lrwxrwxrwx 1 root root 10 Mar 25 20:12 wwn-0x5002538e40fbbf28-part3 -> ../../sda3
+```
+
+We are going to use the external HDD. I could use `usb-WD_Elements_25A3_5343483052583253-0:0` or `wwn-0x5000cca425ce6d7d`.
+
+```sh
+zpool create \
+  -o ashift=12 \
+  -O acltype=posixacl \
+  -O xattr=sa \
+  -O compression=zstd \
+  -O atime=off \
+  -O relatime=off \
+  -O normalization=formD \
+  -m /backup \
+  backup \
+  /dev/disk/by-id/wwn-0x5000cca425ce6d7d
+```
+
+#### Setup backup account on the main server
+
+Let's create a new user
+
+```sh
+adduser --disabled-password --gecos "Syncoid replication user" syncoid
+```
+
+Give this user the permissions required to replicate the ZFS pools:
+
+```sh
+zfs allow syncoid send,snapshot,hold hdd
+zfs allow syncoid send,snapshot,hold ssd
+```
+
+On the backup server, create a new SSH key for the syncoid user:
+
+```sh
+ssh-keygen -t ed25519 -f /root/.ssh/id_syncoid
+```
+
+Copy the public key to the main server:
+
+```sh
+cat /root/.ssh/id_syncoid.pub
+```
+
+Paste it on the main server:
+
+```sh
+mkdir -p /home/syncoid/.ssh
+nano /home/syncoid/.ssh/authorized_keys
+```
+
+Set the permissions:
+
+```sh
+chown -R syncoid:syncoid /home/syncoid/.ssh
+chmod 700 /home/syncoid/.ssh
+chmod 600 /home/syncoid/.ssh/authorized_keys
+```
+
+At this point, you should be able to connect to the main server from the backup server as the syncoid user:
+
+```sh
+ssh -i /root/.ssh/id_syncoid syncoid@melchior zfs list
+```
+
+If you want to further secure the connection, you can limit syncoid to only run specific commands.
+Edit `/home/syncoid/.ssh/authorized_keys` and prepend the ssh-ed25519 key with the following:
+
+```text
+command="syncoid --receive-only",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc ssh-ed25519 ...
+```
+
+#### Install Sanoid and Syncoid on the backup server
+
+Follow the same procedure as the main server, except for the retention policy:
+
+```config
+[backup/hdd]
+    use_template = backup
+
+[backup/ssd]
+    use_template = backup
+
+[template_backup]
+    hourly = 0
+    daily = 0
+    weekly = 12
+    monthly = 24
+    yearly = 6
+    autosnap = no
+    autoprune = yes
+```
+
+Note the `autosnap = no`, it means that no snapshots will be taken automatically, it will only be replicated snapshots coming from the main server.
+But we will still use Sanoid for its retention policy.
+
+Run the replication process manually:
+
+```sh
+syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:ssd backup/ssd
+syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:hdd backup/hdd
+```
+
+#### Tunneled SSH connection
+
+Because the main server and backup server are not on the same network, we need to tunnel the SSH connection.
+We already have Pangolin, so we can use it to tunnel the SSH connection.
+
+In the Pangolin dashboard, in Networks -> Clients -> Machines -> Create client
+Give it a name, and select Docker as the "Operating system".
+Copy the "Commands" and paste it in a docker-compose.yml file on the backup server.
+
+Confirm the creation on the Pangolin dashboard and then run the container.
+
+```sh
+docker compose up -d
+```
+
+The client should be reported as "Connected" now.
+
+Now let's create a Private Ressource to allow the backup server to access the main server via SSH.
+In the Pangolin dashboard, in Networks -> Ressources -> Private -> Add ressource
+
+Give it a name, select the main server site.
+Because Newt is running in a docker container, the destination should need to be `host.docker.internal`.
+Give it an Alias even if it will not be used (e.g: `melchior.internal`).
+
+In Port Restictions, use TCP Custom 22, UDP Blocked. You can keep ICMP.
+
+In the Access Policy tab, select the Machine Client we created earlier.
+
+After saving, toggle the Alias Address column to see the IP address to use to connect to the main server.
+
+Copy it and try connecting to the main server via SSH from the backup server:
+
+```sh
+ssh 100.96.128.8
+```
+
+If it ask for a password, or give a normal SSH response, this is good sign.
+
+Edit `/root/.ssh/config` and add the following:
+
+```conf
+Host melchior
+    Hostname 100.96.128.8
+    User syncoid
+    IdentityFile ~/.ssh/id_syncoid
+```
+
+Now you can connect with just:
+
+```sh
+ssh melchior
+```
+
+And these should now work remotely, even if the main server is not on the same network as the backup server:
+
+```sh
+syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:ssd backup/ssd
+syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:hdd backup/hdd
+```
+
+#### Further hardening
+
+Let's log with commands are being executed by syncoid over SSH:
+
+```sh
+nano /home/syncoid/.ssh/authorized_keys
+```
+
+Add the following:
+
+```text
+command="echo \"$SSH_ORIGINAL_COMMAND\" >> /home/syncoid/ssh_commands.log && exec /bin/bash -c \"$SSH_ORIGINAL_COMMAND\"",
+```
+
+Run syncoid again and check the log file:
+
+```txt
+exit
+echo -n
+command -v lzop
+command -v mbuffer
+zpool get -o value -H feature@extensible_dataset 'hdd'
+zfs list -o name,origin -t filesystem,volume -Hr 'hdd'
+zfs get -H syncoid:sync 'hdd'
+zfs get -Hpd 1 -t snapshot guid,creation 'hdd'
+zfs send -nvP -I 'hdd@autosnap_2026-03-23_23:30:27_weekly' 'hdd@autosnap_2026-03-28_10:00:10_hourly'
+zfs send  -I 'hdd'@'autosnap_2026-03-23_23:30:27_weekly' 'hdd'@'autosnap_2026-03-28_10:00:10_hourly' | lzop  | mbuffer  -q -s 128k -m 16M
+```
+
+Write this filter script:
+
+```sh
+nano /home/syncoid/ssh_filter.sh
+```
+
+```sh
+#!/bin/bash
+set -e
+
+LOGFILE="/home/syncoid/ssh_commands.log"
+CMD="${SSH_ORIGINAL_COMMAND#"${SSH_ORIGINAL_COMMAND%%[![:space:]]*}"}"
+
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [$1] $CMD" >> "$LOGFILE"
+}
+
+if [ -z "$CMD" ]; then
+    echo "No command provided" >&2
+    exit 1
+fi
+
+case "$CMD" in
+    # Connection checks
+    "exit")
+        log "ALLOWED"
+        exit 0
+        ;;
+    "echo -n")
+        log "ALLOWED"
+        echo -n
+        exit 0
+        ;;
+    # Tool availability checks
+    "command -v lzop"|"command -v mbuffer")
+        log "ALLOWED"
+        exec /bin/bash -c "$CMD"
+        ;;
+    # ZFS/zpool commands
+    "zfs "*|"zpool "*)
+        log "ALLOWED"
+        exec /bin/bash -c "$CMD"
+        ;;
+    *)
+        log "BLOCKED"
+        logger -t syncoid-ssh "BLOCKED command: $CMD"
+        echo "Command not allowed: $CMD" >&2
+        exit 1
+        ;;
+esac
+```
+
+Make sure the script is executable:
+
+```sh
+chown root:root /home/syncoid/ssh_filter.sh
+chmod 755 /home/syncoid/ssh_filter.sh
+```
+
+Edit the authorized keys file again:
+
+```sh
+nano /home/syncoid/.ssh/authorized_keys
+```
+
+Replace with the following:
+
+```text
+command="~/ssh_filter.sh",
+```
+
+#### Wrapping it up
+
+On the backup server, create a script:
+
+```sh
+nano /root/run_syncoid.sh
+```
+
+```sh
+#!/bin/bash
+set -e
+
+echo "[1/4] Reconnect the external HDD"
+zpool import backup
+
+echo "[2/4] Replicate the snapshots from the main server"
+syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:ssd backup/ssd
+syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:hdd backup/hdd
+
+echo "[3/4] Prune old/unwanted local snapshots"
+sanoid --cron --verbose
+
+echo "[4/4] Disconnect the Zpool and make the external HDD enter sleep mode"
+zpool export backup
+hdparm -y /dev/disk/by-id/wwn-0x5000cca425ce6d7d
+```
+
+#### Scrubbing the external HDD
+
+```sh
+#!/bin/bash
+set -e
+
+echo "[1/4] Reconnect the external HDD"
+zpool import backup
+
+echo "[2/4] Scrub the Zpool"
+zpool scrub backup
+
+echo "[3/4] Wait for scrub to complete"
+while zpool status backup | grep -q "scrub in progress"; do
+    sleep 30
+done
+
+echo "[4/4] Disconnect the Zpool and make the external HDD enter sleep mode"
+zpool export backup
+hdparm -y /dev/disk/by-id/wwn-0x5000cca425ce6d7d
+```
+
+#### Setup systemd services and timers
+
+`/etc/systemd/system/syncoid.service`:
+
+```config
+[Unit]
+Description=Syncoid backup to external drive
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/root/run_syncoid.sh
+User=root
+StandardOutput=journal
+StandardError=journal
+```
+
+`/etc/systemd/system/syncoid.timer`:
+
+```config
+[Unit]
+Description=Run Syncoid backup weekly
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+ini[Unit]
+Description=Run Syncoid backup weekly
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+`/etc/systemd/system/scrub.service`:
+
+```config
+/etc/systemd/system/scrub.service
+ini[Unit]
+Description=ZFS scrub on backup pool
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/root/run_scrub.sh
+User=root
+StandardOutput=journal
+StandardError=journal
+```
+
+`/etc/systemd/system/scrub.timer`:
+
+```config
+ini[Unit]
+Description=Run ZFS scrub monthly
+
+[Timer]
+OnCalendar=monthly
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+```sh
+systemctl daemon-reload
+systemctl enable --now syncoid.timer
+systemctl enable --now scrub.timer
+```
+
 ### Deploying services
 
 > [!error] This section is a work in progress.
@@ -1629,7 +2174,6 @@ services:
   service-name:
     image: image-name:latest
     container_name: service-name
-    depend
     restart: unless-stopped
 
     user: "1000:1000"
@@ -1663,7 +2207,6 @@ services:
 
     networks:
       - pangolin_net
-
 
 networks:
   pangolin_net:
@@ -1702,9 +2245,6 @@ tmpfs:
 volumes:
   - ./default.conf:/etc/nginx/conf.d/default.conf:ro
 ```
-
-
-
 
 ### Monitoring and alerting
 
@@ -1967,6 +2507,7 @@ Now the server is running on a Ryzen 5 5500 CPU and an Asus TUF Gaming B550-PLUS
 ### The end is never the end is never...
 
 - Experiment with NixOS
+- Backup the password database to a USB drive securely
 
 ### Other resources
 
