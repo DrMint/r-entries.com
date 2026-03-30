@@ -1213,7 +1213,7 @@ nano /etc/ssh/sshd_config
 - Add `AuthenticationMethods publickey` right below
 - Set `PasswordAuthentication` to `no`
 - Keep `KbdInteractiveAuthentication no`
-- Set `UsePAM` to `no`
+- Kepp `UsePAM yes`
 - Set `X11Forwarding` to `no`
 
 Validate syntax first:
@@ -1282,58 +1282,6 @@ passwd
 
 Consider that you may have to enter these passwords without access to the clipboard.
 I would recommend using passphrase for these passwords to make entering them easier while keeping the strength high.
-
-##### Install and enable Fail2Ban
-
-Fail2Ban is a tool that bans IPs that try to brute force SSH.
-In our case, we already disabled password authentication, so its usefulness is limited.
-Still, it's a low effort setup that can help protect against malformed requests and other hammering attacks.
-
-```sh
-apt install fail2ban
-```
-
-Let's configure it:
-
-```sh
-nano /etc/fail2ban/jail.local
-```
-
-Add the following:
-
-```config
-[sshd]
-    enabled  = true
-    port     = ssh
-    maxretry = 5
-    findtime = 10m
-    bantime  = 1h
-```
-
-It will ban an IP for 1 hour after 5 failed attempts within a 10-minute window.
-
-Enable and start the service:
-
-```sh
-systemctl enable fail2ban
-systemctl start fail2ban
-```
-
-Check status of the service:
-
-```sh
-systemctl status fail2ban
-```
-
-You can check if any IP is banned with:
-
-```sh
-fail2ban-client status sshd
-```
-
-If you are willing to be locked out of your server for 1 hours, you can try to wrongly connect 5 times to see if fail2ban works.
-This time, keeping a SSH connection open to test Fail2Ban will not work because it's your IP that is banned, which is the same across your terminals.
-Alternatively, if you stuck yourself and you can't wait, you can restart the server using the power button. Bans are not persisted across restarts.
 
 ### Containerization setup
 
@@ -1658,6 +1606,24 @@ zfs set mountpoint=/services ssd
 
 > [!todo]
 > Show how to mount the ZFS pools when migrated to a new server or if we have reinstalled the OS.
+
+##### Upgrade a pool
+
+When checking the status of a pool (e.g: `zpool status ssd`), you may see this message:
+
+```txt
+Some supported and requested features are not enabled on the pool.
+The pool can still be used, but some features are unavailable.
+action: Enable all features using 'zpool upgrade'. Once this is done,
+        the pool may no longer be accessible by software that does not support
+        the features. See zpool-features(7) for details.
+```
+
+To upgrade the pool, run:
+
+```sh
+  zpool upgrade ssd
+```
 
 #### JavaScript
 
@@ -2167,6 +2133,32 @@ systemctl enable --now scrub.timer
 > [!error] This section is a work in progress.
 > Come back later :)
 
+#### Troubleshooting
+
+##### DNS resolution issues
+
+Apparently at startup, if the container starts before the host's DNS resolution is ready, it will fail, and sometimes it's unrecoverable unless you restart the container.
+To fix this, you can tell docker to use the host's DNS servers by adding the following to the docker compose file:
+
+```yml
+volumes:
+  - /etc/resolv.conf:/etc/resolv.conf:ro
+```
+
+Alternatively, you can also set DNS servers directly in the container's network settings:
+
+```yml
+dns:
+  - 1.1.1.1
+  - 8.8.8.8
+```
+
+Make sure to restart the container after adding the DNS servers.
+
+```sh
+docker compose down && docker compose up
+```
+
 #### Hardening
 
 ```yaml
@@ -2195,6 +2187,8 @@ services:
     volumes:
       - ./volume-name:/volume-name
 
+    env_file: .env
+
     logging:
       driver: loki
       options:
@@ -2219,6 +2213,12 @@ About tmpfs params:
 - `nosuid`: Prevents escalation of privileges.
 - `nodev`: Prevents character/block devices from being created.
 - `size`: Limits the maximum size, help prevent a process from filling up the host memory.
+
+Also if you are using .env files, make sure the file permissions are set to 600.
+
+```sh
+chmod 600 .env
+```
 
 ##### Nginx
 
