@@ -1036,38 +1036,11 @@ The Pi is better suited for a home automation server with it's IO capabilities.
 > [!error] This section is a work in progress.
 > Come back later :)
 
-### Complete shopping list
-
-For the main server:
-
-| Component   | Name                                             |           Price |
-| ----------- | ------------------------------------------------ | --------------: |
-| Rack        | Inter-Tech IPC 3U-3508                           |   197.71&nbsp;€ |
-| Motherboard | ASROCK B850 Pro RS                               |   194.76&nbsp;€ |
-| CPU         | Ryzen 7 9700X                                    |   279.00&nbsp;€ |
-| Cooler      | Noctua NH-L12Sx77                                |    84.90&nbsp;€ |
-| RAM         | Kingston Server Premier 32&nbsp;GB DDR5-5600 ECC |   203.27&nbsp;€ |
-| GPU         | Sparkle Arc A380 GENIE                           |   144.03&nbsp;€ |
-| PSU         | be quiet! Pure Power 12M 750&nbsp;W              |   127.75&nbsp;€ |
-| NVMe        | 2 × Crucial P310 SSD 500&nbsp;GB                 |    69.82&nbsp;€ |
-| HDDs        | 4 × WD Ultrastar DC HC320 8&nbsp;TB              |   535.96&nbsp;€ |
-| Card        | M.2 to SATA3.0 Adapter Card ASM1166              |    19.19&nbsp;€ |
-| Cable       | 2 × Sata To Sata Cable 4 Ports 0.5M              |     4.19&nbsp;€ |
-| Cable       | Sata To Sata Cable 2 Ports 0.5M                  |     3.95&nbsp;€ |
-| Cable       | 2 × SATA to Molex                                |     9.08&nbsp;€ |
-| Fan         | 2 × Noctua NF-A6x25 PWM 80mm                     |    33.80&nbsp;€ |
-| Fan         | 2 × Noctua NF-A8 PWM 80mm                        |    37.80&nbsp;€ |
-| Total       |                                                  | 1 945.21&nbsp;€ |
-
-For the backup server:
-
-| Component | Name                            |         Price |
-| --------- | ------------------------------- | ------------: |
-| NVMe      | Crucial P310 SSD 500&nbsp;GB    |  34.91&nbsp;€ |
-| HDDs      | 4 × Seagate EXOS X16 16&nbsp;TB | 887.43&nbsp;€ |
-| Total     |                                 | 922.34&nbsp;€ |
 
 ### Setting up the physical hardware
+
+> [!error] This section is a work in progress.
+> Photos
 
 - Take a picture of the drives before inserting them into the server. Note which bay they are in.
 - I was surprised that the cooler wasn't aligned with the CPU but offset by 0.7mm.
@@ -1182,6 +1155,8 @@ But let's secure it further.
 
 ##### Use a SSH key instead of a password
 
+On your personal computer, generate a new SSH key:
+
 ```sh
 ssh-keygen
 ```
@@ -1199,7 +1174,11 @@ ssh-copy-id tom@192.168.70.67
 
 Test connecting with the key.
 
-If everything is working, let's now disable password authentication.
+```sh
+ssh -i ~/.ssh/id_melchior tom@192.168.70.67
+```
+
+If everything is working, we can now disable password authentication.
 
 ```sh
 nano /etc/ssh/sshd_config
@@ -1213,7 +1192,7 @@ nano /etc/ssh/sshd_config
 - Add `AuthenticationMethods publickey` right below
 - Set `PasswordAuthentication` to `no`
 - Keep `KbdInteractiveAuthentication no`
-- Kepp `UsePAM yes`
+- Keep `UsePAM yes`
 - Set `X11Forwarding` to `no`
 
 Validate syntax first:
@@ -1232,7 +1211,7 @@ systemctl restart ssh
 > In case something goes wrong, we want to be able to revert the changes.
 > Only close the SSH connection if you validated everything is working.
 
-Try in a new terminal:
+Try in a new terminal to connect without the key:
 
 ```sh
 ssh tom@192.168.70.67
@@ -1463,65 +1442,6 @@ zpool create \
   /dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B
 ```
 
-#### Import the pools
-
-If the pools were already created on another server, you can import them with:
-
-```sh
-zpool import
-```
-
-```txt
-  pool: ssd
-    id: 4664139631714187601
- state: ONLINE
-status: The pool was last accessed by another system.
-action: The pool can be imported using its name or numeric identifier and
-        the '-f' flag.
-   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
-config:
-
-        ssd                                                      ONLINE
-          mirror-0                                               ONLINE
-            nvme-CT500P310SSD8_25164FAF1C4F                      ONLINE
-            nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B  ONLINE
-
-  pool: hdd
-    id: 3786879799329643345
- state: ONLINE
-status: The pool was last accessed by another system.
-action: The pool can be imported using its name or numeric identifier and
-        the '-f' flag.
-   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
-config:
-
-        hdd                         ONLINE
-          raidz2-0                  ONLINE
-            wwn-0x5000cca0bbe63bb3  ONLINE
-            wwn-0x5000cca0bbe68f2e  ONLINE
-            wwn-0x5000cca0bbe693ad  ONLINE
-            wwn-0x5000cca0bbf58929  ONLINE
-```
-
-Create the mounting points:
-
-```sh
-mkdir /data /services
-```
-
-Import each pool:
-
-```sh
-zpool import -f hdd
-zpool import -f ssd
-```
-
-Check that the pools are imported:
-
-```sh
-zpool list
-```
-
 #### Setup ZFS snapshots and retention policy
 
 Install [sanoid](https://github.com/jimsalterjrs/sanoid):
@@ -1604,8 +1524,62 @@ zfs set mountpoint=/services ssd
 
 ##### Import pool from another server
 
-> [!todo]
-> Show how to mount the ZFS pools when migrated to a new server or if we have reinstalled the OS.
+If the pools were already created on another server, you can import them with:
+
+```sh
+zpool import
+```
+
+```txt
+  pool: ssd
+    id: 4664139631714187601
+ state: ONLINE
+status: The pool was last accessed by another system.
+action: The pool can be imported using its name or numeric identifier and
+        the '-f' flag.
+   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
+config:
+
+        ssd                                                      ONLINE
+          mirror-0                                               ONLINE
+            nvme-CT500P310SSD8_25164FAF1C4F                      ONLINE
+            nvme-Samsung_SSD_970_EVO_Plus_500GB_S4EVNF0M698680B  ONLINE
+
+  pool: hdd
+    id: 3786879799329643345
+ state: ONLINE
+status: The pool was last accessed by another system.
+action: The pool can be imported using its name or numeric identifier and
+        the '-f' flag.
+   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-EY
+config:
+
+        hdd                         ONLINE
+          raidz2-0                  ONLINE
+            wwn-0x5000cca0bbe63bb3  ONLINE
+            wwn-0x5000cca0bbe68f2e  ONLINE
+            wwn-0x5000cca0bbe693ad  ONLINE
+            wwn-0x5000cca0bbf58929  ONLINE
+```
+
+Create the mounting points:
+
+```sh
+mkdir /data /services
+```
+
+Import each pool:
+
+```sh
+zpool import -f hdd
+zpool import -f ssd
+```
+
+Check that the pools are imported:
+
+```sh
+zpool list
+```
 
 ##### Upgrade a pool
 
@@ -1619,11 +1593,17 @@ action: Enable all features using 'zpool upgrade'. Once this is done,
         the features. See zpool-features(7) for details.
 ```
 
+This happens because ZFS running on the host is newer than when the pool was created.
+This is normal and it continue to work because ZFS is retrocompatible with older pools.
+
 To upgrade the pool, run:
 
 ```sh
   zpool upgrade ssd
 ```
+
+This procedure is quick and safe. Only the pool metadata is upgraded, not the data.
+The only downside is that--while ZFS is retrocompatible--if a system runs a version of ZFS older than the pool, it will not be able to import it.
 
 #### JavaScript
 
@@ -1652,7 +1632,7 @@ pm2 startup
 pm2 save
 ```
 
-Run pm2 save after adding or removing services to preserve the configuration after a reboot.
+Run `pm2 save` after adding or removing services to preserve the configuration after a reboot.
 
 #### Other useful tools
 
@@ -1670,23 +1650,11 @@ apt install ncdu
 
 ### Configuration for the bastion server
 
-```sh
-apt update
-apt upgrade
-```
+- Follow the [Base OS and environment](#base-os-and-environment) section
+- Follow the [Containerization setup](#containerization-setup) section
+- No need for ZFS on the bastion server
 
-```sh
-apt-get install ca-certificates curl
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  tee /etc/apt/sources.list.d/docker.list > /dev/null
-apt-get update
-apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
+#### Install Pangolin
 
 ```sh
 curl -fsSL https://digpangolin.com/get-installer.sh | bash
@@ -1715,11 +1683,99 @@ Would you like to install and start the containers? (yes/no) (default: yes):
 Would you like to run Pangolin as Docker or Podman containers? (default: docker):
 ```
 
+#### Add captcha
+
+We will configure the Traefik CrowdSec bouncer plugin to serve a Cloudflare Turnstile CAPTCHA challenge instead of a plain 403 when CrowdSec issues a `captcha` decision.
+
+##### Get Turnstile API keys
+
+1. Log in to [dash.cloudflare.com](https://dash.cloudflare.com)
+2. In the left sidebar, go to **Turnstile**
+3. Click **Add widget**
+4. Give it a name and add your domain(s)
+5. Copy the **Site Key** and **Secret Key**
+
+##### Download the captcha HTML template
+
+The bouncer plugin needs an HTML file to render the Turnstile widget. Download it into your Traefik config directory:
+
+```bash
+curl -o ./config/traefik/captcha.html \
+  https://raw.githubusercontent.com/maxlerebourg/crowdsec-bouncer-traefik-plugin/main/examples/captcha/captcha.html
+```
+
+##### Mount the HTML file into the Traefik container
+
+In your `docker-compose.yml`, add a volume mount to the `traefik` service:
+
+```yaml {6}#ins
+traefik:
+  volumes:
+    - ./config/traefik:/etc/traefik:ro
+    - ./config/letsencrypt:/letsencrypt
+    - ./config/traefik/logs:/var/log/traefik
+    - ./config/traefik/captcha.html:/captcha.html
+```
+
+Restart the container:
+
+```sh
+docker compose down && docker compose up
+```
+
+##### Add captcha settings to the CrowdSec middleware
+
+In `./config/traefik/dynamic_config.yml`, add the following lines to the `crowdsec` plugin block:
+
+```yaml {7-11}#ins  
+http:
+  middlewares:
+    crowdsec:
+      plugin:
+        crowdsec:
+          # ... your existing config ...
+          captchaProvider: turnstile
+          captchaSiteKey: YOUR_SITE_KEY
+          captchaSecretKey: YOUR_SECRET_KEY
+          captchaGracePeriodSeconds: 1800
+          captchaHTMLFilePath: /captcha.html
+```
+
+##### Test it
+
+Add a temporary `captcha` decision against your own IP:
+
+```bash
+docker exec crowdsec cscli decisions add --ip YOUR_IP --duration 2m --type captcha --reason "testing turnstile"
+```
+
 ### Configuration for the backup server
 
-- Same OS installation procedure
-- Same SSH and local login setup
-- Same procedure for installing ZFS
+- Follow the [Base OS and environment](#base-os-and-environment) section
+- Follow the [Containerization setup](#containerization-setup) section
+
+#### Install ZFS
+
+Add backports to your sources.list:
+
+```sh
+apt install lsb-release
+codename=$(lsb_release -cs);echo "deb http://deb.debian.org/debian $codename-backports main contrib non-free"|tee -a /etc/apt/sources.list
+```
+
+Install the packages:
+
+```sh
+apt update
+apt install linux-headers-amd64
+apt install -t stable-backports zfsutils-linux
+```
+
+Press Enter in the license agreement prompt.
+
+#### Create the backup pool
+
+Get the list of disks' UUIDs:
 
 ```sh
 ls -l /dev/disk/by-id/
@@ -1760,9 +1816,14 @@ zpool create \
   /dev/disk/by-id/wwn-0x5000cca425ce6d7d
 ```
 
-#### Setup backup account on the main server
+#### Setup snapshots replication and retention policy
 
-Let's create a new user
+> [!hint] Local setup
+> For this section, we will consider that both the main server and backup server are **initially** running on the **same local network**. 
+> We will then use Pangolin to tunnel the SSH connection between the two servers, making it possible to do remote backups.
+> It should be possible to setup everything remotely from the get go if you configure the pangolin-cli first.
+
+On the main server, create a new user
 
 ```sh
 adduser --disabled-password --gecos "Syncoid replication user" syncoid
@@ -1775,13 +1836,14 @@ zfs allow syncoid send,snapshot,hold hdd
 zfs allow syncoid send,snapshot,hold ssd
 ```
 
-On the backup server, create a new SSH key for the syncoid user:
+On the backup server, create a new SSH key for the syncoid user (don't set a passphrase):
 
 ```sh
-ssh-keygen -t ed25519 -f /root/.ssh/id_syncoid
+ssh-keygen -f /root/.ssh/id_syncoid
 ```
 
-Copy the public key to the main server:
+Because we already blocked password authentication, we can't use the `ssh-copy-id` command.
+Instead we can manually copy the public key to the main server:
 
 ```sh
 cat /root/.ssh/id_syncoid.pub
@@ -1805,19 +1867,49 @@ chmod 600 /home/syncoid/.ssh/authorized_keys
 At this point, you should be able to connect to the main server from the backup server as the syncoid user:
 
 ```sh
-ssh -i /root/.ssh/id_syncoid syncoid@melchior zfs list
+ssh -i /root/.ssh/id_syncoid syncoid@192.168.70.67 zfs list
 ```
 
-If you want to further secure the connection, you can limit syncoid to only run specific commands.
-Edit `/home/syncoid/.ssh/authorized_keys` and prepend the ssh-ed25519 key with the following:
+Let's add this connection to the `~/.ssh/config` file:
 
-```text
-command="syncoid --receive-only",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc ssh-ed25519 ...
+```sh
+nano ~/.ssh/config
 ```
 
-#### Install Sanoid and Syncoid on the backup server
+Add the following:
 
-Follow the same procedure as the main server, except for the retention policy:
+```conf
+Host melchior
+    Hostname 192.168.70.67
+    User syncoid
+    IdentityFile ~/.ssh/id_syncoid
+```
+
+Now you can connect with just:
+
+```sh
+ssh melchior
+```
+
+##### Install Sanoid and Syncoid on the backup server
+
+Install [sanoid](https://github.com/jimsalterjrs/sanoid):
+
+```sh
+apt install sanoid
+```
+
+If it doesn't already exists, create the sanoid folder in `/etc`:
+
+```sh
+mkdir /etc/sanoid
+```
+
+Edit the config file:
+
+```sh
+nano /etc/sanoid/sanoid.conf
+```
 
 ```config
 [backup/hdd]
@@ -1839,16 +1931,104 @@ Follow the same procedure as the main server, except for the retention policy:
 Note the `autosnap = no`, it means that no snapshots will be taken automatically, it will only be replicated snapshots coming from the main server.
 But we will still use Sanoid for its retention policy.
 
-Run the replication process manually:
+Then enable Sanoid with this command:
+
+```sh
+systemctl enable --now sanoid.timer
+```
+
+Check that it's running properly with
+
+```sh
+systemctl status sanoid.timer
+```
+
+You can now try to run the replication process manually (this can take a while if the pools are large):
 
 ```sh
 syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:ssd backup/ssd
 syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:hdd backup/hdd
 ```
 
-#### Tunneled SSH connection
+##### Automating the replication process
 
-Because the main server and backup server are not on the same network, we need to tunnel the SSH connection.
+On the backup server, create a script:
+
+```sh
+nano /root/run_syncoid.sh
+```
+
+```sh
+#!/bin/bash
+set -e
+
+echo "[1/4] Reconnect the external HDD"
+zpool import backup
+
+echo "[2/4] Replicate the snapshots from the main server"
+syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:ssd backup/ssd
+syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:hdd backup/hdd
+
+echo "[3/4] Prune old/unwanted local snapshots"
+sanoid --cron --verbose
+
+echo "[4/4] Disconnect the Zpool and make the external HDD enter sleep mode"
+zpool export backup
+hdparm -y /dev/disk/by-id/wwn-0x5000cca425ce6d7d
+```
+
+Let's create the systemd services and timers:
+
+```sh
+nano /etc/systemd/system/syncoid.service
+```
+
+```config
+[Unit]
+Description=Syncoid backup to external drive
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/root/run_syncoid.sh
+User=root
+StandardOutput=journal
+StandardError=journal
+```
+
+```sh
+nano /etc/systemd/system/syncoid.timer
+```
+
+```config
+[Unit]
+Description=Run Syncoid backup weekly
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+ini[Unit]
+Description=Run Syncoid backup weekly
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+And finally enable and start the services and timers:
+
+```sh
+systemctl daemon-reload
+systemctl enable syncoid.service
+systemctl enable --now syncoid.timer
+```
+
+##### Tunneled SSH connection
+
+Because we want offsite backups, we need to tunnel the SSH connection between the main server and the backup server.
 We already have Pangolin, so we can use it to tunnel the SSH connection.
 
 In the Pangolin dashboard, in Networks -> Clients -> Machines -> Create client
@@ -1884,31 +2064,27 @@ ssh 100.96.128.8
 
 If it ask for a password, or give a normal SSH response, this is good sign.
 
-Edit `/root/.ssh/config` and add the following:
+Edit `/root/.ssh/config` and update the Hostname:
 
-```conf
+```conf {3}#ins {2}#del
 Host melchior
+    Hostname 192.168.70.67
     Hostname 100.96.128.8
     User syncoid
     IdentityFile ~/.ssh/id_syncoid
 ```
 
-Now you can connect with just:
-
-```sh
-ssh melchior
-```
-
-And these should now work remotely, even if the main server is not on the same network as the backup server:
+And this should now work remotely, even if the main server is not on the same network as the backup server:
 
 ```sh
 syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:ssd backup/ssd
 syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:hdd backup/hdd
 ```
 
-#### Further hardening
+##### Hardening the SSH connection
 
-Let's log with commands are being executed by syncoid over SSH:
+Great, but in case the backup server is compromised, we want to make sure this SSH connection cannot be used to execute arbitrary commands on the main server.
+Let's first log which commands are required by syncoid to run properly:
 
 ```sh
 nano /home/syncoid/.ssh/authorized_keys
@@ -1920,9 +2096,13 @@ Add the following:
 command="echo \"$SSH_ORIGINAL_COMMAND\" >> /home/syncoid/ssh_commands.log && exec /bin/bash -c \"$SSH_ORIGINAL_COMMAND\"",
 ```
 
-Run syncoid again and check the log file:
+Run syncoid again from the backup server and check the log file:
 
-```txt
+```sh
+cat /home/syncoid/ssh_commands.log
+```
+
+```sh
 exit
 echo -n
 command -v lzop
@@ -1935,7 +2115,7 @@ zfs send -nvP -I 'hdd@autosnap_2026-03-23_23:30:27_weekly' 'hdd@autosnap_2026-03
 zfs send  -I 'hdd'@'autosnap_2026-03-23_23:30:27_weekly' 'hdd'@'autosnap_2026-03-28_10:00:10_hourly' | lzop  | mbuffer  -q -s 128k -m 16M
 ```
 
-Write this filter script:
+We will now create a filter script to block all commands except the ones required by syncoid.
 
 ```sh
 nano /home/syncoid/ssh_filter.sh
@@ -1987,7 +2167,7 @@ case "$CMD" in
 esac
 ```
 
-Make sure the script is executable:
+Make sure the script cannot be edited by the syncoid user, but is still executable:
 
 ```sh
 chown root:root /home/syncoid/ssh_filter.sh
@@ -2006,34 +2186,28 @@ Replace with the following:
 command="~/ssh_filter.sh",
 ```
 
-#### Wrapping it up
+On the backup server, run syncoid again and check if everything is still working.
+
+```sh
+systemctl start syncoid.service
+```
+
+You can check the logs with:
+
+```sh
+journalctl -u syncoid
+```
+
+#### Scrubbing the external HDD
+
+Because the external HDD is only running when the replication process is running, it will never be available for scrubbing.
+Let's schedule a monthly scrub of the pool.
 
 On the backup server, create a script:
 
 ```sh
-nano /root/run_syncoid.sh
+nano /root/run_scrub.sh
 ```
-
-```sh
-#!/bin/bash
-set -e
-
-echo "[1/4] Reconnect the external HDD"
-zpool import backup
-
-echo "[2/4] Replicate the snapshots from the main server"
-syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:ssd backup/ssd
-syncoid --recursive --no-privilege-elevation --no-sync-snap melchior:hdd backup/hdd
-
-echo "[3/4] Prune old/unwanted local snapshots"
-sanoid --cron --verbose
-
-echo "[4/4] Disconnect the Zpool and make the external HDD enter sleep mode"
-zpool export backup
-hdparm -y /dev/disk/by-id/wwn-0x5000cca425ce6d7d
-```
-
-#### Scrubbing the external HDD
 
 ```sh
 #!/bin/bash
@@ -2055,44 +2229,11 @@ zpool export backup
 hdparm -y /dev/disk/by-id/wwn-0x5000cca425ce6d7d
 ```
 
-#### Setup systemd services and timers
+Let's create the systemd services and timers:
 
-`/etc/systemd/system/syncoid.service`:
-
-```config
-[Unit]
-Description=Syncoid backup to external drive
-After=network.target
-
-[Service]
-Type=oneshot
-ExecStart=/root/run_syncoid.sh
-User=root
-StandardOutput=journal
-StandardError=journal
+```sh
+nano /etc/systemd/system/scrub.service
 ```
-
-`/etc/systemd/system/syncoid.timer`:
-
-```config
-[Unit]
-Description=Run Syncoid backup weekly
-
-[Timer]
-OnCalendar=weekly
-Persistent=true
-ini[Unit]
-Description=Run Syncoid backup weekly
-
-[Timer]
-OnCalendar=weekly
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-```
-
-`/etc/systemd/system/scrub.service`:
 
 ```config
 /etc/systemd/system/scrub.service
@@ -2108,7 +2249,9 @@ StandardOutput=journal
 StandardError=journal
 ```
 
-`/etc/systemd/system/scrub.timer`:
+```sh
+nano /etc/systemd/system/scrub.timer
+```
 
 ```config
 ini[Unit]
@@ -2122,10 +2265,64 @@ Persistent=true
 WantedBy=timers.target
 ```
 
+And finally enable and start the services and timers:
+
 ```sh
 systemctl daemon-reload
-systemctl enable --now syncoid.timer
+systemctl enable scrub.service
 systemctl enable --now scrub.timer
+```
+
+#### Upgrading Newt
+
+Because the backup server is remote and we can only access it via the Newt tunnel, updating Newt could lead to "cutting the branch on which one is sitting".
+If we simply run 
+
+```sh
+docker compose pull
+docker compose down && docker compose up
+```
+
+If will stop the Newt tunnel and the SSH connection will stop mid command.
+The `docker compose up` will not be executed.
+
+There are a few solutions to this problem, we will use a simple systemd oneshot service to run the update process:
+
+```sh
+nano /etc/systemd/system/upgrade-newt.service
+```
+
+```config
+[Unit]
+Description=Upgrade Newt
+
+[Service]
+WorkingDirectory=/services/newt
+Type=oneshot
+ExecStart=docker compose pull
+ExecStart=docker compose down
+ExecStart=docker compose up -d
+```
+
+Whenever a new version is available, you can run:
+
+```sh
+systemctl start upgrade-newt
+```
+
+Unfortunately, you will still be disconnected:
+
+```sh
+Read from remote host 100.96.128.8: Connection reset by peer
+Connection to 100.96.128.8 closed.
+client_loop: send disconnect: Broken pipe
+```
+
+But you should be able to reconnect immediately.
+After you do, you can check that everything worked properly by checking the logs:
+
+```sh
+journalctl --since "1 hour ago" -u upgrade-newt
 ```
 
 ### Deploying services
@@ -2160,6 +2357,9 @@ docker compose down && docker compose up
 ```
 
 #### Hardening
+
+> [!error] This section is a work in progress.
+> Come back later :)
 
 ```yaml
 services:
@@ -2512,3 +2712,4 @@ Now the server is running on a Ryzen 5 5500 CPU and an Asus TUF Gaming B550-PLUS
 ### Other resources
 
 - https://wiki.crowncloud.net/index.php#Debian+13
+- https://ramnode.com/guides/series/pangolin/production-hardening
