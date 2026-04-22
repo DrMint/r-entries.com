@@ -11,7 +11,7 @@ const { title, summary } = homePage.data;
 const { Content } = await render(homePage);
 
 const latestPosts = await getPosts({
-  maxCount: 3,
+  maxCount: 10,
   sort: "date",
   order: "desc",
 });

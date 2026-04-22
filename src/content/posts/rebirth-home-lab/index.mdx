@@ -1036,7 +1036,6 @@ The Pi is better suited for a home automation server with it's IO capabilities.
 > [!error] This section is a work in progress.
 > Come back later :)
 
-
 ### Setting up the physical hardware
 
 > [!error] This section is a work in progress.
@@ -1611,6 +1610,9 @@ The only downside is that--while ZFS is retrocompatible--if a system runs a vers
 apt install nodejs npm
 ```
 
+> [!error] This section is a work in progress.
+> Integrate NVM in the mix
+
 #### PM2 process manager
 
 Install:
@@ -1727,7 +1729,7 @@ docker compose down && docker compose up
 
 In `./config/traefik/dynamic_config.yml`, add the following lines to the `crowdsec` plugin block:
 
-```yaml {7-11}#ins  
+```yaml {7-11}#ins
 http:
   middlewares:
     crowdsec:
@@ -1819,7 +1821,7 @@ zpool create \
 #### Setup snapshots replication and retention policy
 
 > [!hint] Local setup
-> For this section, we will consider that both the main server and backup server are **initially** running on the **same local network**. 
+> For this section, we will consider that both the main server and backup server are **initially** running on the **same local network**.
 > We will then use Pangolin to tunnel the SSH connection between the two servers, making it possible to do remote backups.
 > It should be possible to setup everything remotely from the get go if you configure the pangolin-cli first.
 
@@ -2276,7 +2278,7 @@ systemctl enable --now scrub.timer
 #### Upgrading Newt
 
 Because the backup server is remote and we can only access it via the Newt tunnel, updating Newt could lead to "cutting the branch on which one is sitting".
-If we simply run 
+If we simply run
 
 ```sh
 docker compose pull
@@ -2381,8 +2383,8 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,size=128m,uid=1000,gid=1000,mode=1777
+      tmpfs:
+        - /tmp:rw,noexec,nosuid,nodev,size=128m,uid=1000,gid=1000,mode=1777
 
     volumes:
       - ./volume-name:/volume-name
@@ -2403,6 +2405,10 @@ services:
       - pangolin_net
 
 networks:
+  internal_net:
+    name: internal_net
+    driver: bridge
+    internal: true
   pangolin_net:
     external: true
 ```
@@ -2414,10 +2420,40 @@ About tmpfs params:
 - `nodev`: Prevents character/block devices from being created.
 - `size`: Limits the maximum size, help prevent a process from filling up the host memory.
 
-Also if you are using .env files, make sure the file permissions are set to 600.
+##### Users, groups, and permissions
+
+For each service, you should create a dedicated user:
 
 ```sh
-chmod 600 .env
+groupadd --gid 2000 paperless
+useradd --no-create-home --shell /usr/sbin/nologin --uid 2000 --gid 2000 service-name
+```
+
+Stucture and permissions:
+
+```
+/services/service-name/
+├── docker-compose.yml # owned by root:root and chmod 640
+├── .env # optional, owned by root:root and chmod 600
+└── mounts/ # optional, owned by root:root and chmod 750
+    └── mounts-name/ # owned by service-name:service-name and chmod 750
+```
+
+And then be careful with the permissions within the mounts themselves.
+
+To set all files to 640 and directories to 750 recursively from the current directory, you can use:
+```sh
+chmod -R 640 .
+chmod -R u+X,g+X .
+```
+
+
+##### Ressource sharing
+
+You can check the resource usage of the containers with:
+
+```sh
+docker stats
 ```
 
 ##### Nginx
@@ -2495,23 +2531,46 @@ Create a `docker-compose.yml` file:
 
 ```yml
 services:
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - 1883:1883
+    volumes:
+      - ./mosquitto:/mosquitto/data
+    networks:
+      - zigbee_net
+
   zigbee2mqtt:
     container_name: zigbee2mqtt
     image: ghcr.io/koenkk/zigbee2mqtt
     restart: unless-stopped
+    depends_on:
+      - mosquitto
     volumes:
-      - ./data:/app/data
+      - ./mounts/data:/app/data
       - /run/udev:/run/udev:ro
     ports:
-      # Frontend port
-      - 52526:8080
+      - 8080:8080
     environment:
-      - TZ=Europe/Berlin
+      - TZ=Europe/Paris
     devices:
-      - /dev/serial/by-id/usb-SONOFF_SONOFF_Dongle_Plus_MG24_a4df9b88eba2ef11a7a7906661ce3355-if00-port0
+      - /dev/serial/by-id/usb-SONOFF_SONOFF_Dongle_Plus_MG24_a4df9b88eba2ef11a7a7906661ce3355-if00-port0:/dev/zigbee
+    networks:
+      - pangolin_net
+      - zigbee_net
+
+networks:
+  zigbee_net:
+    name: zigbee_net
+    driver: bridge
+    internal: true
+  pangolin_net:
+    external: true
 ```
 
-Connect to the frontend at http://localhost:52526
+Connect to the frontend
 
 - Select the dongle in the "Found Devices" dropdown
 
@@ -2610,6 +2669,26 @@ And finally, we can do the same for the SSDs:
 
 Now if a disk fails, let's say wwn-0x5000cca0bbe63bb3, we will be able to know that its serial number is VDJR3AGK and it is located in the first row, first column.
 We can safely replace it with the spare disk and start the resilvering process.
+
+### Keeping a list of your service users and groups
+
+Keep track of the users and groups you create for your services.
+If you have to recreate the server, the UID and GID will need to be exactly the same for the services to work.
+That's why it's important to explicitly set the UID and GID when creating the users and groups.
+
+```sh
+groupadd --gid 2000 paperless
+groupadd --gid 2001 vaultwarden
+groupadd --gid 2002 sure
+groupadd --gid 2003 mqtt
+
+usermod -aG dialout mqtt
+
+useradd --no-create-home --shell /usr/sbin/nologin --uid 2000 --gid 2000 paperless
+useradd --no-create-home --shell /usr/sbin/nologin --uid 2001 --gid 2001 vaultwarden
+useradd --no-create-home --shell /usr/sbin/nologin --uid 2002 --gid 2002 sure
+useradd --no-create-home --shell /usr/sbin/nologin --uid 2003 --gid 2003 mqtt
+```
 
 ## Showcase
 
