@@ -188,7 +188,7 @@ There are actually several solutions to circumvent this issue:
 - **Support IPv6 only**. IPv6 address space is so much larger than IPv4, it doesn't have the same address exhaustion problem.
   With IPv6, say goodbye to NAT and CGNAT: every device has a unique global IPv6 address, just like it used to be with IPv4.
   It's the future of the internet, but unfortunately, not all ISPs support IPv6 yet.
-  The adoption is still [under 50%](https://www.google.com/intl/en/ipv6/statistics.html) worldwide.
+  The adoption is still [under 50&nbsp;%](https://www.google.com/intl/en/ipv6/statistics.html) worldwide.
   If it continues at this rate, it may take another 15 years to reach near-universal adoption.
 
 - Use some form of **tunneling**.
@@ -267,7 +267,7 @@ All I really need is a server with:
 - at least 20&nbsp;GB of storage
 - a European company and data center
 
-My internet speed is pretty fast with 2300&nbsp;Mbps download and about 1000&nbsp;Mbps upload.
+My internet speed is pretty fast with 2 300&nbsp;Mbps download and about 1 000&nbsp;Mbps upload.
 A provider with 1&nbsp;Gb/s speed would be ideal for fast downloads.
 But I'm also thinking that a lower speed--on top of reducing the cost--would reserve more bandwidth for my own home internet usage.
 
@@ -284,12 +284,12 @@ In the end, I decided to go with OVH. Specifically their VPS-1 offering:
 - **CPU**: 4 vCores
 - **Memory**: 8&nbsp;GB
 - **Storage**: 75&nbsp;GB (NVMe)
-- **Bandwidth**: 400 Mbit/s
+- **Bandwidth**: 400&nbsp;Mbit/s
 - **Traffic**: Unlimited
 - **Price**: 5.39&nbsp;€ / month (no commitment)
 - **Backups**: Daily, keep one (keep 7 for 2.20&nbsp;€ / month)
 - **Snapshots**: No snapshots (one snapshot for 0.60&nbsp;€ / month)
-- **SLA**: 99.9% uptime
+- **SLA**: 99.9&nbsp;% uptime
 - **OS**: Fedora (40, 42), AlmaLinux (8, 9, 10), CloudLinux (9), Debian (11, 12, 13), Rocky Linux (8, 9, 10), Ubuntu (22.04, 24.04, 24.10, 25.04), FreeBSD (14.3)
 - Comes with a public IPv4 and IPv6 addresses
 - SSH access
@@ -569,7 +569,7 @@ Other tips:
 
 - Store optical discs vertically in standard jewel cases without additional materials in the case.
 - If you want to label the discs, use a water-based permanent marker on the clear inner hub, not the top surface.
-- 20-50% humidity and temperatures between 15-25°C are ideal.
+- 20-50&nbsp;% humidity and temperatures between 15-25&nbsp;°C are ideal.
 
 More info at [this article on Optical Discs](https://www.canada.ca/en/conservation-institute/services/conservation-preservation-publications/canadian-conservation-institute-notes/longevity-recordable-cds-dvds.html) by the Canadian Conservation Institute.
 
@@ -1351,7 +1351,7 @@ sdc     4096  7.3T disk
 sdd     4096  7.3T disk
 ```
 
-We see that the `PHY-SEC` is 4096. This gives us `ashift=12` (2^12 = 4096).
+We see that the `PHY-SEC` is 4 096. This gives us `ashift=12` (2^12 = 4 096).
 
 Create the RAIDZ2 pool (this will **erase everything on these drives**. Make sure there's nothing you care about on them):
 

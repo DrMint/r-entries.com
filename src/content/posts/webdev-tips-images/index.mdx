@@ -13,7 +13,7 @@ tags:
 ## Starting point
 
 Let's say we have a banner image for our webpage's hero section.
-The JPEG image is 1200x300 pixels.
+The JPEG image is 1200 × 300 pixels.
 Here's the simplest possible HTML code to display it:
 
 ```html
@@ -27,7 +27,7 @@ There are a few things we can do to improve it:
 - JPEG is good but dated format.
   We can use formats with more efficient compression like AVIF or WebP instead.
 - We are only providing one image size.
-  If the user is on a mobile device, we are wasting bandwidth by serving a 1200x300 image.
+  If the user is on a mobile device, we are wasting bandwidth by serving a 1200 × 300 image.
   If the user is using a 4K monitor, the image will be blurry because of the low resolution.
 
 ## The `alt` attribute
@@ -165,13 +165,13 @@ After that, if the viewport is any wider, the image will stay at 1000px-wide.
 With that more advanced case, you may be wondering why we are still providing resolutions that are larger than 1000px.
 Well, depending on the device pixel ratio (DPR) and the browser's zoom level, logical pixels may not correspond to physical pixels.
 
-First example: The user has a 1920 × 1080 screen with a DPR of 1, and a zoom level of 100%,
+First example: The user has a 1920 × 1080 screen with a DPR of 1, and a zoom level of 100&nbsp;%,
 the viewport is above the 1000px threshold, so `sizes{:.entity.other.attribute}` will be interpreted as `1000px{:.string}`.
 The **1200px**-wide image will be used as it is the closest to the expected 1000px.
 
-But now the user zooms in to 150%, the expected image width will be 1500px, so the **1800px**-wide image will be used.
+But now the user zooms in to 150&nbsp;%, the expected image width will be 1500px, so the **1800px**-wide image will be used.
 
-Second example: The user has a mobile device with a 1320 × 2868 screen, a DPR of 3, and a zoom level of 100%.
+Second example: The user has a mobile device with a 1320 × 2868 screen, a DPR of 3, and a zoom level of 100&nbsp;%.
 In terms of logical pixels, the viewport is only 440px wide (1320px / 3).
 This means that when interpreting the `sizes{:.entity.other.attribute}` attribute, the `(max-width: 1000px) 100vw{:.string}` rule applies and we consider the image to be 100vw, the full width of the viewport.
 But the browser will also consider the DPR to determine the desired resolution for the image.
@@ -276,7 +276,7 @@ With all the tips we've covered, here is the final result:
 - There isn't a single best image format. The best solution is to provide multiple formats and let the browser pick the first one that it supports.
 - AVIF and WebP are the best formats to use as your default, then fallback to whichever legacy format is appropriate for the image (JPEG, PNG, or GIF).
 - The same goes with image sizes. Provide multiple sizes and let the browser pick the most appropriate one.
-- Don't forget to provide resolutions that are larger than the expected width image in the viewport for cases where the DPR is above 1 and/or the zoom level is above 100%.
+- Don't forget to provide resolutions that are larger than the expected width image in the viewport for cases where the DPR is above 1 and/or the zoom level is above 100&nbsp;%.
 - For images above the fold, use `loading="eager"`, `decoding="sync"`, and `fetchpriority="high"` properties.
 - For images below the fold, use `loading="lazy"`, `decoding="async"`, and `fetchpriority="auto"` properties.
 - `og:image` should be a JPEG image. `twitter:image` should use WebP.
