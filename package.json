@@ -17,7 +17,7 @@
     "@astrojs/mdx": "^5.0.4",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
-    "astro": "^6.2.1",
+    "astro": "^6.3.1",
     "color": "^5.0.3",
     "dotenv": "^17.4.2",
     "postcss-preset-env": "^11.2.1",
@@ -29,7 +29,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/upgrade": "^0.7.2",
-    "npm-check-updates": "^22.0.1",
+    "npm-check-updates": "^22.1.1",
     "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^5.9.3"
