@@ -10,7 +10,7 @@ const SHOULD_BYPASS =
 
 if (SHOULD_BYPASS) {
   console.log(
-    "[check-image-metadata] Skipped (ALLOW_IMAGE_GPS_METADATA=1 or SKIP_IMAGE_METADATA_CHECK=1).",
+    "[check-image-metadata] Skipped (ALLOW_IMAGE_GPS_METADATA=1 or SKIP_IMAGE_METADATA_CHECK=1)."
   );
   process.exit(0);
 }
@@ -68,7 +68,7 @@ async function readCompromisingLocationMetadata(filePath) {
     return gpsSummaryFromTags(/** @type {Record<string, unknown>} */ (tags));
   } catch (e) {
     throw new Error(
-      `Failed to read metadata for ${filePath}: ${e instanceof Error ? e.message : String(e)}`,
+      `Failed to read metadata for ${filePath}: ${e instanceof Error ? e.message : String(e)}`
     );
   }
 }
@@ -91,19 +91,20 @@ await exiftool.end();
 if (parseErrors.length > 0) {
   console.error(
     `\n[check-image-metadata] Could not read metadata for ${parseErrors.length} image(s). ` +
-      "Failing to avoid false negatives.\n",
+      "Failing to avoid false negatives.\n"
   );
   for (const msg of parseErrors.slice(0, 20)) console.error(`- ${msg}`);
-  if (parseErrors.length > 20) console.error(`- ... (${parseErrors.length - 20} more)`);
+  if (parseErrors.length > 20)
+    console.error(`- ... (${parseErrors.length - 20} more)`);
   console.error(
-    "\nFix: ensure images are valid, or bypass with SKIP_IMAGE_METADATA_CHECK=1 for this commit.\n",
+    "\nFix: ensure images are valid, or bypass with SKIP_IMAGE_METADATA_CHECK=1 for this commit.\n"
   );
   process.exit(2);
 }
 
 if (offenders.length > 0) {
   console.error(
-    `\n[check-image-metadata] Blocked commit: found potential doxxing metadata (GPS/location) in ${offenders.length} image(s):\n`,
+    `\n[check-image-metadata] Blocked commit: found potential doxxing metadata (GPS/location) in ${offenders.length} image(s):\n`
   );
   for (const { file, gpsSummary } of offenders) {
     console.error(`- ${file} (${gpsSummary})`);
@@ -113,11 +114,11 @@ if (offenders.length > 0) {
     "\nFix: strip metadata before committing (examples):\n" +
       "- exiftool: exiftool -all= -overwrite_original <file>\n" +
       "- ImageMagick: magick <in> -strip <out>\n" +
-      "\nBypass (not recommended): set ALLOW_IMAGE_GPS_METADATA=1 for this commit.\n",
+      "\nBypass (not recommended): set ALLOW_IMAGE_GPS_METADATA=1 for this commit.\n"
   );
   process.exit(1);
 }
 
 console.log(
-  `[check-image-metadata] OK: scanned ${files.length} image(s); no GPS/location metadata found.`,
+  `[check-image-metadata] OK: scanned ${files.length} image(s); no GPS/location metadata found.`
 );

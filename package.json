@@ -11,7 +11,7 @@
     "format": "prettier --write --list-different .",
     "tsc": "tsc",
     "check:images": "node scripts/check-image-metadata.mjs",
-    "precommit": "npm run check:images && npm run tsc && npm run check && npm run format && npm run build",
+    "precommit": "npm run tsc && npm run check && npm run format && npm run build && npm run check:images",
     "upgrade": "npx @astrojs/upgrade && ncu"
   },
   "dependencies": {
