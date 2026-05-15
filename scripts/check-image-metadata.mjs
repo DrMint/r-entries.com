@@ -1,31 +1,42 @@
 #!/usr/bin/env node
 // @ts-check
+import { execFileSync } from "node:child_process";
 import process from "node:process";
-import fg from "fast-glob";
 import { exiftool } from "exiftool-vendored";
 
-const SHOULD_BYPASS =
-  process.env.ALLOW_IMAGE_GPS_METADATA === "1" ||
-  process.env.SKIP_IMAGE_METADATA_CHECK === "1";
+const IMAGE_EXTENSIONS = new Set([
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".tif",
+  ".tiff",
+  ".heic",
+  ".avif",
+]);
 
-if (SHOULD_BYPASS) {
-  console.log(
-    "[check-image-metadata] Skipped (ALLOW_IMAGE_GPS_METADATA=1 or SKIP_IMAGE_METADATA_CHECK=1)."
-  );
-  process.exit(0);
+/** @param {string} relPath */
+function isImageFile(relPath) {
+  const i = relPath.lastIndexOf(".");
+  if (i === -1) return false;
+  return IMAGE_EXTENSIONS.has(relPath.slice(i).toLowerCase());
 }
 
-const patterns = [
-  "src/**/*.{jpg,jpeg,png,webp,tif,tiff,heic,avif}",
-  "public/**/*.{jpg,jpeg,png,webp,tif,tiff,heic,avif}",
-];
-
-const ignore = [
-  "**/node_modules/**",
-  "**/dist/**",
-  "**/.astro/**",
-  "**/.git/**",
-];
+function listTrackedImageFiles() {
+  try {
+    const out = execFileSync("git", ["ls-files", "-z", "--", "src", "public"], {
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+    });
+    return out.split("\0").filter((p) => p.length > 0 && isImageFile(p));
+  } catch (e) {
+    throw new Error(
+      `git ls-files failed (run from repo root, inside a git clone): ${
+        e instanceof Error ? e.message : String(e)
+      }`
+    );
+  }
+}
 
 /** @param {Record<string, unknown>} tags */
 function gpsSummaryFromTags(tags) {
@@ -73,7 +84,15 @@ async function readCompromisingLocationMetadata(filePath) {
   }
 }
 
-const files = await fg(patterns, { ignore, dot: false, onlyFiles: true });
+let files;
+try {
+  files = listTrackedImageFiles();
+} catch (e) {
+  console.error(
+    `\n[check-image-metadata] ${e instanceof Error ? e.message : String(e)}\n`
+  );
+  process.exit(2);
+}
 
 const offenders = [];
 const parseErrors = [];
@@ -96,9 +115,7 @@ if (parseErrors.length > 0) {
   for (const msg of parseErrors.slice(0, 20)) console.error(`- ${msg}`);
   if (parseErrors.length > 20)
     console.error(`- ... (${parseErrors.length - 20} more)`);
-  console.error(
-    "\nFix: ensure images are valid, or bypass with SKIP_IMAGE_METADATA_CHECK=1 for this commit.\n"
-  );
+  console.error("\nFix: ensure images are valid and readable by exiftool.\n");
   process.exit(2);
 }
 
@@ -113,8 +130,7 @@ if (offenders.length > 0) {
   console.error(
     "\nFix: strip metadata before committing (examples):\n" +
       "- exiftool: exiftool -all= -overwrite_original <file>\n" +
-      "- ImageMagick: magick <in> -strip <out>\n" +
-      "\nBypass (not recommended): set ALLOW_IMAGE_GPS_METADATA=1 for this commit.\n"
+      "- ImageMagick: magick <in> -strip <out>\n"
   );
   process.exit(1);
 }
