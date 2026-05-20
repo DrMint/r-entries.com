@@ -2,7 +2,7 @@
 import Html from "src/components/layout/Html.astro";
 import { getUrl } from "src/utils/navigation";
 import { getPostsTree, getTags } from "src/utils/collections";
-import { ENABLE_TAG_FEATURE } from "src/constants";
+import { ENABLE_TAG_FEATURE, MAX_POSTS_HOMEPAGE } from "src/constants";
 
 const posts = await getPostsTree();
 const tags = ENABLE_TAG_FEATURE
@@ -21,7 +21,11 @@ const tags = ENABLE_TAG_FEATURE
     {
       posts.length > 0 && (
         <li>
-          <a href={getUrl("/posts")}>Posts</a>
+          {MAX_POSTS_HOMEPAGE === Infinity ? (
+            "Posts"
+          ) : (
+            <a href={getUrl("/posts")}>Posts</a>
+          )}
           <ul>
             {posts.map((post) => (
               <li>

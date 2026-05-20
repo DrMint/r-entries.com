@@ -20,6 +20,8 @@ export const DEFAULT_DESCRIPTION = "A collection of entries about R";
 export const WEBSITE_COPYRIGHT_STARTING_YEAR = 2018;
 export const WEBSITE_COPYRIGHT_NAME = "R-Entries";
 
+export const MAX_POSTS_HOMEPAGE = Infinity;
+
 /* -------------------------------[ Features ]------------------------------- */
 
 export const ENABLE_GO_TO_TOP_FEATURE = true;
@@ -45,12 +47,16 @@ export const NAVIGATION_HOME_ITEM: NavigationItem = {
 };
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
-  {
-    href: "/posts",
-    detection: "prefix",
-    label: "Posts",
-    icon: PostsIcon,
-  },
+  ...(MAX_POSTS_HOMEPAGE === Infinity
+    ? []
+    : [
+        {
+          href: "/posts",
+          detection: "prefix" as const,
+          label: "Posts",
+          icon: PostsIcon,
+        },
+      ]),
   ...(ENABLE_TAG_FEATURE
     ? [
         {

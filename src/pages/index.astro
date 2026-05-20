@@ -5,17 +5,18 @@ import PostCard from "src/components/PostCard.astro";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
 import { getPosts, getPage } from "src/utils/collections";
 import { render } from "astro:content";
+import { MAX_POSTS_HOMEPAGE } from "src/constants";
 
 const homePage = await getPage("home");
 const { title, summary } = homePage.data;
 const { Content } = await render(homePage);
 
-const latestPosts = await getPosts({
-  maxCount: 10,
+const posts = await getPosts({
   sort: "date",
   order: "desc",
 });
-const postsCount = (await getPosts()).length;
+
+const latestPosts = posts.slice(0, MAX_POSTS_HOMEPAGE);
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
@@ -28,7 +29,7 @@ const postsCount = (await getPosts()).length;
   {
     latestPosts.length > 0 && (
       <>
-        <h2>Latest posts</h2>
+        <h2>{MAX_POSTS_HOMEPAGE === Infinity ? "Posts" : "Latest posts"}</h2>
         <div id="latest-post">
           {latestPosts.map((post) => (
             <div>
@@ -36,7 +37,7 @@ const postsCount = (await getPosts()).length;
             </div>
           ))}
         </div>
-        {latestPosts.length !== postsCount && (
+        {latestPosts.length !== posts.length && (
           <a id="view-all" href={getUrl("/posts")}>
             View all posts <RightArrow width={16} height={16} />
           </a>
@@ -78,6 +79,10 @@ const postsCount = (await getPosts()).length;
 
       & > div:last-child {
         border-bottom: 1px solid var(--layout-border);
+      }
+
+      &:last-child {
+        margin-bottom: 64px;
       }
     }
 
