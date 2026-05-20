@@ -1,0 +1,198 @@
+---
+title: "Linux Daily Driver"
+date: 2026-03-07
+tags: ["linux"]
+summary: "A guide to make my scanner and printer work on Linux"
+draft: true
+---
+
+## System
+
+### Spin down hard drive
+
+Find the hard drive by ID:
+
+```sh
+ls -l /dev/disk/by-id/
+```
+
+In my case, the hard drive is:
+```txt
+lrwxrwxrwx - root 11 mars  14:59 ata-ST8000NM000A-2KE101_WKD0P38D -> ../../sda
+```
+
+Create the service file:
+
+```sh
+sudo nano /etc/systemd/system/hdparm-spindown.service
+```
+
+```conf
+[Unit]
+Description=Apply HDD spindown timer
+After=multi-user.target suspend.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/hdparm -S 10 /dev/disk/by-id/ata-ST8000NM000A-2KE101_WKD0P38D
+
+[Install]
+WantedBy=multi-user.target suspend.target
+```
+
+Enable the service:
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable hdparm-spindown.service
+sudo systemctl start hdparm-spindown.service
+```
+
+### Control the fans
+
+```sh
+yay -S coolercontrol
+```
+
+Enable the service:
+
+```sh
+sudo systemctl enable --now coolercontrold
+```
+
+If you use a liquid cooling system:
+
+```sh
+sudo pacman -S liquidctl
+```
+
+### Overclocking the GPU
+
+```sh
+sudo pacman -S lact
+sudo systemctl enable --now lactd
+```
+
+Open LACT and click on the "Enable AMD overclocking" button.
+Restart the system.
+
+## Peripherals
+
+### Canon i-SENSYS MF4580dn (LAN)
+
+```sh
+sudo pacman -S cups cups-filters system-config-printer
+paru -S cnrdrvcups-lb
+```
+
+```sh
+sudo systemctl enable --now cups
+```
+
+- Open your browser and go to: http://localhost:631
+- Go to Administration (use your local user and password)
+- Click on "Find new printers"
+- It should detect "Canon Canon MF4500 Series (UFRII LT) (CanonMF4500)"
+- 
+
+
+### Fujitsu ScanSnap S1300i
+
+I have a ScanSnap S1300i scanner. Let's try to make it work on Linux:
+
+```sh
+sudo pacman -S sane
+```
+
+Get the scanner driver from https://github.com/bjoern-vh/scansnap-linux
+
+In my case for the S1300i:
+```sh
+wget https://raw.githubusercontent.com/bjoern-vh/scansnap-linux/refs/heads/main/drivers/1300i_0D12.nal
+sudo mv 1300i_0D12.nal /usr/share/sane/epjitsu/
+```
+
+Test the scanner:
+```sh
+scanimage -L
+```
+
+You should be rewarded with a beautiful sound coming from your scanner and its status light should stop blinking.
+On screen, the scanner should be listed in the output.
+In my case:
+```txt
+device `epjitsu:libusb:001:006' is a FUJITSU ScanSnap S1300i scanner
+```
+
+Now into scanning something, I'm going to use simple-scan to give myself a nice GUI to use the scanner:
+```sh
+sudo pacman -S simple-scan
+```
+
+The FUJITSU ScanSnap S1300i should appear in the list when starting the program.
+
+### Epson Perfection V33
+
+For the Epson Perfection V33, all I had to do was install the iscan and iscan-plugin-perfection-v330 packages:
+
+```sh
+yay -S iscan iscan-plugin-perfection-v330
+```
+
+The Epson Perfection V33 should appear in the list when starting the program.
+
+
+### Prevent peripherals from waking up the system
+
+First, let's make sure the peripheral is capable of waking up the system.
+```sh
+grep -i "logitech\|bolt\|unifying" /sys/bus/usb/devices/*/manufacturer 2>/dev/null
+```
+
+```txt
+/sys/bus/usb/devices/5-2.1/manufacturer:Logitech
+```
+
+```sh
+cat /sys/bus/usb/devices/5-2.1/power/wakeup
+```
+
+```txt
+enabled
+```
+
+So indeed, the Logitech Bolt Receiver is currently capable of waking up the system.
+Let's find its device ID:
+```sh
+lsusb | grep -i "logitech\|bolt"    
+```
+
+```txt
+Bus 005 Device 006: ID 046d:c548 Logitech, Inc. Logi Bolt Receiver
+```
+
+Now let's create a new udev rule to prevent the device from waking up the system:
+```sh
+sudo nano /etc/udev/rules.d/90-logitech-bolt-wakeup.rules
+```
+
+```txt
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c548", ATTR{power/wakeup}="disabled"
+```
+
+```sh
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+After unplugging and plugging back in the device, it should no longer be capable of waking up the system.
+We can check this by running again the following command:
+
+```sh
+cat /sys/bus/usb/devices/5-2.1/power/wakeup
+```
+
+```txt
+disabled
+```
+
+And obviously, the best check is to put the system to sleep and see if it stays asleep.
