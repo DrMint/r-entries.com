@@ -25,6 +25,7 @@ export const WEBSITE_COPYRIGHT_NAME = "R-Entries";
 export const ENABLE_GO_TO_TOP_FEATURE = true;
 export const ENABLE_TABLE_OF_CONTENTS_FEATURE = true;
 export const ENABLE_IMAGE_ZOOM_FEATURE = true;
+export const ENABLE_TAG_FEATURE = false;
 
 /* ------------------------------[ Responsive ]------------------------------ */
 
@@ -50,12 +51,16 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     label: "Posts",
     icon: PostsIcon,
   },
-  {
-    href: "/tags",
-    detection: "prefix",
-    label: "Tags",
-    icon: TagsIcon,
-  },
+  ...(ENABLE_TAG_FEATURE
+    ? [
+        {
+          href: "/tags",
+          detection: "prefix" as const,
+          label: "Tags",
+          icon: TagsIcon,
+        },
+      ]
+    : []),
   {
     href: "/about",
     detection: "prefix",

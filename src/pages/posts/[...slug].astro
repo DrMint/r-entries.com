@@ -5,7 +5,10 @@ import Tags from "src/pages/posts/_components/Tags.astro";
 import PostMeta from "src/components/PostMeta.astro";
 import TableOfContents from "src/pages/posts/_components/TableOfContents.astro";
 import AdjacentPosts from "src/pages/posts/_components/AdjacentPosts.astro";
-import { ENABLE_TABLE_OF_CONTENTS_FEATURE } from "src/constants";
+import {
+  ENABLE_TABLE_OF_CONTENTS_FEATURE,
+  ENABLE_TAG_FEATURE,
+} from "src/constants";
 import { getPosts } from "src/utils/collections";
 import Lightbox from "src/components/layout/Lightbox.astro";
 import defaultCover from "src/images/default-cover.jpg";
@@ -51,7 +54,7 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
   <div id="header">
     <h1>{title}</h1>
     <PostMeta post={post} />
-    <Tags tags={tags} />
+    {ENABLE_TAG_FEATURE && <Tags tags={tags} />}
   </div>
   <div id="content">
     {

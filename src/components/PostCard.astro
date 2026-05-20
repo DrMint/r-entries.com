@@ -5,6 +5,7 @@ import PostMeta from "src/components/PostMeta.astro";
 import { getUrl } from "src/utils/navigation";
 import Image from "./Image.astro";
 import defaultCover from "src/images/default-cover.jpg";
+import { ENABLE_TAG_FEATURE } from "src/constants";
 
 interface Props {
   post: CollectionEntry<"posts">;
@@ -28,7 +29,7 @@ const { post, ...rest } = Astro.props;
     <p>{post.data.summary}</p>
     <PostMeta post={post} />
     {
-      post.data.tags && post.data.tags.length > 0 && (
+      ENABLE_TAG_FEATURE && post.data.tags && post.data.tags.length > 0 && (
         <div class="tags">
           {post.data.tags?.map((tag) => (
             <div>
@@ -60,7 +61,7 @@ const { post, ...rest } = Astro.props;
     }
 
     & > picture > img {
-      width: 280px;
+      width: 240px;
       height: 100%;
       object-fit: cover;
       aspect-ratio: 4/3;
@@ -84,6 +85,7 @@ const { post, ...rest } = Astro.props;
 
       display: flex;
       flex-direction: column;
+      place-content: center;
       padding: 32px;
 
       & > h2 {

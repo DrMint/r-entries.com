@@ -2,9 +2,12 @@
 import Html from "src/components/layout/Html.astro";
 import { getUrl } from "src/utils/navigation";
 import { getPostsTree, getTags } from "src/utils/collections";
+import { ENABLE_TAG_FEATURE } from "src/constants";
 
 const posts = await getPostsTree();
-const tags = await getTags({ sort: "name", order: "asc" });
+const tags = ENABLE_TAG_FEATURE
+  ? await getTags({ sort: "name", order: "asc" })
+  : [];
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
