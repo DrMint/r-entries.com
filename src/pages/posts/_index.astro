@@ -2,11 +2,6 @@
 import Html from "src/components/layout/Html.astro";
 import PostCard from "src/components/PostCard.astro";
 import { getPosts } from "src/utils/collections";
-import { MAX_POSTS_HOMEPAGE } from "src/constants";
-
-if (MAX_POSTS_HOMEPAGE === Infinity) {
-  return Astro.redirect("/");
-}
 
 const posts = await getPosts({ sort: "date", order: "desc" });
 ---

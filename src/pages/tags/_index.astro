@@ -1,0 +1,40 @@
+---
+import Html from "src/components/layout/Html.astro";
+import TagPill from "src/components/TagPill.astro";
+import { getTags } from "src/utils/collections";
+import { getUrl } from "src/utils/navigation";
+
+const tags = await getTags({ sort: "prevalence", order: "desc" });
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<Html data-page="Tags">
+  <h1>Tags</h1>
+  <div>
+    {
+      tags.map(({ tag, count }) => (
+        <a href={getUrl(`/tags/${tag}`)}>
+          <TagPill tag={tag} count={count} withLinks />
+        </a>
+      ))
+    }
+  </div>
+</Html>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-page="Tags"] {
+    padding: 64px var(--middle-x-padding);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    & > div {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+  }
+</style>

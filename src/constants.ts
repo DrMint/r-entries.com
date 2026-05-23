@@ -20,6 +20,8 @@ export const DEFAULT_DESCRIPTION = "A collection of entries about R";
 export const WEBSITE_COPYRIGHT_STARTING_YEAR = 2018;
 export const WEBSITE_COPYRIGHT_NAME = "R-Entries";
 
+// Set it to `Infinity` to show all posts on the homepage
+// and disable the "view all posts" button and Posts page
 export const MAX_POSTS_HOMEPAGE = Infinity;
 
 /* -------------------------------[ Features ]------------------------------- */

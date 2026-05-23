@@ -1,117 +1,26 @@
 ---
-import { render } from "astro:content";
-import Html from "src/components/layout/Html.astro";
-import Tags from "src/pages/posts/_components/Tags.astro";
-import PostMeta from "src/components/PostMeta.astro";
-import TableOfContents from "src/pages/posts/_components/TableOfContents.astro";
-import AdjacentPosts from "src/pages/posts/_components/AdjacentPosts.astro";
-import {
-  ENABLE_TABLE_OF_CONTENTS_FEATURE,
-  ENABLE_TAG_FEATURE,
-} from "src/constants";
+import { MAX_POSTS_HOMEPAGE } from "src/constants";
 import { getPosts } from "src/utils/collections";
-import Lightbox from "src/components/layout/Lightbox.astro";
-import defaultCover from "src/images/default-cover.jpg";
+import Post from "./_post.astro";
+import Index from "./_index.astro";
 
 export const getStaticPaths = async () => {
   const posts = await getPosts({ includingNested: true });
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+
+  const paths: { params: { slug: string | undefined } }[] = posts.map(
+    (post) => ({
+      params: { slug: post.id },
+    })
+  );
+
+  if (MAX_POSTS_HOMEPAGE !== Infinity) {
+    paths.push({ params: { slug: undefined } });
+  }
+
+  return paths;
 };
 
-const { post } = Astro.props;
-const { title, cover, tags, summary } = post.data;
-const { Content, headings } = await render(post);
-
-// Add a space after the numbering
-const numberedHeadings = headings.map(({ depth, slug, text }) => ({
-  depth,
-  slug,
-  text: text.replace(/^([\d.]+)/, "$1 "),
-}));
+const slug = Astro.params.slug;
 ---
 
-{/* --------------------------------[ HTML ]-------------------------------- */}
-
-<Html
-  data-page="Post"
-  openGraph={{
-    title,
-    description: summary,
-    thumbnail: cover?.src,
-  }}
->
-  <Lightbox
-    src={cover?.src ?? defaultCover}
-    alt={cover?.alt ?? ""}
-    sizes="(max-width: 1024px) 100vw, 1024px"
-    fallbackWidth={1024}
-    minWidth={1200}
-    priority
-  />
-  <div id="header">
-    <h1>{title}</h1>
-    <PostMeta post={post} />
-    {ENABLE_TAG_FEATURE && <Tags tags={tags} />}
-  </div>
-  <div id="content">
-    {
-      ENABLE_TABLE_OF_CONTENTS_FEATURE && numberedHeadings.length > 0 && (
-        <TableOfContents headings={numberedHeadings} />
-      )
-    }
-    <div>
-      <Content />
-    </div>
-    <AdjacentPosts currentPost={post} />
-  </div>
-</Html>
-
-{/* ---------------------------------[ CSS ]-------------------------------- */}
-
-<style>
-  [data-page="Post"] {
-    display: flex;
-    flex-direction: column;
-    place-items: center;
-
-    picture {
-      & > img {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-        border-bottom: 1px solid var(--layout-border);
-
-        background-image: radial-gradient(
-          var(--layout-border) 20%,
-          transparent 30%
-        );
-        background-size: 16px 16px;
-        background-repeat: space;
-      }
-    }
-
-    & > #header {
-      width: 100%;
-      padding: 64px var(--middle-x-padding);
-      border-bottom: 2px dotted var(--layout-border);
-
-      display: flex;
-      flex-direction: column;
-      place-items: center;
-      gap: 24px;
-      text-align: center;
-    }
-
-    & > #content {
-      max-width: 70ch;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 128px;
-      padding: 64px 16px;
-    }
-  }
-</style>
+{slug ? <Post slug={slug} /> : <Index />}

@@ -26,6 +26,12 @@ export const getPosts = async (options?: {
   return posts;
 };
 
+export const getPost = async (slug: string) => {
+  const post = await getEntry("posts", slug);
+  if (!post) throw new Error(`Post not found: ${slug}`);
+  return post;
+};
+
 export const getPostsTree = async () => {
   const allPosts = await getPosts({ includingNested: true });
   const posts = allPosts.filter((post) => !post.id.includes("/"));

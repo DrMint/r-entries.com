@@ -1,11 +1,8 @@
 ---
-import Html from "src/components/layout/Html.astro";
-import TagPill from "src/components/TagPill.astro";
-import HashLogo from "src/icons/lucide--hash.svg";
-import PostCard from "src/components/PostCard.astro";
-import { getUrl } from "src/utils/navigation";
-import { getPosts, getTags } from "src/utils/collections";
+import { getTags } from "src/utils/collections";
 import { ENABLE_TAG_FEATURE } from "src/constants";
+import Index from "./_index.astro";
+import Tag from "./_tag.astro";
 
 export const getStaticPaths = async () => {
   if (!ENABLE_TAG_FEATURE) return [];
@@ -19,104 +16,6 @@ export const getStaticPaths = async () => {
 };
 
 const tag = Astro.params.tag;
-const isIndex = !tag;
-
-const tags = await getTags({ sort: "prevalence", order: "desc" });
-
-const posts = !isIndex
-  ? await getPosts({
-      tag,
-      includingNested: true,
-      sort: "date",
-      order: "desc",
-    })
-  : null;
 ---
 
-{/* --------------------------------[ HTML ]-------------------------------- */}
-
-{
-  isIndex ? (
-    <Html data-page="Tags">
-      <h1>Tags</h1>
-      <div>
-        {tags.map(({ tag, count }) => (
-          <a href={getUrl(`/tags/${tag}`)}>
-            <TagPill tag={tag} count={count} withLinks />
-          </a>
-        ))}
-      </div>
-    </Html>
-  ) : (
-    <Html data-page="Tag">
-      <h1>
-        Posts tagged with{" "}
-        <span>
-          <HashLogo width={26} height={26} />
-          {tag}
-        </span>
-      </h1>
-
-      <div id="posts">
-        {posts!.map((post) => (
-          <div>
-            <PostCard post={post} />
-          </div>
-        ))}
-      </div>
-    </Html>
-  )
-}
-
-{/* ---------------------------------[ CSS ]-------------------------------- */}
-
-<style>
-  [data-page="Tags"] {
-    padding: 64px var(--middle-x-padding);
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-
-    & > div {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-  }
-
-  [data-page="Tag"] {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-
-    padding-top: 64px;
-    padding-bottom: 128px;
-
-    & > h1 {
-      padding-inline: var(--middle-x-padding);
-      line-height: 1.5;
-
-      & > span {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background-color: var(--foreground-10);
-        border-radius: 100vmax;
-        padding: 8px 14px;
-        padding-right: 18px;
-        font-size: var(--font-size-2xl);
-        font-weight: 500;
-      }
-    }
-
-    & > #posts {
-      & > div {
-        border-top: 1px solid var(--layout-border);
-      }
-
-      & > div:last-child {
-        border-bottom: 1px solid var(--layout-border);
-      }
-    }
-  }
-</style>
+{tag ? <Tag tag={tag} /> : <Index />}
