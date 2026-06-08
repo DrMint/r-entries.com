@@ -34,6 +34,7 @@ class ResponsiveImageSet {
   private readonly acceptableWidths: number[];
   private type: ImageType;
   private fallbackFormat: ImageFormat;
+  private square: boolean;
 
   private sets:
     | {
@@ -50,10 +51,13 @@ class ResponsiveImageSet {
     options?: ResponsiveImageSetOptions
   ) {
     this.acceptableWidths = RESPONSIVE_WIDTHS.filter(
-      (w) => w <= this.original.width
+      (w) =>
+        w <= this.original.width &&
+        (options?.maxWidth ? w <= options.maxWidth : true)
     );
     this.type = options?.type ?? "default";
     this.fallbackFormat = fallbackFormats[this.type];
+    this.square = options?.square ?? false;
   }
 
   async init(): Promise<void> {
@@ -124,6 +128,8 @@ class ResponsiveImageSet {
         const image = await getImage({
           src: this.original,
           width,
+          height: this.square ? width : undefined,
+          fit: this.square ? "cover" : undefined,
           format,
         });
         return {
@@ -140,18 +146,34 @@ const responsiveImages: Map<string, ResponsiveImageSet> = new Map();
 
 export type ResponsiveImageSetOptions = {
   type?: ImageType | undefined;
+  square?: boolean | undefined;
+  maxWidth?: number | undefined;
 };
 
 export const getResponsiveImage = async (
   src: ImageMetadata,
   options?: ResponsiveImageSetOptions
 ) => {
-  const existing = responsiveImages.get(src.src);
+  // If the image is within 5% of already being a square,
+  // we don't need to create a square version
+  const imageRatio = src.width / src.height;
+  const square = options?.square && Math.abs(imageRatio - 1) > 0.05;
+
+  const key = src.src + (square ? "square" : "");
+  const existing = responsiveImages.get(key);
+
   if (existing) {
     return existing;
   }
-  const responsiveImage = new ResponsiveImageSet(src, options);
+
+  const responsiveImage = new ResponsiveImageSet(src, {
+    type: options?.type,
+    square,
+    maxWidth: options?.maxWidth,
+  });
+
   await responsiveImage.init();
-  responsiveImages.set(src.src, responsiveImage);
+
+  responsiveImages.set(key, responsiveImage);
   return responsiveImage;
 };

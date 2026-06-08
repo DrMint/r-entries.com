@@ -9,12 +9,27 @@ interface Props {
   priority: boolean;
   fallbackWidth: ResponsiveWidth;
   type?: ImageType;
+  square?: boolean;
+  maxWidth?: ResponsiveWidth;
 }
 
-const { src, alt, sizes, priority, type, fallbackWidth, ...otherProps } =
-  Astro.props;
+const {
+  src,
+  alt,
+  sizes,
+  priority,
+  type,
+  fallbackWidth,
+  square,
+  maxWidth,
+  ...otherProps
+} = Astro.props;
 
-const responsiveImage = await getResponsiveImage(src, { type });
+const responsiveImage = await getResponsiveImage(src, {
+  type,
+  square,
+  maxWidth,
+});
 const { srcSets } = responsiveImage;
 const fallback = await responsiveImage.getFallback(fallbackWidth);
 ---
