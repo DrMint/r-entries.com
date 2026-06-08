@@ -2,17 +2,17 @@
 import { ENABLE_IMAGE_ZOOM_FEATURE } from "src/constants";
 import Image from "../Image.astro";
 
-type Props = Parameters<typeof Image>[0] & { minWidth?: number };
-const { minWidth, ...otherProps } = Astro.props;
+type Props = Parameters<typeof Image>[0];
+const props = Astro.props;
 ---
 
 {
   ENABLE_IMAGE_ZOOM_FEATURE ? (
-    <div data-component="Lightbox" data-min-width={minWidth}>
-      <Image {...otherProps} />
+    <div data-component="Lightbox">
+      <Image {...props} />
     </div>
   ) : (
-    <Image {...otherProps} />
+    <Image {...props} />
   )
 }
 
@@ -21,6 +21,7 @@ const { minWidth, ...otherProps } = Astro.props;
 <script>
   const ANIM_DURATION = 250;
   const PADDING = 64;
+  const MIN_UPSCALE_FACTOR = 1.1;
 
   const lightboxes = document.querySelectorAll<HTMLDivElement>(
     "[data-component='Lightbox']"
@@ -30,38 +31,53 @@ const { minWidth, ...otherProps } = Astro.props;
     const img = picture.querySelector<HTMLImageElement>("img")!;
     const initialSizes = img.sizes;
     const placeholder = document.createElement("div");
-    const minimumWidth = lightbox.dataset.minWidth
-      ? parseInt(lightbox.dataset.minWidth)
-      : undefined;
 
-    const updateEnabled = (newValue: boolean) => {
-      enabled = newValue;
-      if (enabled) {
-        console.log(
-          "[Lightbox] Viewport is larger than",
-          minimumWidth,
-          "px, enabling lightbox"
-        );
-      } else {
-        console.log(
-          "[Lightbox] Viewport is smaller than",
-          minimumWidth,
-          "px, disabling lightbox"
-        );
-      }
+    const getCurrentScale = (width: number, height: number) => {
+      const { naturalWidth, naturalHeight } = img;
+      const widthRatio = width / naturalWidth;
+      const heightRatio = height / naturalHeight;
+      return getComputedStyle(img).objectFit === "cover"
+        ? Math.max(widthRatio, heightRatio)
+        : Math.min(widthRatio, heightRatio);
+    };
+
+    const getLightboxScale = () => {
+      const availableWidth = window.innerWidth - PADDING * 2;
+      const availableHeight = window.innerHeight - PADDING * 2;
+      return Math.min(
+        availableWidth / img.naturalWidth,
+        availableHeight / img.naturalHeight
+      );
+    };
+
+    const shouldEnableLightbox = () => {
+      const { naturalWidth, naturalHeight } = img;
+      if (!naturalWidth || !naturalHeight) return false;
+
+      const { width, height } = img.getBoundingClientRect();
+      if (!width || !height) return false;
+
+      return (
+        getLightboxScale() > getCurrentScale(width, height) * MIN_UPSCALE_FACTOR
+      );
+    };
+
+    let enabled = false;
+
+    const updateEnabled = () => {
+      enabled = shouldEnableLightbox();
       lightbox.classList.toggle("enabled", enabled);
     };
 
-    let enabled = true;
-    if (minimumWidth) {
-      const mediaQuery = window.matchMedia(`(min-width: ${minimumWidth}px)`);
-      updateEnabled(mediaQuery.matches);
-      mediaQuery.addEventListener("change", ({ matches }) => {
-        updateEnabled(matches);
-      });
+    if (img.complete && img.naturalWidth) {
+      updateEnabled();
     } else {
-      updateEnabled(true);
+      img.addEventListener("load", updateEnabled, { once: true });
     }
+
+    const resizeObserver = new ResizeObserver(updateEnabled);
+    resizeObserver.observe(img);
+    window.addEventListener("resize", updateEnabled);
 
     let previousPictureBoundingBox: DOMRect;
     let previousImageBoundingBox: DOMRect;
@@ -69,19 +85,16 @@ const { minWidth, ...otherProps } = Astro.props;
     let scrollPosition = 0;
 
     const scrollPreventionListener = () => {
-      console.log("[Lightbox] Preventing scroll");
       window.scrollTo(window.scrollX, scrollPosition);
     };
 
     const keydownListener = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        console.log("[Lightbox] Closing with 'Escape' being pressed");
         closeLightbox();
       }
     };
 
     const resizingListener = () => {
-      console.log("[Lightbox] Closing because of resizing");
       closeLightbox();
     };
 
