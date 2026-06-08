@@ -15,10 +15,10 @@
     "upgrade": "npx @astrojs/upgrade && ncu"
   },
   "dependencies": {
-    "@astrojs/mdx": "^5.0.6",
+    "@astrojs/mdx": "^6.0.2",
     "@astrojs/rss": "^4.0.18",
-    "@astrojs/sitemap": "^3.7.2",
-    "astro": "^6.3.3",
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^6.4.4",
     "color": "^5.0.3",
     "dotenv": "^17.4.2",
     "postcss-preset-env": "^11.3.0",
@@ -30,8 +30,8 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/upgrade": "^0.7.2",
-    "exiftool-vendored": "^35.20.0",
-    "npm-check-updates": "^22.2.0",
+    "exiftool-vendored": "^36.0.0",
+    "npm-check-updates": "^22.2.3",
     "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^5.9.3"

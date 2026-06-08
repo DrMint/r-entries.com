@@ -11,6 +11,7 @@ import type { Element } from "hast";
 import { loadEnv } from "./tools/loadEnv";
 import rehypeCallouts from "rehype-callouts";
 import rehypePrettyCode from "rehype-pretty-code";
+import { unified } from "@astrojs/markdown-remark";
 
 const env = loadEnv();
 
@@ -18,49 +19,51 @@ export default defineConfig({
   integrations: [mdx({ optimize: true }), sitemap()],
   trailingSlash: env.TRAILING_SLASH,
   markdown: {
-    remarkRehype: {
-      footnoteLabel: "Footnotes",
-    },
     syntaxHighlight: false,
-    rehypePlugins: [
-      rehypeSlug,
-      rehypeNumberHeadings,
-      [
-        rehypeAutolinkHeadings,
-        {
-          behavior: "prepend",
-          content: (node: Element) => ({
-            type: "text",
-            value: node.properties["data-numbering"],
-          }),
-          properties: {
-            className: ["anchor-link"],
-            "aria-hidden": "true",
-            tabindex: "-1",
+    processor: unified({
+      remarkRehype: {
+        footnoteLabel: "Footnotes",
+      },
+      rehypePlugins: [
+        rehypeSlug,
+        rehypeNumberHeadings,
+        [
+          rehypeAutolinkHeadings,
+          {
+            behavior: "prepend",
+            content: (node: Element) => ({
+              type: "text",
+              value: node.properties["data-numbering"],
+            }),
+            properties: {
+              className: ["anchor-link"],
+              "aria-hidden": "true",
+              tabindex: "-1",
+            },
           },
-        },
-      ],
-      [
-        rehypePrettyCode,
-        {
-          theme: {
-            light: "light-plus",
-            dark: "dark-plus",
+        ],
+        [
+          rehypePrettyCode,
+          {
+            theme: {
+              light: "light-plus",
+              dark: "dark-plus",
+            },
+            keepBackground: false,
           },
-          keepBackground: false,
-        },
+        ],
+        rehypeCallouts,
+        [
+          rehypeExternalNofollow,
+          {
+            target: "_blank",
+            rel: ["nofollow", "noreferrer", "noopener"],
+          },
+        ],
+        rehypeWrapTables,
+        rehypeMarkNonMDXNodes,
       ],
-      rehypeCallouts,
-      [
-        rehypeExternalNofollow,
-        {
-          target: "_blank",
-          rel: ["nofollow", "noreferrer", "noopener"],
-        },
-      ],
-      rehypeWrapTables,
-      rehypeMarkNonMDXNodes,
-    ],
+    }),
   },
   server: {
     host: true,
