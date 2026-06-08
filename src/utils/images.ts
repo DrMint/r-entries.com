@@ -142,8 +142,6 @@ class ResponsiveImageSet {
   }
 }
 
-const responsiveImages: Map<string, ResponsiveImageSet> = new Map();
-
 export type ResponsiveImageSetOptions = {
   type?: ImageType | undefined;
   square?: boolean | undefined;
@@ -159,13 +157,6 @@ export const getResponsiveImage = async (
   const imageRatio = src.width / src.height;
   const square = options?.square && Math.abs(imageRatio - 1) > 0.05;
 
-  const key = src.src + (square ? "square" : "");
-  const existing = responsiveImages.get(key);
-
-  if (existing) {
-    return existing;
-  }
-
   const responsiveImage = new ResponsiveImageSet(src, {
     type: options?.type,
     square,
@@ -173,7 +164,5 @@ export const getResponsiveImage = async (
   });
 
   await responsiveImage.init();
-
-  responsiveImages.set(key, responsiveImage);
   return responsiveImage;
 };
