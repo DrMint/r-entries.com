@@ -28,7 +28,18 @@ const pagesCollection = defineCollection({
   }),
 });
 
+const galleryCollection = defineCollection({
+  loader: glob({ base: "src/content/gallery", pattern: "**/*.mdx" }),
+  schema: ({ image }) =>
+    z.object({
+      image: image(),
+      title: z.string(),
+      date: z.coerce.date(),
+    }),
+});
+
 export const collections = {
   posts: postsCollection,
   pages: pagesCollection,
+  gallery: galleryCollection,
 };

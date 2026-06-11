@@ -4,6 +4,7 @@ import TagsIcon from "src/icons/lucide--tags.svg";
 import AboutIcon from "src/icons/lucide--circle-user-round.svg";
 import GithubLogo from "src/icons/lucide--github.svg";
 import TwitterLogo from "src/icons/lucide--twitter.svg";
+import ImageIcon from "src/icons/lucide--image.svg";
 import Logo from "src/icons/r-entries.svg";
 import type { SocialItem, NavigationItem } from "src/utils/navigation";
 
@@ -30,6 +31,7 @@ export const ENABLE_GO_TO_TOP_FEATURE = true;
 export const ENABLE_TABLE_OF_CONTENTS_FEATURE = true;
 export const ENABLE_IMAGE_ZOOM_FEATURE = true;
 export const ENABLE_TAG_FEATURE = false;
+export const ENABLE_GALLERY_FEATURE = true;
 
 /* ------------------------------[ Responsive ]------------------------------ */
 
@@ -59,6 +61,16 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
           icon: PostsIcon,
         },
       ]),
+  ...(ENABLE_GALLERY_FEATURE
+    ? [
+        {
+          href: "/gallery",
+          detection: "prefix" as const,
+          label: "Gallery",
+          icon: ImageIcon,
+        },
+      ]
+    : []),
   ...(ENABLE_TAG_FEATURE
     ? [
         {

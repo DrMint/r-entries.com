@@ -1,0 +1,68 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getUrl } from "src/utils/navigation";
+import Image from "src/components/Image.astro";
+
+interface Props {
+  entry: CollectionEntry<"gallery">;
+}
+
+const { entry } = Astro.props;
+---
+
+<a data-component="GalleryEntryCard" href={getUrl(`/gallery/${entry.id}`)}>
+  <Image
+    src={entry.data.image}
+    alt={""}
+    sizes="
+      (max-width: 300px) 100vw,
+      (max-width: 450px) 50vw,
+      (max-width: 768px) 33vw,
+      (max-width: 1024px) 25vw,
+      256px"
+    fallbackWidth={256}
+    maxWidth={580}
+    priority
+    square
+  />
+</a>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-component="GalleryEntryCard"] {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: relative;
+
+    overflow: hidden;
+    outline: 1px solid var(--layout-border);
+
+    &:hover,
+    &:focus-visible {
+      outline-color: var(--foreground-50);
+      z-index: 1;
+
+      & > picture > img {
+        scale: 110%;
+      }
+    }
+
+    & > picture > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      aspect-ratio: 1/1;
+
+      transition: scale 500ms;
+
+      background-image: radial-gradient(
+        var(--layout-border) 20%,
+        transparent 30%
+      );
+      background-size: 8px 8px;
+      background-repeat: space;
+    }
+  }
+</style>

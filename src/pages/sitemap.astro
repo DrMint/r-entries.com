@@ -1,13 +1,23 @@
 ---
 import Html from "src/components/layout/Html.astro";
 import { getUrl } from "src/utils/navigation";
-import { getPostsTree, getTags } from "src/utils/collections";
-import { ENABLE_TAG_FEATURE, MAX_POSTS_HOMEPAGE } from "src/constants";
+import {
+  getGalleryEntries,
+  getPostsTree,
+  getTags,
+} from "src/utils/collections";
+import {
+  ENABLE_TAG_FEATURE,
+  ENABLE_GALLERY_FEATURE,
+  MAX_POSTS_HOMEPAGE,
+} from "src/constants";
 
 const posts = await getPostsTree();
 const tags = ENABLE_TAG_FEATURE
   ? await getTags({ sort: "name", order: "asc" })
   : [];
+
+const galleryEntries = ENABLE_GALLERY_FEATURE ? await getGalleryEntries() : [];
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
@@ -41,6 +51,20 @@ const tags = ENABLE_TAG_FEATURE
                     ))}
                   </ul>
                 )}
+              </li>
+            ))}
+          </ul>
+        </li>
+      )
+    }
+    {
+      galleryEntries.length > 0 && (
+        <li>
+          <a href={getUrl("/gallery")}>Gallery</a>
+          <ul>
+            {galleryEntries.map((entry) => (
+              <li>
+                <a href={getUrl(`/gallery/${entry.id}`)}>{entry.data.title}</a>
               </li>
             ))}
           </ul>

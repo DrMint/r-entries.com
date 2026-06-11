@@ -1,0 +1,102 @@
+---
+import Html from "src/components/layout/Html.astro";
+import Lightbox from "src/components/layout/Lightbox.astro";
+import { getGalleryEntry } from "src/utils/collections";
+import { render } from "astro:content";
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const entry = await getGalleryEntry(slug);
+const { image, title, date } = entry.data;
+const { Content } = await render(entry);
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<Html data-page="GalleryEntry">
+  <Lightbox
+    src={image}
+    alt={""}
+    sizes="(max-width: 1024px) 100vw, 1024px"
+    fallbackWidth={1024}
+    priority
+  />
+  <div id="header" class:list={{ "with-body": entry.body }}>
+    <h1>{title}</h1>
+    <p>{date.toLocaleDateString("en-US", { dateStyle: "long" })}</p>
+  </div>
+  {
+    entry.body && (
+      <div id="content">
+        <div>
+          <Content />
+        </div>
+      </div>
+    )
+  }
+</Html>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-page="GalleryEntry"] {
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+
+    picture {
+      & > img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-bottom: 1px solid var(--layout-border);
+
+        background-image: radial-gradient(
+          var(--layout-border) 20%,
+          transparent 30%
+        );
+        background-size: 16px 16px;
+        background-repeat: space;
+      }
+    }
+
+    :global(picture > img) {
+      max-height: calc(100dvh - 64px);
+      height: auto;
+      width: 100%;
+      object-fit: contain;
+    }
+
+    & > #header {
+      width: 100%;
+      padding-inline: var(--middle-x-padding);
+      padding-top: 64px;
+
+      &.with-body {
+        border-bottom: 2px dotted var(--layout-border);
+        padding-bottom: 64px;
+      }
+
+      display: flex;
+      flex-direction: column;
+      place-items: center;
+      gap: 24px;
+      text-align: center;
+
+      & > p {
+        color: var(--foreground-60);
+      }
+    }
+
+    & > #content {
+      max-width: 70ch;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 16px;
+    }
+  }
+</style>

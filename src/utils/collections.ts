@@ -84,3 +84,17 @@ export const getPage = async (slug: string) => {
   if (!page) throw new Error(`Page not found: ${slug}`);
   return page;
 };
+
+export const getGalleryEntries = async () => {
+  const gallery = (await getCollection("gallery")).sort(
+    /* From newest to oldest */
+    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+  );
+  return gallery;
+};
+
+export const getGalleryEntry = async (slug: string) => {
+  const entry = await getEntry("gallery", slug);
+  if (!entry) throw new Error(`Gallery entry not found: ${slug}`);
+  return entry;
+};

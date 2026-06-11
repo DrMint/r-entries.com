@@ -14,7 +14,7 @@ const readingTime = getReadingTime(post.body);
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <div data-component="PostMeta" {...rest}>
-  <p>{date.toLocaleDateString(undefined, { dateStyle: "long" })}</p>
+  <p>{date.toLocaleDateString("en-US", { dateStyle: "long" })}</p>
   <div class="separator">|</div>
   <p>{`${readingTime} min read`}</p>
 </div>
