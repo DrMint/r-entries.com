@@ -1,16 +1,32 @@
 ---
 title: "Recipe for some waffles"
+cover:
+  src: "13.jpg"
+  alt: "Waffles"
 summary: "A recipe for some waffles"
 date: 2025-04-21
 tags:
   - recipe
   - sweet
-draft: true
 ---
+
+import MdxImage from "src/components/mdx/MdxImage.astro";
+import image2 from "./2.jpg";
+import image5 from "./5.jpg";
+import image6 from "./6.jpg";
+import image7 from "./7.jpg";
+import image8 from "./8.jpg";
+import image10 from "./10.jpg";
+import image11 from "./11.jpg";
+import image12 from "./12.jpg";
+import image13 from "./13.jpg";
+import image14 from "./14.jpg";
 
 This is my grandmother's waffles: gotta respect the old-timey recipes!
 
 ## Ingredients
+
+<MdxImage src={image2} />
 
 - 400&nbsp;g flour
 - 330&nbsp;ml milk
@@ -27,3 +43,15 @@ This is my grandmother's waffles: gotta respect the old-timey recipes!
 3. Melt the butter (100&nbsp;g) in the microwave and pour it in the well, along with the eggs.
 4. Slowly pour the milk (330&nbsp;ml) while mixing until homogenized.
 5. That's it, you can now cook the waffles!
+
+## Gallery
+
+<MdxImage src={image5} alt="In a big bowl, pour the flour (400&nbsp;g), baking powder (1 sachet), pinch of salt, and sugar (75&nbsp;g). Mix together and make a well in the center." caption />
+<MdxImage src={image6} alt="Beat the 2 whole eggs in another bowl." caption />
+<MdxImage src={image7} alt="Melt the butter (100&nbsp;g) in the microwave." caption />
+<MdxImage src={image8} alt="Pour the butter and eggs in the well. Slowly pour the milk (330&nbsp;ml) while mixing until homogenized. That's it, you can now cook the waffles!" caption />
+<MdxImage src={image12} alt="All sorts of spreads and toppings: jam, chestnut spread, whipped cream, sugar, " caption />
+<MdxImage src={image11} />
+<MdxImage src={image10} alt="You can pair the waffles with some good cider!" caption />
+<MdxImage src={image13} />
+<MdxImage src={image14} />
