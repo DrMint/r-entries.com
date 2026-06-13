@@ -3,6 +3,7 @@ import { visit } from "unist-util-visit";
 import type { Plugin } from "unified";
 
 interface Options {
+  siteUrl: string;
   target?: "_blank" | "_self";
   rel?: string[];
 }
@@ -16,9 +17,12 @@ export const rehypeExternalNofollow: Plugin<[Options | undefined], Root> =
       if (
         node.tagName === "a" &&
         typeof node.properties?.href === "string" &&
-        /^https?:\/\//.test(node.properties.href) &&
-        !node.properties.href.includes(process.env.SITE_URL!)
+        /^https?:\/\//.test(node.properties.href)
       ) {
+        if (options && !node.properties.href.startsWith(options.siteUrl)) {
+          return;
+        }
+
         if (target) {
           node.properties.target = target;
         }

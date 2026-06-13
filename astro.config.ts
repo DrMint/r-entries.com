@@ -56,6 +56,7 @@ export default defineConfig({
         [
           rehypeExternalNofollow,
           {
+            siteUrl: env.SITE_URL,
             target: "_blank",
             rel: ["nofollow", "noreferrer", "noopener"],
           },
