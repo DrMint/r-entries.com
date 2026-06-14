@@ -29,8 +29,15 @@ const props = Astro.props;
   lightboxes.forEach((lightbox) => {
     const picture = lightbox.querySelector<HTMLPictureElement>("picture")!;
     const img = picture.querySelector<HTMLImageElement>("img")!;
+    const openOriginalLink = picture.querySelector<HTMLAnchorElement>("a");
     const initialSizes = img.sizes;
     const placeholder = document.createElement("div");
+
+    if (openOriginalLink) {
+      openOriginalLink.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+    }
 
     const getCurrentScale = (width: number, height: number) => {
       const { naturalWidth, naturalHeight } = img;
@@ -237,6 +244,10 @@ const props = Astro.props;
         position: fixed;
         display: flex;
         place-items: center;
+        
+        & > a {
+          opacity: 1;
+        }
 
         & > img {
           height: 100%;
@@ -254,10 +265,6 @@ const props = Astro.props;
           transition: border-color 250ms;
         }
       }
-    }
-
-    & > picture {
-      display: block;
     }
   }
 </style>

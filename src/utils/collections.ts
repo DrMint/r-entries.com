@@ -43,6 +43,20 @@ export const getPostsTree = async () => {
   }));
 };
 
+export const getAdjacentEntries = async (entry: CollectionEntry<"gallery">) => {
+  const entries = await getGalleryEntries();
+
+  const previousEntry = entries.find(
+    (otherEntry) => otherEntry.data.date.valueOf() < entry.data.date.valueOf()
+  );
+
+  const nextEntry = entries.findLast(
+    (otherEntry) => otherEntry.data.date.valueOf() > entry.data.date.valueOf()
+  );
+
+  return { previousEntry, nextEntry };
+};
+
 export const getAdjacentPosts = async (post: CollectionEntry<"posts">) => {
   const posts = await getPosts({ sort: "date", order: "desc" });
 

@@ -1,6 +1,7 @@
 ---
 import type { ResponsiveWidth } from "src/constants";
 import { getResponsiveImage, type ImageType } from "src/utils/images";
+import DownloadIcon from "src/icons/lucide--download.svg";
 
 interface Props {
   src: ImageMetadata;
@@ -11,6 +12,7 @@ interface Props {
   type?: ImageType;
   square?: boolean;
   maxWidth?: ResponsiveWidth;
+  openOriginal?: boolean;
 }
 
 const {
@@ -22,6 +24,7 @@ const {
   fallbackWidth,
   square,
   maxWidth,
+  openOriginal,
   ...otherProps
 } = Astro.props;
 
@@ -34,7 +37,7 @@ const { srcSets } = responsiveImage;
 const fallback = await responsiveImage.getFallback(fallbackWidth);
 ---
 
-<picture {...otherProps}>
+<picture {...otherProps} data-component="Image">
   {
     srcSets.map(({ type, images }) => (
       <source
@@ -54,4 +57,62 @@ const fallback = await responsiveImage.getFallback(fallbackWidth);
     fetchpriority={priority ? "high" : "auto"}
     {...otherProps}
   />
+  {
+    openOriginal && (
+      <a
+        href={responsiveImage.original.src}
+        title="Open original"
+        target="_blank"
+        {...otherProps}
+      >
+        <DownloadIcon />
+      </a>
+    )
+  }
 </picture>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-component="Image"] {
+    position: relative;
+    display: flex;
+
+    &:hover {
+      & > a {
+        opacity: 1;
+      }
+    }
+
+    & > a {
+      opacity: 0;
+      
+      position: absolute;
+      display: grid;
+      place-content: center;
+
+      right: 8px;
+      bottom: 8px;
+
+      padding: 10px;
+
+      border-radius: 6px;
+      border: 1px solid var(--layout-border);
+
+      color: var(--foreground);
+      background-color: var(--background);
+
+      transition:
+        border-color 100ms,
+        background-color 100ms,
+        opacity 250ms;
+
+
+      &:hover,
+      &:focus-visible {
+        border-color: var(--foreground-50);
+        background-color: var(--foreground-5);
+      }
+    }
+  }
+</style>

@@ -1,5 +1,9 @@
 import Color from "color";
 
+/* TODO: When color-mix() becomes widely supported,
+ * switch to using it to define the colors directly in
+ * Html.astro instead of using this function. */
+
 export const generateColorTheme = (
   foregroundColor: string,
   backgroundColor: string

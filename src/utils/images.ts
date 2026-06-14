@@ -47,7 +47,7 @@ class ResponsiveImageSet {
   private _openGraph: Image | undefined;
 
   constructor(
-    private readonly original: ImageMetadata,
+    readonly original: ImageMetadata,
     options?: ResponsiveImageSetOptions
   ) {
     this.acceptableWidths = RESPONSIVE_WIDTHS.filter(

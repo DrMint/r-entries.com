@@ -3,53 +3,53 @@ import type { CollectionEntry } from "astro:content";
 import LeftArrow from "src/icons/lucide--arrow-left.svg";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
 import { getUrl } from "src/utils/navigation";
-import { getAdjacentPosts } from "src/utils/collections";
+import { getAdjacentEntries } from "src/utils/collections";
 
 interface Props {
-  currentPost: CollectionEntry<"posts">;
+  currentEntry: CollectionEntry<"gallery">;
 }
 
-const { currentPost, ...rest } = Astro.props;
-const { previousPost, nextPost } = await getAdjacentPosts(currentPost);
+const { currentEntry, ...rest } = Astro.props;
+const { previousEntry, nextEntry } = await getAdjacentEntries(currentEntry);
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <div data-component="AdjacentPosts" {...rest}>
   {
-    nextPost ? (
-      <a id="next" href={getUrl(`/posts/${nextPost.id}`)}>
+    nextEntry ? (
+      <a id="next" href={getUrl(`/gallery/${nextEntry.id}`)}>
         <LeftArrow width={18} height={18} />
         <div>
-          <p class="label">Next Post</p>
-          <p>{nextPost.data.title}</p>
+          <p class="label">Next Entry</p>
+          <p>{nextEntry.data.title}</p>
         </div>
       </a>
     ) : (
       <div id="next" class="disabled">
         <LeftArrow width={18} height={18} />
         <div>
-          <p class="label">Next Post</p>
-          <p>Newest post!</p>
+          <p class="label">Next Entry</p>
+          <p>Newest entry!</p>
         </div>
       </div>
     )
   }
 
   {
-    previousPost ? (
-      <a id="previous" href={getUrl(`/posts/${previousPost.id}`)}>
+    previousEntry ? (
+      <a id="previous" href={getUrl(`/gallery/${previousEntry.id}`)}>
         <div>
-          <p class="label">Previous Post</p>
-          <p>{previousPost.data.title}</p>
+          <p class="label">Previous Entry</p>
+          <p>{previousEntry.data.title}</p>
         </div>
         <RightArrow width={18} height={18} />
       </a>
     ) : (
       <div id="previous" class="disabled">
         <div>
-          <p class="label">Previous Post</p>
-          <p>Last post!</p>
+          <p class="label">Previous Entry</p>
+          <p>Last entry!</p>
         </div>
         <RightArrow width={18} height={18} />
       </div>

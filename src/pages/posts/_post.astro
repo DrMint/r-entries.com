@@ -48,20 +48,23 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
     sizes="(max-width: 1024px) 100vw, 1024px"
     fallbackWidth={1024}
     priority
+    openOriginal
   />
   <div id="header">
     <h1>{title}</h1>
     <PostMeta post={post} />
     {ENABLE_TAG_FEATURE && <Tags tags={tags} />}
   </div>
-  <div id="content">
-    {
-      ENABLE_TABLE_OF_CONTENTS_FEATURE && numberedHeadings.length > 0 && (
-        <TableOfContents headings={numberedHeadings} />
-      )
-    }
-    <div>
-      <Content />
+  <div id="body">
+    <div id="content">
+      {
+        ENABLE_TABLE_OF_CONTENTS_FEATURE && numberedHeadings.length > 0 && (
+          <TableOfContents headings={numberedHeadings} />
+        )
+      }
+      <div>
+        <Content />
+      </div>
     </div>
     <AdjacentPosts currentPost={post} />
   </div>
@@ -103,13 +106,22 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
       text-align: center;
     }
 
-    & > #content {
+    & > #body {
       max-width: 70ch;
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 128px;
       padding: 64px 16px;
+
+      & > #content {
+        display: flex;
+        flex-direction: column;
+        gap: 128px;
+      }
+
+      @media only screen and (max-width: 1600.5px) {
+        gap: 128px;
+      }
     }
   }
 </style>

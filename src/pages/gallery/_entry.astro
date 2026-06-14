@@ -1,6 +1,7 @@
 ---
 import Html from "src/components/layout/Html.astro";
 import Lightbox from "src/components/layout/Lightbox.astro";
+import AdjacentEntries from "./_components/AdjacentEntries.astro";
 import { getGalleryEntry } from "src/utils/collections";
 import { render } from "astro:content";
 
@@ -23,20 +24,22 @@ const { Content } = await render(entry);
     sizes="(max-width: 1024px) 100vw, 1024px"
     fallbackWidth={1024}
     priority
+    openOriginal
   />
   <div id="header" class:list={{ "with-body": entry.body }}>
     <h1>{title}</h1>
     <p>{date.toLocaleDateString("en-US", { dateStyle: "long" })}</p>
   </div>
-  {
-    entry.body && (
-      <div id="content">
-        <div>
+  <div id="body">
+    {
+      entry.body && (
+        <div id="content">
           <Content />
         </div>
-      </div>
-    )
-  }
+      )
+    }
+    <AdjacentEntries currentEntry={entry} />
+  </div>
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
@@ -85,12 +88,21 @@ const { Content } = await render(entry);
       }
     }
 
-    & > #content {
+    & > #body {
       max-width: 70ch;
       width: 100%;
       display: flex;
       flex-direction: column;
       padding: 64px 16px;
+
+      & > #content {
+        display: flex;
+        flex-direction: column;
+      }
+
+      @media only screen and (max-width: 1600.5px) {
+        gap: 128px;
+      }
     }
   }
 </style>
