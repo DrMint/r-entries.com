@@ -27,15 +27,18 @@ const { pathname } = new URL(Astro.request.url);
     <div id="right">
       {
         NAVIGATION_ITEMS.map(({ href, label, detection, tooltip }) => (
-          <a
-            href={getUrl(href)}
-            class:list={{
-              active: isActive({ href, detection }, pathname),
-            }}
-            title={tooltip}
-          >
-            {label}
-          </a>
+          <div>
+            <div aria-hidden="true">{label}</div>
+            <a
+              href={getUrl(href)}
+              class:list={{
+                active: isActive({ href, detection }, pathname),
+              }}
+              title={tooltip}
+            >
+              {label}
+            </a>
+          </div>
         ))
       }
     </div>
@@ -84,6 +87,24 @@ const { pathname } = new URL(Astro.request.url);
         align-items: center;
       }
 
+      & > #right > div {
+        display: grid;
+        place-items: center;
+
+        & > a {
+          grid-column: 1;
+          grid-row: 1;
+        }
+
+        & > div {
+          grid-column: 1;
+          grid-row: 1;
+          font-weight: 700;
+          visibility: hidden;
+          padding: 16px;
+        }
+      }
+
       & a {
         color: var(--foreground-60);
         padding: 16px;
@@ -96,6 +117,7 @@ const { pathname } = new URL(Astro.request.url);
 
         &.active {
           color: var(--foreground);
+          font-weight: 700;
         }
       }
 
@@ -126,7 +148,7 @@ const { pathname } = new URL(Astro.request.url);
         padding-block: 16px;
 
         & > #left {
-          margin-bottom: -16px;
+          margin-bottom: -8px;
         }
       }
 

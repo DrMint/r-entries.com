@@ -3,53 +3,53 @@ import type { CollectionEntry } from "astro:content";
 import LeftArrow from "src/icons/lucide--arrow-left.svg";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
 import { getUrl } from "src/utils/navigation";
-import { getAdjacentEntries } from "src/utils/collections";
+import { getAdjacentImages } from "src/utils/collections";
 
 interface Props {
-  currentEntry: CollectionEntry<"gallery">;
+  currentImage: CollectionEntry<"images">;
 }
 
-const { currentEntry, ...rest } = Astro.props;
-const { previousEntry, nextEntry } = await getAdjacentEntries(currentEntry);
+const { currentImage, ...rest } = Astro.props;
+const { previousImage, nextImage } = await getAdjacentImages(currentImage);
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div data-component="AdjacentPosts" {...rest}>
+<div data-component="AdjacentImages" {...rest}>
   {
-    nextEntry ? (
-      <a id="next" href={getUrl(`/gallery/${nextEntry.id}`)}>
+    nextImage ? (
+      <a id="next" href={getUrl(`/images/${nextImage.id}`)}>
         <LeftArrow width={18} height={18} />
         <div>
-          <p class="label">Next Entry</p>
-          <p>{nextEntry.data.title}</p>
+          <p class="label">Next Image</p>
+          <p>{nextImage.data.title}</p>
         </div>
       </a>
     ) : (
       <div id="next" class="disabled">
         <LeftArrow width={18} height={18} />
         <div>
-          <p class="label">Next Entry</p>
-          <p>Newest entry!</p>
+          <p class="label">Next Image</p>
+          <p>Newest image!</p>
         </div>
       </div>
     )
   }
 
   {
-    previousEntry ? (
-      <a id="previous" href={getUrl(`/gallery/${previousEntry.id}`)}>
+    previousImage ? (
+      <a id="previous" href={getUrl(`/images/${previousImage.id}`)}>
         <div>
-          <p class="label">Previous Entry</p>
-          <p>{previousEntry.data.title}</p>
+          <p class="label">Previous Image</p>
+          <p>{previousImage.data.title}</p>
         </div>
         <RightArrow width={18} height={18} />
       </a>
     ) : (
       <div id="previous" class="disabled">
         <div>
-          <p class="label">Previous Entry</p>
-          <p>Last entry!</p>
+          <p class="label">Previous Image</p>
+          <p>Last image!</p>
         </div>
         <RightArrow width={18} height={18} />
       </div>
@@ -60,7 +60,7 @@ const { previousEntry, nextEntry } = await getAdjacentEntries(currentEntry);
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [data-component="AdjacentPosts"] {
+  [data-component="AdjacentImages"] {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;

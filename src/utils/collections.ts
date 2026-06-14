@@ -43,17 +43,17 @@ export const getPostsTree = async () => {
   }));
 };
 
-export const getAdjacentEntries = async (entry: CollectionEntry<"gallery">) => {
-  const entries = await getGalleryEntries();
+export const getAdjacentImages = async (image: CollectionEntry<"images">) => {
+  const images = await getImages();
 
-  const currentEntryIndex = entries.findIndex((e) => e.id === entry.id);
-  const previousEntryIndex = currentEntryIndex + 1;
-  const nextEntryIndex = currentEntryIndex - 1;
+  const currentImageIndex = images.findIndex((e) => e.id === image.id);
+  const previousImageIndex = currentImageIndex + 1;
+  const nextImageIndex = currentImageIndex - 1;
 
-  const previousEntry = entries[previousEntryIndex];
-  const nextEntry = entries[nextEntryIndex];
+  const previousImage = images[previousImageIndex];
+  const nextImage = images[nextImageIndex];
 
-  return { previousEntry, nextEntry };
+  return { previousImage, nextImage };
 };
 
 export const getAdjacentPosts = async (post: CollectionEntry<"posts">) => {
@@ -97,16 +97,16 @@ export const getPage = async (slug: string) => {
   return page;
 };
 
-export const getGalleryEntries = async () => {
-  const gallery = (await getCollection("gallery")).sort(
+export const getImages = async () => {
+  const images = (await getCollection("images")).sort(
     /* From newest to oldest */
     (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
   );
-  return gallery;
+  return images;
 };
 
-export const getGalleryEntry = async (slug: string) => {
-  const entry = await getEntry("gallery", slug);
-  if (!entry) throw new Error(`Gallery entry not found: ${slug}`);
-  return entry;
+export const getImage = async (slug: string) => {
+  const image = await getEntry("images", slug);
+  if (!image) throw new Error(`Image not found: ${slug}`);
+  return image;
 };

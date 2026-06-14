@@ -1,15 +1,11 @@
 ---
 import Html from "src/components/layout/Html.astro";
 import { getUrl } from "src/utils/navigation";
-import {
-  getGalleryEntries,
-  getPostsTree,
-  getTags,
-} from "src/utils/collections";
+import { getImages, getPostsTree, getTags } from "src/utils/collections";
 import {
   ENABLE_TAG_FEATURE,
-  ENABLE_GALLERY_FEATURE,
   MAX_POSTS_HOMEPAGE,
+  MAX_IMAGES_HOMEPAGE,
 } from "src/constants";
 
 const posts = await getPostsTree();
@@ -17,7 +13,11 @@ const tags = ENABLE_TAG_FEATURE
   ? await getTags({ sort: "name", order: "asc" })
   : [];
 
-const galleryEntries = ENABLE_GALLERY_FEATURE ? await getGalleryEntries() : [];
+const images = await getImages();
+
+const postsPageExists = MAX_POSTS_HOMEPAGE !== Infinity;
+const imagesPageExists =
+  Math.min(...Object.values(MAX_IMAGES_HOMEPAGE)) !== Infinity;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
@@ -31,11 +31,7 @@ const galleryEntries = ENABLE_GALLERY_FEATURE ? await getGalleryEntries() : [];
     {
       posts.length > 0 && (
         <li>
-          {MAX_POSTS_HOMEPAGE === Infinity ? (
-            "Posts"
-          ) : (
-            <a href={getUrl("/posts")}>Posts</a>
-          )}
+          {postsPageExists ? <a href={getUrl("/posts")}>Posts</a> : "Posts"}
           <ul>
             {posts.map((post) => (
               <li>
@@ -58,13 +54,13 @@ const galleryEntries = ENABLE_GALLERY_FEATURE ? await getGalleryEntries() : [];
       )
     }
     {
-      galleryEntries.length > 0 && (
+      images.length > 0 && (
         <li>
-          <a href={getUrl("/gallery")}>Gallery</a>
+          {imagesPageExists ? <a href={getUrl("/images")}>Images</a> : "Images"}
           <ul>
-            {galleryEntries.map((entry) => (
+            {images.map((image) => (
               <li>
-                <a href={getUrl(`/gallery/${entry.id}`)}>{entry.data.title}</a>
+                <a href={getUrl(`/images/${image.id}`)}>{image.data.title}</a>
               </li>
             ))}
           </ul>

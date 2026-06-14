@@ -1,8 +1,8 @@
 ---
 import Html from "src/components/layout/Html.astro";
 import Lightbox from "src/components/layout/Lightbox.astro";
-import AdjacentEntries from "./_components/AdjacentEntries.astro";
-import { getGalleryEntry } from "src/utils/collections";
+import AdjacentImages from "./_components/AdjacentImages.astro";
+import { getImage } from "src/utils/collections";
 import { render } from "astro:content";
 
 interface Props {
@@ -10,14 +10,14 @@ interface Props {
 }
 
 const { slug } = Astro.props;
-const entry = await getGalleryEntry(slug);
-const { image, title, date } = entry.data;
+const entry = await getImage(slug);
+const { image, title, date, yearOnly } = entry.data;
 const { Content } = await render(entry);
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html data-page="GalleryEntry">
+<Html data-page="Image">
   <Lightbox
     src={image}
     alt={""}
@@ -28,24 +28,35 @@ const { Content } = await render(entry);
   />
   <div id="header" class:list={{ "with-body": entry.body }}>
     <h1>{title}</h1>
-    <p>{date.toLocaleDateString("en-US", { dateStyle: "long" })}</p>
+    <p>
+      {
+        yearOnly
+          ? date.getFullYear()
+          : date.toLocaleDateString("en-US", { dateStyle: "long" })
+      }
+    </p>
   </div>
-  <div id="body">
-    {
-      entry.body && (
-        <div id="content">
+
+  {
+    entry.body ? (
+      <div id="body">
+        <div>
           <Content />
         </div>
-      )
-    }
-    <AdjacentEntries currentEntry={entry} />
-  </div>
+        <AdjacentImages currentImage={entry} />
+      </div>
+    ) : (
+      <div id="footer">
+        <AdjacentImages currentImage={entry} />
+      </div>
+    )
+  }
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [data-page="GalleryEntry"] {
+  [data-page="Image"] {
     display: flex;
     flex-direction: column;
     place-items: center;
@@ -95,13 +106,19 @@ const { Content } = await render(entry);
       flex-direction: column;
       padding: 64px 16px;
 
-      & > #content {
-        display: flex;
-        flex-direction: column;
-      }
-
       @media only screen and (max-width: 1600.5px) {
         gap: 128px;
+      }
+    }
+
+    & > #footer {
+      width: 100%;
+      max-width: 70ch;
+      padding-inline: var(--middle-x-padding);
+
+      @media only screen and (max-width: 1600.5px) {
+        padding-top: 64px;
+        padding-inline: 16px;
       }
     }
   }

@@ -1,0 +1,24 @@
+---
+import { getImages } from "src/utils/collections";
+import { MAX_IMAGES_HOMEPAGE } from "src/constants";
+import Index from "./_index.astro";
+import Image from "./_image.astro";
+
+export const getStaticPaths = async () => {
+  const images = await getImages();
+
+  const paths: { params: { slug: string | undefined } }[] = images.map(
+    ({ id }) => ({ params: { slug: id } })
+  );
+
+  if (Math.min(...Object.values(MAX_IMAGES_HOMEPAGE)) !== Infinity) {
+    paths.push({ params: { slug: undefined } });
+  }
+
+  return paths;
+};
+
+const slug = Astro.params.slug;
+---
+
+{slug ? <Image slug={slug} /> : <Index />}

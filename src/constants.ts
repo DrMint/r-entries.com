@@ -25,13 +25,26 @@ export const WEBSITE_COPYRIGHT_NAME = "R-Entries";
 // and disable the "view all posts" button and Posts page
 export const MAX_POSTS_HOMEPAGE = Infinity;
 
+// Set all values to `Infinity` to show all images on the homepage
+// and disable the "view all images" button and Images page
+export const MAX_IMAGES_HOMEPAGE: {
+  with4Columns: number;
+  with3Columns: number;
+  with2Columns: number;
+  with1Column: number;
+} = {
+  with4Columns: Infinity,
+  with3Columns: Infinity,
+  with2Columns: Infinity,
+  with1Column: Infinity,
+};
+
 /* -------------------------------[ Features ]------------------------------- */
 
 export const ENABLE_GO_TO_TOP_FEATURE = true;
 export const ENABLE_TABLE_OF_CONTENTS_FEATURE = true;
 export const ENABLE_IMAGE_ZOOM_FEATURE = true;
 export const ENABLE_TAG_FEATURE = false;
-export const ENABLE_GALLERY_FEATURE = true;
 
 /* ------------------------------[ Responsive ]------------------------------ */
 
@@ -61,16 +74,16 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
           icon: PostsIcon,
         },
       ]),
-  ...(ENABLE_GALLERY_FEATURE
-    ? [
+  ...(Math.min(...Object.values(MAX_IMAGES_HOMEPAGE)) === Infinity
+    ? []
+    : [
         {
-          href: "/gallery",
+          href: "/images",
           detection: "prefix" as const,
-          label: "Gallery",
+          label: "Images",
           icon: ImageIcon,
         },
-      ]
-    : []),
+      ]),
   ...(ENABLE_TAG_FEATURE
     ? [
         {

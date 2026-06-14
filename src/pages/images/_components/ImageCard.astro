@@ -4,15 +4,15 @@ import { getUrl } from "src/utils/navigation";
 import Image from "src/components/Image.astro";
 
 interface Props {
-  entry: CollectionEntry<"gallery">;
+  image: CollectionEntry<"images">;
 }
 
-const { entry } = Astro.props;
+const { image } = Astro.props;
 ---
 
-<a data-component="GalleryEntryCard" href={getUrl(`/gallery/${entry.id}`)}>
+<a data-component="ImageCard" href={getUrl(`/images/${image.id}`)}>
   <Image
-    src={entry.data.image}
+    src={image.data.thumbnail ?? image.data.image}
     alt={""}
     sizes="
       (max-width: 300px) 100vw,
@@ -30,7 +30,7 @@ const { entry } = Astro.props;
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [data-component="GalleryEntryCard"] {
+  [data-component="ImageCard"] {
     display: flex;
     flex-direction: column;
     gap: 32px;

@@ -1,20 +1,20 @@
 ---
 import Html from "src/components/layout/Html.astro";
-import { getGalleryEntries } from "src/utils/collections";
-import GalleryEntryCard from "./_components/GalleryEntryCard.astro";
+import { getImages } from "src/utils/collections";
+import ImageCard from "./_components/ImageCard.astro";
 
-const entries = await getGalleryEntries();
+const images = await getImages();
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html data-page="Gallery">
-  <h1>Gallery</h1>
-  <div id="gallery">
+<Html data-page="Images">
+  <h1>Images</h1>
+  <div id="images">
     {
-      entries.map((entry) => (
+      images.map((image) => (
         <div>
-          <GalleryEntryCard entry={entry} />
+          <ImageCard image={image} />
         </div>
       ))
     }
@@ -24,7 +24,7 @@ const entries = await getGalleryEntries();
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  [data-page="Gallery"] {
+  [data-page="Images"] {
     display: flex;
     flex-direction: column;
     gap: 32px;
@@ -36,7 +36,7 @@ const entries = await getGalleryEntries();
       padding-inline: var(--middle-x-padding);
     }
 
-    & > #gallery {
+    & > #images {
       display: grid;
 
       grid-template-columns: 1fr;
