@@ -46,13 +46,12 @@ export const getPostsTree = async () => {
 export const getAdjacentEntries = async (entry: CollectionEntry<"gallery">) => {
   const entries = await getGalleryEntries();
 
-  const previousEntry = entries.find(
-    (otherEntry) => otherEntry.data.date.valueOf() < entry.data.date.valueOf()
-  );
+  const currentEntryIndex = entries.findIndex((e) => e.id === entry.id);
+  const previousEntryIndex = currentEntryIndex + 1;
+  const nextEntryIndex = currentEntryIndex - 1;
 
-  const nextEntry = entries.findLast(
-    (otherEntry) => otherEntry.data.date.valueOf() > entry.data.date.valueOf()
-  );
+  const previousEntry = entries[previousEntryIndex];
+  const nextEntry = entries[nextEntryIndex];
 
   return { previousEntry, nextEntry };
 };
@@ -60,13 +59,12 @@ export const getAdjacentEntries = async (entry: CollectionEntry<"gallery">) => {
 export const getAdjacentPosts = async (post: CollectionEntry<"posts">) => {
   const posts = await getPosts({ sort: "date", order: "desc" });
 
-  const previousPost = posts.find(
-    (otherPost) => otherPost.data.date.valueOf() < post.data.date.valueOf()
-  );
+  const currentPostIndex = posts.findIndex((p) => p.id === post.id);
+  const previousPostIndex = currentPostIndex + 1;
+  const nextPostIndex = currentPostIndex - 1;
 
-  const nextPost = posts.findLast(
-    (otherPost) => otherPost.data.date.valueOf() > post.data.date.valueOf()
-  );
+  const previousPost = posts[previousPostIndex];
+  const nextPost = posts[nextPostIndex];
 
   return { previousPost, nextPost };
 };
