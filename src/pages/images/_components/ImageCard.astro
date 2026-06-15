@@ -13,7 +13,7 @@ const { image } = Astro.props;
 <a data-component="ImageCard" href={getUrl(`/images/${image.id}`)}>
   <Image
     src={image.data.thumbnail ?? image.data.image}
-    alt={""}
+    alt=""
     sizes="
       (max-width: 300px) 100vw,
       (max-width: 450px) 50vw,
@@ -37,12 +37,13 @@ const { image } = Astro.props;
     position: relative;
 
     overflow: hidden;
-    outline: 1px solid var(--layout-border);
+    outline: 1px solid transparent;
+
+    transition: outline-color 100ms;
 
     &:hover,
     &:focus-visible {
       outline-color: var(--foreground-50);
-      z-index: 1;
 
       & > picture > img {
         scale: 110%;
