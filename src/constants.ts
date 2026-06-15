@@ -23,7 +23,7 @@ export const WEBSITE_COPYRIGHT_NAME = "R-Entries";
 
 // Set it to `Infinity` to show all posts on the homepage
 // and disable the "view all posts" button and Posts page
-export const MAX_POSTS_HOMEPAGE = Infinity;
+export const MAX_POSTS_HOMEPAGE = 6;
 
 // Set all values to `Infinity` to show all images on the homepage
 // and disable the "view all images" button and Images page
@@ -33,10 +33,10 @@ export const MAX_IMAGES_HOMEPAGE: {
   with2Columns: number;
   with1Column: number;
 } = {
-  with4Columns: Infinity,
-  with3Columns: Infinity,
-  with2Columns: Infinity,
-  with1Column: Infinity,
+  with4Columns: 4,
+  with3Columns: 6,
+  with2Columns: 6,
+  with1Column: 4,
 };
 
 /* -------------------------------[ Features ]------------------------------- */
