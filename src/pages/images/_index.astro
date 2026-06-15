@@ -74,7 +74,7 @@ const images = await getImages();
       background-color: var(--layout-border);
       padding-block: 1px;
 
-      @media only screen and (max-width: 1023.5px) {
+      @media (max-width: 1023.5px) {
         padding-inline: 1px;
       }
 
@@ -91,7 +91,7 @@ const images = await getImages();
         display: none;
       }
 
-      @media only screen and (min-width: 300px) {
+      @media (min-width: 300px) {
         grid-template-columns: repeat(2, 1fr);
 
         & > div.hide-1,
@@ -106,7 +106,7 @@ const images = await getImages();
         }
       }
 
-      @media only screen and (min-width: 450px) {
+      @media (min-width: 450px) {
         grid-template-columns: repeat(3, 1fr);
 
         & > div.hide-1,
@@ -121,7 +121,7 @@ const images = await getImages();
         }
       }
 
-      @media only screen and (min-width: 768px) {
+      @media (min-width: 768px) {
         grid-template-columns: repeat(4, 1fr);
 
         & > div.hide-1,

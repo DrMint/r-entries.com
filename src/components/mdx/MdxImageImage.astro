@@ -27,9 +27,22 @@ const { src, alt } = Astro.props;
     width: 100%;
 
     & > img {
-      width: 100%;
+      --mobile-footer-height: 80px;
+
+      max-height: calc(100dvh);
+
+      @media (-moz-touch-enabled: 1), (pointer: coarse) {
+        max-height: calc(100dvh - var(--mobile-footer-height));
+      }
+
+      @media (max-height: 500px) {
+        max-height: unset;
+      }
+
+      max-width: 100%;
+      width: auto;
       height: auto;
-      object-fit: cover;
+      margin-inline: auto;
       border: 1px solid var(--layout-border);
 
       background-color: var(--background);

@@ -80,6 +80,23 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
 
     picture {
       & > img {
+        --header-height: 64px;
+        --mobile-footer-height: 80px;
+        --title-height: 130px;
+
+        max-height: calc(100dvh - var(--header-height) - var(--title-height));
+
+        @media (-moz-touch-enabled: 1), (pointer: coarse) {
+          max-height: calc(
+            100dvh - var(--header-height) - var(--mobile-footer-height) -
+              var(--title-height)
+          );
+        }
+
+        @media (max-height: 500px) {
+          max-height: unset;
+        }
+
         width: 100%;
         height: auto;
         object-fit: cover;
@@ -119,7 +136,7 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
         gap: 128px;
       }
 
-      @media only screen and (max-width: 1600.5px) {
+      @media (max-width: 1600.5px) {
         gap: 128px;
       }
     }

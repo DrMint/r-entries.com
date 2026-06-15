@@ -78,15 +78,18 @@ const fallback = await responsiveImage.getFallback(fallbackWidth);
     position: relative;
     display: flex;
 
-    &:hover {
+    @media (hover: hover) {
       & > a {
+        opacity: 0;
+      }
+
+      &:hover > a,
+      &:focus-visible > a {
         opacity: 1;
       }
     }
 
     & > a {
-      opacity: 0;
-
       position: absolute;
       display: grid;
       place-content: center;
@@ -99,8 +102,18 @@ const fallback = await responsiveImage.getFallback(fallbackWidth);
       border-radius: 6px;
       border: 1px solid var(--layout-border);
 
-      color: var(--foreground);
       background-color: var(--background);
+      color: var(--foreground-80);
+
+      @supports (backdrop-filter: blur(24px)) {
+        backdrop-filter: blur(24px);
+        background-color: var(--background-70-transparent);
+      }
+
+      @media (prefers-reduced-transparency) {
+        backdrop-filter: none;
+        background-color: var(--background);
+      }
 
       transition:
         border-color 100ms,
@@ -111,6 +124,13 @@ const fallback = await responsiveImage.getFallback(fallbackWidth);
       &:focus-visible {
         border-color: var(--foreground-50);
         background-color: var(--foreground-5);
+        color: var(--foreground);
+      }
+    }
+
+    @media print {
+      & > a {
+        display: none;
       }
     }
   }

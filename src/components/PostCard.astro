@@ -111,7 +111,7 @@ const { post, ...rest } = Astro.props;
       }
     }
 
-    @media only screen and (max-width: 600.5px) {
+    @media (max-width: 600.5px) {
       flex-direction: column;
 
       & > picture > img {
@@ -129,7 +129,7 @@ const { post, ...rest } = Astro.props;
       }
     }
 
-    @media only screen and (max-width: 400.5px) {
+    @media (max-width: 400.5px) {
       & > picture > img {
         aspect-ratio: unset;
         max-height: 225px;

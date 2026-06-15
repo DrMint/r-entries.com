@@ -63,7 +63,21 @@ const { Content } = await render(entry);
 
     picture {
       & > img {
-        max-height: calc(100dvh - 64px);
+        --header-height: 64px;
+        --mobile-footer-height: 80px;
+
+        max-height: calc(100dvh - var(--header-height));
+
+        @media (-moz-touch-enabled: 1), (pointer: coarse) {
+          max-height: calc(
+            100dvh - var(--header-height) - var(--mobile-footer-height)
+          );
+        }
+
+        @media (max-height: 500px) {
+          max-height: unset;
+        }
+
         width: 100%;
         height: auto;
         object-fit: contain;
@@ -106,7 +120,7 @@ const { Content } = await render(entry);
       flex-direction: column;
       padding: 64px 16px;
 
-      @media only screen and (max-width: 1600.5px) {
+      @media (max-width: 1600.5px) {
         gap: 128px;
       }
     }
@@ -116,7 +130,7 @@ const { Content } = await render(entry);
       max-width: 70ch;
       padding-inline: var(--middle-x-padding);
 
-      @media only screen and (max-width: 1600.5px) {
+      @media (max-width: 1600.5px) {
         padding-top: 64px;
         padding-inline: 16px;
       }

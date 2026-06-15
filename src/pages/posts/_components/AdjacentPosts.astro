@@ -131,11 +131,11 @@ const { previousPost, nextPost } = await getAdjacentPosts(currentPost);
       padding-right: 24px;
     }
 
-    @media only screen and (max-width: 600.5px) {
+    @media (max-width: 600.5px) {
       grid-template-columns: 1fr;
     }
 
-    @media only screen and (min-width: 1600.5px) {
+    @media (min-width: 1600.5px) {
       & > #next,
       & > #previous {
         position: fixed;

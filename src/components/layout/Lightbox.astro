@@ -152,6 +152,7 @@ const props = Astro.props;
         picture.style.setProperty("left", `${PADDING}px`);
         picture.style.setProperty("width", `calc(100% - ${PADDING * 2}px)`);
         picture.style.setProperty("height", `calc(100% - ${PADDING * 2}px)`);
+        img.style.setProperty("max-height", "unset");
       }, 0);
 
       setTimeout(() => {
@@ -197,6 +198,7 @@ const props = Astro.props;
         picture.style.removeProperty("height");
         picture.style.removeProperty("transition-property");
         picture.style.removeProperty("transition-duration");
+        img.style.removeProperty("max-height");
         placeholder.remove();
 
         document.removeEventListener("scroll", scrollPreventionListener);

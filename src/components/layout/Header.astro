@@ -49,7 +49,7 @@ const { pathname } = new URL(Astro.request.url);
 
 <style>
   [data-component="Header"] {
-    @media only screen and (min-width: 600.5px) {
+    @media (min-width: 600.5px) {
       position: sticky;
       top: 0;
 
@@ -74,7 +74,7 @@ const { pathname } = new URL(Astro.request.url);
       margin-inline: auto;
       padding-inline: calc(var(--middle-x-padding) - 16px);
 
-      @media only screen and (min-width: 1024px) {
+      @media (min-width: 1024px) {
         border-inline: 1px solid var(--layout-border);
       }
 
@@ -131,7 +131,7 @@ const { pathname } = new URL(Astro.request.url);
           height: 32px;
         }
 
-        @media only screen and (max-width: 400.5px) {
+        @media (max-width: 400.5px) {
           display: flex;
           flex-direction: column;
 
@@ -142,7 +142,7 @@ const { pathname } = new URL(Astro.request.url);
         }
       }
 
-      @media only screen and (max-width: 600.5px) {
+      @media (max-width: 600.5px) {
         flex-direction: column;
         align-items: center;
         padding-block: 16px;
@@ -152,7 +152,7 @@ const { pathname } = new URL(Astro.request.url);
         }
       }
 
-      @media only screen and (max-width: 400.5px) {
+      @media (max-width: 400.5px) {
         & > #left {
           margin-bottom: unset;
         }
