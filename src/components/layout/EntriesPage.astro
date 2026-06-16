@@ -16,7 +16,7 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html data-page="EntriesPage">
+<Html data-page="EntriesPage" data-entry-type={title}>
   <h1>{title}</h1>
   {
     tags.length > 0 && (
@@ -50,3 +50,35 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
     }
   }
 </style>
+
+{/* ---------------------------------[ JS ]--------------------------------- */}
+
+{/* Preserve scroll position when navigating between the same Entries page */}
+<script is:inline>
+  const entryType = document
+    .querySelector("[data-page='EntriesPage']")
+    ?.getAttribute("data-entry-type");
+
+  if (!entryType) throw new Error("Entry type not found");
+
+  const scroll = JSON.parse(
+    localStorage.getItem("entries-page-scroll") ?? "{}"
+  );
+
+  if (scroll.time < Date.now() + 3_000 && scroll.entryType === entryType) {
+    window.scrollTo({ top: scroll.top, behavior: "instant" });
+  }
+
+  localStorage.removeItem("entries-page-scroll");
+
+  window.addEventListener("beforeunload", (e) => {
+    localStorage.setItem(
+      "entries-page-scroll",
+      JSON.stringify({
+        top: window.scrollY,
+        time: Date.now(),
+        entryType,
+      })
+    );
+  });
+</script>
