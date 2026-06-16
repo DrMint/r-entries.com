@@ -21,7 +21,10 @@ const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
           }}
         >
           <Icon width={24} height={24} />
-          {label}
+          <div>
+            <span aria-hidden="true">{label}</span>
+            <div>{label}</div>
+          </div>
         </a>
       ))
     }
@@ -81,6 +84,23 @@ const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
         &.active {
           color: var(--foreground);
           font-weight: 700;
+        }
+
+        & > div {
+          display: grid;
+          place-items: center;
+
+          & > span {
+            visibility: hidden;
+            grid-column: 1;
+            grid-row: 1;
+            font-weight: 700;
+          }
+
+          & > div {
+            grid-column: 1;
+            grid-row: 1;
+          }
         }
       }
     }
