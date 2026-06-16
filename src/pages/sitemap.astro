@@ -1,20 +1,10 @@
 ---
 import Html from "src/components/layout/Html.astro";
 import { getUrl } from "src/utils/navigation";
-import { getImages, getPosts, getTags } from "src/utils/collections";
-import {
-  ENABLE_TAG_FEATURE,
-  MAX_POSTS_HOMEPAGE,
-  MAX_IMAGES_HOMEPAGE,
-  ENABLE_TAGS_PAGE_FEATURE,
-} from "src/constants";
+import { getImages, getPosts } from "src/utils/collections";
+import { MAX_POSTS_HOMEPAGE, MAX_IMAGES_HOMEPAGE } from "src/constants";
 
 const posts = await getPosts({ sort: "title", order: "asc" });
-const tags =
-  ENABLE_TAG_FEATURE && ENABLE_TAGS_PAGE_FEATURE
-    ? await getTags({ sort: "name", order: "asc" })
-    : [];
-
 const images = await getImages({ sort: "title", order: "asc" });
 
 const postsPageExists = MAX_POSTS_HOMEPAGE !== Infinity;
@@ -52,20 +42,6 @@ const imagesPageExists =
             {images.map((image) => (
               <li>
                 <a href={getUrl(`/images/${image.id}`)}>{image.data.title}</a>
-              </li>
-            ))}
-          </ul>
-        </li>
-      )
-    }
-    {
-      tags.length > 0 && (
-        <li>
-          <a href={getUrl("/tags")}>Tags</a>
-          <ul>
-            {tags.map((tag) => (
-              <li>
-                <a href={getUrl(`/tags/${tag.tag}`)}>{tag.tag}</a>
               </li>
             ))}
           </ul>

@@ -53,7 +53,7 @@ Each post is stored in a separate folder.
 The folder name is the post slug.
 The post slug is used in the url as `/posts/{slug}`.
 
-## TOD
+## TODO
 
 - Handle overflowing tables and code blocks when printing
 

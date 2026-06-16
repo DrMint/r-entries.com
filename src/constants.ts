@@ -1,6 +1,5 @@
 import HomeIcon from "src/icons/lucide--home.svg";
 import PostsIcon from "src/icons/lucide--newspaper.svg";
-import TagsIcon from "src/icons/lucide--tags.svg";
 import AboutIcon from "src/icons/lucide--circle-user-round.svg";
 import GithubLogo from "src/icons/lucide--github.svg";
 import TwitterLogo from "src/icons/lucide--twitter.svg";
@@ -53,9 +52,6 @@ export const ENABLE_IMAGE_ZOOM_FEATURE = true;
 // Set to `true` to display tags on post and image cards,
 // on their entries pages and respective pages.
 export const ENABLE_TAG_FEATURE = true;
-// Set to `true` to enable the /tags page which lists all tags and their counts
-// and links to the /tags/tag page for each tag
-export const ENABLE_TAGS_PAGE_FEATURE = false;
 
 /* ------------------------------[ Responsive ]------------------------------ */
 
@@ -95,16 +91,6 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
           icon: ImageIcon,
         },
       ]),
-  ...(ENABLE_TAG_FEATURE && ENABLE_TAGS_PAGE_FEATURE
-    ? [
-        {
-          href: "/tags",
-          detection: "prefix" as const,
-          label: "Tags",
-          icon: TagsIcon,
-        },
-      ]
-    : []),
   {
     href: "/about",
     detection: "prefix",
