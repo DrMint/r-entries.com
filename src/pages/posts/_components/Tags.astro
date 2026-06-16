@@ -4,28 +4,48 @@ import TagPill from "src/components/TagPill.astro";
 interface Props {
   tags: { tag: string; count?: number }[] | undefined;
   activeTag?: string | undefined;
-  getTagLink: (tag: string) => string;
+  getTagLink?: (tag: string) => string;
+  align?: "center" | "start" | "end";
+  large?: boolean;
 }
 
-const { tags = [], activeTag, getTagLink, ...rest } = Astro.props;
+const {
+  tags = [],
+  activeTag,
+  getTagLink,
+  align = "center",
+  large = false,
+  ...rest
+} = Astro.props;
 
 if (tags.length === 0) return;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div data-component="Tags" {...rest}>
+<div data-component="Tags" data-align={align} {...rest}>
   {
-    tags.map(({ tag, count }) => (
-      <a href={getTagLink(tag)}>
+    tags.map(({ tag, count }) =>
+      getTagLink === undefined ? (
         <TagPill
           tag={tag}
           count={count}
           withLinks={activeTag !== tag}
           active={activeTag === tag}
+          large={large}
         />
-      </a>
-    ))
+      ) : (
+        <a href={getTagLink(tag)}>
+          <TagPill
+            tag={tag}
+            count={count}
+            withLinks={activeTag !== tag}
+            active={activeTag === tag}
+            large={large}
+          />
+        </a>
+      )
+    )
   }
 </div>
 
@@ -36,7 +56,18 @@ if (tags.length === 0) return;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    justify-content: center;
+
+    &[data-align="start"] {
+      justify-content: flex-start;
+    }
+
+    &[data-align="end"] {
+      justify-content: flex-end;
+    }
+
+    &[data-align="center"] {
+      justify-content: center;
+    }
 
     & > a {
       border-radius: 100vmax;

@@ -45,12 +45,12 @@ const { image } = Astro.props;
     &:focus-visible {
       outline-color: var(--foreground-50);
 
-      & > picture > img {
+      & > [data-component="Image"] > img {
         scale: 110%;
       }
     }
 
-    & > picture > img {
+    & > [data-component="Image"] > img {
       width: 100%;
       height: 100%;
       object-fit: cover;

@@ -1,17 +1,18 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import HashLogo from "src/icons/lucide--hash.svg";
 import PostMeta from "src/components/PostMeta.astro";
 import { getUrl } from "src/utils/navigation";
 import Image from "./Image.astro";
 import defaultCover from "src/images/default-cover.jpg";
 import { ENABLE_TAG_FEATURE } from "src/constants";
+import Tags from "src/pages/posts/_components/Tags.astro";
 
 interface Props {
   post: CollectionEntry<"posts">;
 }
 
 const { post, ...rest } = Astro.props;
+const tags = post.data.tags?.map((tag) => ({ tag })) ?? [];
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
@@ -29,15 +30,8 @@ const { post, ...rest } = Astro.props;
     <p>{post.data.summary}</p>
     <PostMeta post={post} />
     {
-      ENABLE_TAG_FEATURE && post.data.tags && post.data.tags.length > 0 && (
-        <div class="tags">
-          {post.data.tags?.map((tag) => (
-            <div>
-              <HashLogo width={12} height={12} />
-              {tag}
-            </div>
-          ))}
-        </div>
+      ENABLE_TAG_FEATURE && tags.length > 0 && (
+        <Tags tags={tags} align="start" />
       )
     }
   </div>
@@ -57,14 +51,20 @@ const { post, ...rest } = Astro.props;
     &:hover,
     &:focus-visible {
       background-color: var(--foreground-3);
-      outline-color: var(--foreground-20-transparent);
+      outline-color: var(--foreground-50);
+
+      & > [data-component="Image"] > img {
+        scale: 110%;
+      }
+
+      & > div {
+        border-left-color: var(--foreground-50);
+      }
     }
 
-    & > picture > img {
-      width: 240px;
-      height: 100%;
-      object-fit: cover;
-      aspect-ratio: 4/3;
+    & > [data-component="Image"] {
+      overflow: hidden;
+      flex-shrink: 0;
 
       mask-image: linear-gradient(
         0deg,
@@ -72,12 +72,30 @@ const { post, ...rest } = Astro.props;
         white 33%
       );
 
-      background-image: radial-gradient(
-        var(--layout-border) 20%,
-        transparent 30%
-      );
-      background-size: 8px 8px;
-      background-repeat: space;
+      & > img {
+        width: calc(100vw / 3);
+
+        @media (min-width: 768px) {
+          width: calc(100vw / 4);
+        }
+
+        @media (min-width: 1024px) {
+          width: 256px;
+        }
+
+        height: 100%;
+        object-fit: cover;
+        aspect-ratio: 4/3;
+
+        transition: scale 500ms;
+
+        background-image: radial-gradient(
+          var(--layout-border) 20%,
+          transparent 30%
+        );
+        background-size: 8px 8px;
+        background-repeat: space;
+      }
     }
 
     & > div {
@@ -96,25 +114,15 @@ const { post, ...rest } = Astro.props;
         line-height: 1.5;
       }
 
-      & > .tags {
+      & > [data-component="Tags"] {
         margin-top: 16px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-
-        & > div {
-          background-color: var(--foreground-10);
-          border-radius: 100vmax;
-          padding: 2px 8px;
-          padding-right: 12px;
-        }
       }
     }
 
     @media (max-width: 600.5px) {
       flex-direction: column;
 
-      & > picture > img {
+      & > [data-component="Image"] > img {
         width: 100%;
         aspect-ratio: 16/9;
       }
@@ -130,8 +138,8 @@ const { post, ...rest } = Astro.props;
     }
 
     @media (max-width: 400.5px) {
-      & > picture > img {
-        aspect-ratio: unset;
+      & > [data-component="Image"] > img {
+        aspect-ratio: 1/1;
         max-height: 225px;
       }
     }

@@ -20,33 +20,33 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
   <h1>{title}</h1>
   {
     tags.length > 0 && (
-      <div id="tags">
-        <Tags tags={tags} activeTag={activeTag} getTagLink={getTagLink} />
-      </div>
+      <Tags
+        tags={tags}
+        activeTag={activeTag}
+        getTagLink={getTagLink}
+        align="start"
+        large
+      />
     )
   }
-  <div>
-    <slot />
-  </div>
+  <slot />
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
   [data-page="EntriesPage"] {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-
     padding-top: 64px;
     padding-bottom: 128px;
 
     & > h1 {
       padding-inline: var(--middle-x-padding);
+      margin-bottom: 32px;
     }
 
-    & > #tags {
+    & > [data-component="Tags"] {
       padding-inline: var(--middle-x-padding);
+      margin-bottom: 32px;
     }
   }
 </style>
