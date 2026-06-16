@@ -1,7 +1,6 @@
 ---
 title: "Linux Daily Driver"
 date: 2026-03-07
-tags: ["linux"]
 summary: "A guide to make my scanner and printer work on Linux"
 draft: true
 ---
@@ -17,6 +16,7 @@ ls -l /dev/disk/by-id/
 ```
 
 In my case, the hard drive is:
+
 ```txt
 lrwxrwxrwx - root 11 mars  14:59 ata-ST8000NM000A-2KE101_WKD0P38D -> ../../sda
 ```
@@ -41,6 +41,7 @@ WantedBy=multi-user.target suspend.target
 ```
 
 Enable the service:
+
 ```sh
 sudo systemctl daemon-reload
 sudo systemctl enable hdparm-spindown.service
@@ -92,8 +93,7 @@ sudo systemctl enable --now cups
 - Go to Administration (use your local user and password)
 - Click on "Find new printers"
 - It should detect "Canon Canon MF4500 Series (UFRII LT) (CanonMF4500)"
-- 
-
+-
 
 ### Fujitsu ScanSnap S1300i
 
@@ -106,12 +106,14 @@ sudo pacman -S sane
 Get the scanner driver from https://github.com/bjoern-vh/scansnap-linux
 
 In my case for the S1300i:
+
 ```sh
 wget https://raw.githubusercontent.com/bjoern-vh/scansnap-linux/refs/heads/main/drivers/1300i_0D12.nal
 sudo mv 1300i_0D12.nal /usr/share/sane/epjitsu/
 ```
 
 Test the scanner:
+
 ```sh
 scanimage -L
 ```
@@ -119,11 +121,13 @@ scanimage -L
 You should be rewarded with a beautiful sound coming from your scanner and its status light should stop blinking.
 On screen, the scanner should be listed in the output.
 In my case:
+
 ```txt
 device `epjitsu:libusb:001:006' is a FUJITSU ScanSnap S1300i scanner
 ```
 
 Now into scanning something, I'm going to use simple-scan to give myself a nice GUI to use the scanner:
+
 ```sh
 sudo pacman -S simple-scan
 ```
@@ -140,10 +144,10 @@ yay -S iscan iscan-plugin-perfection-v330
 
 The Epson Perfection V33 should appear in the list when starting the program.
 
-
 ### Prevent peripherals from waking up the system
 
 First, let's make sure the peripheral is capable of waking up the system.
+
 ```sh
 grep -i "logitech\|bolt\|unifying" /sys/bus/usb/devices/*/manufacturer 2>/dev/null
 ```
@@ -162,8 +166,9 @@ enabled
 
 So indeed, the Logitech Bolt Receiver is currently capable of waking up the system.
 Let's find its device ID:
+
 ```sh
-lsusb | grep -i "logitech\|bolt"    
+lsusb | grep -i "logitech\|bolt"
 ```
 
 ```txt
@@ -171,6 +176,7 @@ Bus 005 Device 006: ID 046d:c548 Logitech, Inc. Logi Bolt Receiver
 ```
 
 Now let's create a new udev rule to prevent the device from waking up the system:
+
 ```sh
 sudo nano /etc/udev/rules.d/90-logitech-bolt-wakeup.rules
 ```
