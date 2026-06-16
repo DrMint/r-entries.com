@@ -12,6 +12,7 @@ import {
 import Lightbox from "src/components/layout/Lightbox.astro";
 import defaultCover from "src/images/default-cover.jpg";
 import { getPost } from "src/utils/collections";
+import { getUrl } from "src/utils/navigation";
 
 interface Props {
   slug: string;
@@ -21,8 +22,10 @@ const { slug } = Astro.props;
 
 const post = await getPost(slug);
 
-const { title, cover, tags, summary } = post.data;
+const { title, cover, summary } = post.data;
 const { Content, headings } = await render(post);
+
+const tags = (post.data.tags ?? []).map((tag) => ({ tag }));
 
 // Add a space after the numbering
 const numberedHeadings = headings.map(({ depth, slug, text }) => ({
@@ -53,7 +56,11 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
   <div id="header">
     <h1>{title}</h1>
     <PostMeta post={post} />
-    {ENABLE_TAG_FEATURE && <Tags tags={tags} />}
+    {
+      ENABLE_TAG_FEATURE && (
+        <Tags tags={tags} getTagLink={(tag) => getUrl(`/posts/tags/${tag}`)} />
+      )
+    }
   </div>
   <div id="body">
     <div id="content">

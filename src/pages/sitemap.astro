@@ -6,12 +6,14 @@ import {
   ENABLE_TAG_FEATURE,
   MAX_POSTS_HOMEPAGE,
   MAX_IMAGES_HOMEPAGE,
+  ENABLE_TAGS_PAGE_FEATURE,
 } from "src/constants";
 
 const posts = await getPostsTree();
-const tags = ENABLE_TAG_FEATURE
-  ? await getTags({ sort: "name", order: "asc" })
-  : [];
+const tags =
+  ENABLE_TAG_FEATURE && ENABLE_TAGS_PAGE_FEATURE
+    ? await getTags({ sort: "name", order: "asc" })
+    : [];
 
 const images = await getImages();
 

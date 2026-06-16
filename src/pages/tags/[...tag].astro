@@ -1,11 +1,11 @@
 ---
 import { getTags } from "src/utils/collections";
-import { ENABLE_TAG_FEATURE } from "src/constants";
+import { ENABLE_TAG_FEATURE, ENABLE_TAGS_PAGE_FEATURE } from "src/constants";
 import Index from "./_index.astro";
 import Tag from "./_tag.astro";
 
 export const getStaticPaths = async () => {
-  if (!ENABLE_TAG_FEATURE) return [];
+  if (!ENABLE_TAG_FEATURE || !ENABLE_TAGS_PAGE_FEATURE) return [];
 
   const tags = await getTags();
 

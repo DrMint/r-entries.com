@@ -1,0 +1,40 @@
+---
+import EntriesPage from "src/components/layout/EntriesPage.astro";
+import PostsRows from "../_components/PostsRows.astro";
+import { getPosts, getTags } from "src/utils/collections";
+import { getUrl } from "src/utils/navigation";
+import { ENABLE_TAG_FEATURE } from "src/constants";
+
+export const getStaticPaths = async () => {
+  if (!ENABLE_TAG_FEATURE) return [];
+
+  const tags = await getTags({ collection: "posts" });
+
+  const paths: { params: { tag: string | undefined } }[] = tags.map(
+    ({ tag }) => ({ params: { tag } })
+  );
+
+  return paths;
+};
+
+const activeTag = Astro.params.tag!;
+
+const posts = await getPosts({ tag: activeTag, includingNested: true });
+const tags = await getTags({
+  collection: "posts",
+  sort: "prevalence",
+  order: "desc",
+});
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<EntriesPage
+  title="Posts"
+  tags={tags}
+  getTagLink={(tag) =>
+    activeTag === tag ? getUrl(`/posts`) : getUrl(`/posts/tags/${tag}`)}
+  activeTag={activeTag}
+>
+  <PostsRows posts={posts} />
+</EntriesPage>

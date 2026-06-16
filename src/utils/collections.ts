@@ -72,13 +72,27 @@ export const getAdjacentPosts = async (post: CollectionEntry<"posts">) => {
 export const getTags = async (options?: {
   sort?: "prevalence" | "name";
   order?: "asc" | "desc";
+  collection?: "posts" | "images";
 }) => {
-  const posts = await getPosts({ includingNested: true });
-  const tagNames = new Set(posts.flatMap((post) => post.data.tags ?? []));
+  const tagNames = new Map<string, number>();
 
-  let tags = [...tagNames].map((tag) => ({
+  if (!options?.collection || options.collection === "posts") {
+    const posts = await getPosts({ includingNested: true });
+    posts
+      .flatMap((post) => post.data.tags ?? [])
+      .forEach((tag) => tagNames.set(tag, (tagNames.get(tag) ?? 0) + 1));
+  }
+
+  if (!options?.collection || options.collection === "images") {
+    const images = await getImages();
+    images
+      .flatMap((image) => image.data.tags ?? [])
+      .forEach((tag) => tagNames.set(tag, (tagNames.get(tag) ?? 0) + 1));
+  }
+
+  let tags = Array.from(tagNames.entries()).map(([tag, count]) => ({
     tag,
-    count: posts.filter((post) => post.data.tags?.includes(tag)).length,
+    count,
   }));
 
   if (!options) return tags;
@@ -97,11 +111,13 @@ export const getPage = async (slug: string) => {
   return page;
 };
 
-export const getImages = async () => {
-  const images = (await getCollection("images")).sort(
+export const getImages = async (options?: { tag?: string }) => {
+  let images = (await getCollection("images")).sort(
     /* From newest to oldest */
     (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
   );
+  const tag = options?.tag;
+  if (tag) images = images.filter((image) => image.data.tags?.includes(tag));
   return images;
 };
 

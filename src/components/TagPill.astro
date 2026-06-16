@@ -3,18 +3,19 @@ import HashLogo from "src/icons/lucide--hash.svg";
 
 interface Props {
   tag: string;
-  count?: number;
+  count?: number | undefined;
   withLinks?: boolean;
+  active?: boolean;
 }
 
-const { tag, count, withLinks = false, ...rest } = Astro.props;
+const { tag, count, withLinks = false, active = false, ...rest } = Astro.props;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <div
   data-component="TagPill"
-  class:list={{ "with-links": withLinks }}
+  class:list={{ "with-links": withLinks, active }}
   {...rest}
 >
   <HashLogo width={12} height={12} />
@@ -50,6 +51,16 @@ const { tag, count, withLinks = false, ...rest } = Astro.props;
       &:focus-visible {
         background-color: transparent;
         border-color: var(--foreground-20);
+      }
+    }
+
+    &.active {
+      background-color: var(--foreground);
+      border: 1px solid var(--foreground);
+      color: var(--background);
+
+      & > span {
+        color: var(--foreground-50);
       }
     }
   }

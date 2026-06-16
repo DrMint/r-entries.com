@@ -37,6 +37,7 @@ const imagesCollection = defineCollection({
       title: z.string(),
       date: z.coerce.date(),
       yearOnly: z.boolean().default(false),
+      tags: z.array(z.string()).optional(),
     }),
 });
 

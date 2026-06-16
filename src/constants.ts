@@ -41,10 +41,21 @@ export const MAX_IMAGES_HOMEPAGE: {
 
 /* -------------------------------[ Features ]------------------------------- */
 
+// Set to `true` to enable the "go to top" button on all pages.
+// The user has to scroll down a bit before the button appears.
 export const ENABLE_GO_TO_TOP_FEATURE = true;
+// Set to `true` to enable the table of contents at the top of posts.
 export const ENABLE_TABLE_OF_CONTENTS_FEATURE = true;
+// Set to `true` to enable the image zoom feature
+// The zoom is triggered by clicking on the image,
+// and the image would actually be larger when opened in a lightbox.
 export const ENABLE_IMAGE_ZOOM_FEATURE = true;
-export const ENABLE_TAG_FEATURE = false;
+// Set to `true` to display tags on post and image cards,
+// on their entries pages and respective pages.
+export const ENABLE_TAG_FEATURE = true;
+// Set to `true` to enable the /tags page which lists all tags and their counts
+// and links to the /tags/tag page for each tag
+export const ENABLE_TAGS_PAGE_FEATURE = false;
 
 /* ------------------------------[ Responsive ]------------------------------ */
 
@@ -84,7 +95,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
           icon: ImageIcon,
         },
       ]),
-  ...(ENABLE_TAG_FEATURE
+  ...(ENABLE_TAG_FEATURE && ENABLE_TAGS_PAGE_FEATURE
     ? [
         {
           href: "/tags",

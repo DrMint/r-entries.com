@@ -4,6 +4,9 @@ import Lightbox from "src/components/layout/Lightbox.astro";
 import AdjacentImages from "./_components/AdjacentImages.astro";
 import { getImage } from "src/utils/collections";
 import { render } from "astro:content";
+import { ENABLE_TAG_FEATURE } from "src/constants";
+import Tags from "src/pages/posts/_components/Tags.astro";
+import { getUrl } from "src/utils/navigation";
 
 interface Props {
   slug: string;
@@ -13,6 +16,8 @@ const { slug } = Astro.props;
 const entry = await getImage(slug);
 const { image, title, date, yearOnly } = entry.data;
 const { Content } = await render(entry);
+
+const tags = (entry.data.tags ?? []).map((tag) => ({ tag }));
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
@@ -35,6 +40,11 @@ const { Content } = await render(entry);
           : date.toLocaleDateString("en-US", { dateStyle: "long" })
       }
     </p>
+    {
+      ENABLE_TAG_FEATURE && (
+        <Tags tags={tags} getTagLink={(tag) => getUrl(`/images/tags/${tag}`)} />
+      )
+    }
   </div>
 
   {

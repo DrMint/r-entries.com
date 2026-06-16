@@ -1,0 +1,52 @@
+---
+import Html from "src/components/layout/Html.astro";
+import { ENABLE_TAG_FEATURE } from "src/constants";
+import Tags from "src/pages/posts/_components/Tags.astro";
+
+interface Props {
+  title: string;
+  tags?: { tag: string; count: number }[];
+  activeTag?: string;
+  getTagLink: (tag: string) => string;
+}
+
+const { title, activeTag, getTagLink } = Astro.props;
+const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<Html data-page="EntriesPage">
+  <h1>{title}</h1>
+  {
+    tags.length > 0 && (
+      <div id="tags">
+        <Tags tags={tags} activeTag={activeTag} getTagLink={getTagLink} />
+      </div>
+    )
+  }
+  <div>
+    <slot />
+  </div>
+</Html>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-page="EntriesPage"] {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    padding-top: 64px;
+    padding-bottom: 128px;
+
+    & > h1 {
+      padding-inline: var(--middle-x-padding);
+    }
+
+    & > #tags {
+      padding-inline: var(--middle-x-padding);
+    }
+  }
+</style>

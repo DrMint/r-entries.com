@@ -1,0 +1,30 @@
+---
+import PostCard from "src/components/PostCard.astro";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  posts: CollectionEntry<"posts">[];
+}
+
+const { posts } = Astro.props;
+---
+
+{
+  posts.map((post) => (
+    <div>
+      <PostCard post={post} />
+    </div>
+  ))
+}
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  div {
+    border-top: 1px solid var(--layout-border);
+  }
+
+  div:last-child {
+    border-bottom: 1px solid var(--layout-border);
+  }
+</style>

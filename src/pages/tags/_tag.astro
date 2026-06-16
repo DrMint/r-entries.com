@@ -2,7 +2,8 @@
 import Html from "src/components/layout/Html.astro";
 import HashLogo from "src/icons/lucide--hash.svg";
 import PostCard from "src/components/PostCard.astro";
-import { getPosts } from "src/utils/collections";
+import { getPosts, getImages } from "src/utils/collections";
+import ImagesGrid from "src/pages/images/_components/ImagesGrid.astro";
 
 interface Props {
   tag: string;
@@ -16,28 +17,34 @@ const posts = await getPosts({
   sort: "date",
   order: "desc",
 });
+
+const images = await getImages({ tag });
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <Html data-page="Tag">
   <h1>
-    Posts tagged with{" "}
+    Content tagged with{" "}
     <span>
       <HashLogo width={26} height={26} />
       {tag}
     </span>
   </h1>
 
-  <div id="posts">
-    {
-      posts!.map((post) => (
-        <div>
-          <PostCard post={post} />
-        </div>
-      ))
-    }
-  </div>
+  {
+    posts.length > 0 && (
+      <div id="posts">
+        {posts!.map((post) => (
+          <div>
+            <PostCard post={post} />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  {images.length > 0 && <ImagesGrid images={images} />}
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
@@ -75,6 +82,12 @@ const posts = await getPosts({
 
       & > div:last-child {
         border-bottom: 1px solid var(--layout-border);
+      }
+    }
+
+    & > #images {
+      & > div {
+        border-top: 1px solid var(--layout-border);
       }
     }
   }

@@ -1,158 +1,23 @@
 ---
-import Html from "src/components/layout/Html.astro";
-import { getImages } from "src/utils/collections";
-import ImageCard from "./_components/ImageCard.astro";
-import blankImage from "src/images/blank.png";
-import Image from "src/components/Image.astro";
+import EntriesPage from "src/components/layout/EntriesPage.astro";
+import { getImages, getTags } from "src/utils/collections";
+import ImagesGrid from "./_components/ImagesGrid.astro";
+import { getUrl } from "src/utils/navigation";
 
 const images = await getImages();
+const tags = await getTags({
+  collection: "images",
+  sort: "prevalence",
+  order: "desc",
+});
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html data-page="Images">
-  <h1>Images</h1>
-  <div id="images">
-    {
-      images.map((image) => (
-        <div>
-          <ImageCard image={image} />
-        </div>
-      ))
-    }
-    {
-      Array.from({ length: 4 }).map((_, index) => (
-        <div
-          class:list={{
-            "empty-space": true,
-            "hide-1": true,
-            "hide-2":
-              index >= 2 - (images.length % 2) || images.length % 2 === 0,
-            "hide-3":
-              index >= 3 - (images.length % 3) || images.length % 3 === 0,
-            "hide-4":
-              index >= 4 - (images.length % 4) || images.length % 4 === 0,
-          }}
-        >
-          <Image
-            src={blankImage}
-            alt=""
-            sizes="
-              (max-width: 300px) 100vw,
-              (max-width: 450px) 50vw,
-              (max-width: 768px) 33vw,
-              (max-width: 1024px) 25vw,
-              256px"
-            fallbackWidth={580}
-            type="transparent"
-            square
-            priority
-          />
-        </div>
-      ))
-    }
-  </div>
-</Html>
-
-{/* ---------------------------------[ CSS ]-------------------------------- */}
-
-<style>
-  [data-page="Images"] {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-
-    padding-top: 64px;
-    padding-bottom: 128px;
-
-    & > h1 {
-      padding-inline: var(--middle-x-padding);
-    }
-
-    & > #images {
-      display: grid;
-      background-color: var(--layout-border);
-      padding-block: 1px;
-
-      @media (max-width: 1023.5px) {
-        padding-inline: 1px;
-      }
-
-      grid-template-columns: 1fr;
-
-      & > div.hide-1,
-      & > div.hide-2,
-      & > div.hide-3,
-      & > div.hide-4 {
-        display: grid;
-      }
-
-      & > div.hide-1 {
-        display: none;
-      }
-
-      @media (min-width: 300px) {
-        grid-template-columns: repeat(2, 1fr);
-
-        & > div.hide-1,
-        & > div.hide-2,
-        & > div.hide-3,
-        & > div.hide-4 {
-          display: grid;
-        }
-
-        & > div.hide-2 {
-          display: none;
-        }
-      }
-
-      @media (min-width: 450px) {
-        grid-template-columns: repeat(3, 1fr);
-
-        & > div.hide-1,
-        & > div.hide-2,
-        & > div.hide-3,
-        & > div.hide-4 {
-          display: grid;
-        }
-
-        & > div.hide-3 {
-          display: none;
-        }
-      }
-
-      @media (min-width: 768px) {
-        grid-template-columns: repeat(4, 1fr);
-
-        & > div.hide-1,
-        & > div.hide-2,
-        & > div.hide-3,
-        & > div.hide-4 {
-          display: grid;
-        }
-
-        & > div.hide-4 {
-          display: none;
-        }
-      }
-
-      gap: 1px;
-
-      & > div {
-        width: 100%;
-        aspect-ratio: 1/1;
-
-        &.empty-space {
-          background-color: var(--background);
-
-          & > picture > img {
-            width: 100%;
-            height: 100%;
-            padding: 10%;
-            opacity: 0.1;
-          }
-        }
-      }
-    }
-  }
-</style>
+<EntriesPage
+  title="Images"
+  tags={tags}
+  getTagLink={(tag) => getUrl(`/images/tags/${tag}`)}
+>
+  <ImagesGrid images={images} />
+</EntriesPage>
