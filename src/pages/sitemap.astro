@@ -1,7 +1,7 @@
 ---
 import Html from "src/components/layout/Html.astro";
 import { getUrl } from "src/utils/navigation";
-import { getImages, getPostsTree, getTags } from "src/utils/collections";
+import { getImages, getPosts, getTags } from "src/utils/collections";
 import {
   ENABLE_TAG_FEATURE,
   MAX_POSTS_HOMEPAGE,
@@ -9,13 +9,13 @@ import {
   ENABLE_TAGS_PAGE_FEATURE,
 } from "src/constants";
 
-const posts = await getPostsTree();
+const posts = await getPosts({ sort: "title", order: "asc" });
 const tags =
   ENABLE_TAG_FEATURE && ENABLE_TAGS_PAGE_FEATURE
     ? await getTags({ sort: "name", order: "asc" })
     : [];
 
-const images = await getImages();
+const images = await getImages({ sort: "title", order: "asc" });
 
 const postsPageExists = MAX_POSTS_HOMEPAGE !== Infinity;
 const imagesPageExists =
@@ -38,17 +38,6 @@ const imagesPageExists =
             {posts.map((post) => (
               <li>
                 <a href={getUrl(`/posts/${post.id}`)}>{post.data.title}</a>
-                {post.nestedPosts.length > 0 && (
-                  <ul>
-                    {post.nestedPosts.map((nestedPost) => (
-                      <li>
-                        <a href={getUrl(`/posts/${nestedPost.id}`)}>
-                          {nestedPost.data.title}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </li>
             ))}
           </ul>

@@ -5,13 +5,9 @@ export const getPosts = async (options?: {
   sort?: "date" | "title";
   order?: "asc" | "desc";
   maxCount?: number;
-  includingNested?: boolean;
 }) => {
   let posts = await getCollection("posts");
   posts = posts.filter((post) => !post.data.draft);
-  if (!options?.includingNested) {
-    posts = posts.filter((post) => !post.id.includes("/"));
-  }
 
   if (!options) return posts;
   const { tag, sort, order, maxCount } = options;
@@ -32,19 +28,8 @@ export const getPost = async (slug: string) => {
   return post;
 };
 
-export const getPostsTree = async () => {
-  const allPosts = await getPosts({ includingNested: true });
-  const posts = allPosts.filter((post) => !post.id.includes("/"));
-  const nestedPosts = allPosts.filter((post) => post.id.includes("/"));
-
-  return posts.map((post) => ({
-    ...post,
-    nestedPosts: nestedPosts.filter((p) => p.id.startsWith(post.id)),
-  }));
-};
-
 export const getAdjacentImages = async (image: CollectionEntry<"images">) => {
-  const images = await getImages();
+  const images = await getImages({ sort: "date", order: "desc" });
 
   const currentImageIndex = images.findIndex((e) => e.id === image.id);
   const previousImageIndex = currentImageIndex + 1;
@@ -77,7 +62,7 @@ export const getTags = async (options?: {
   const tagNames = new Map<string, number>();
 
   if (!options?.collection || options.collection === "posts") {
-    const posts = await getPosts({ includingNested: true });
+    const posts = await getPosts();
     posts
       .flatMap((post) => post.data.tags ?? [])
       .forEach((tag) => tagNames.set(tag, (tagNames.get(tag) ?? 0) + 1));
@@ -111,13 +96,27 @@ export const getPage = async (slug: string) => {
   return page;
 };
 
-export const getImages = async (options?: { tag?: string }) => {
-  let images = (await getCollection("images")).sort(
-    /* From newest to oldest */
-    (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-  );
-  const tag = options?.tag;
+export const getImages = async (options?: {
+  tag?: string;
+  sort?: "date" | "title";
+  order?: "asc" | "desc";
+  maxCount?: number;
+}) => {
+  let images = await getCollection("images");
+
+  if (!options) return images;
+  const { tag, sort, order, maxCount } = options;
+
   if (tag) images = images.filter((image) => image.data.tags?.includes(tag));
+  if (sort === "date")
+    images = images.sort(
+      (a, b) => a.data.date.valueOf() - b.data.date.valueOf()
+    );
+  if (sort === "title")
+    images = images.sort((a, b) => a.data.title.localeCompare(b.data.title));
+  if (order === "desc") images = images.reverse();
+  if (maxCount) images = images.slice(0, maxCount);
+
   return images;
 };
 

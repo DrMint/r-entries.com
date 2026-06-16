@@ -12,14 +12,10 @@ const homePage = await getPage("home");
 const { title, summary } = homePage.data;
 const { Content } = await render(homePage);
 
-const posts = await getPosts({
-  sort: "date",
-  order: "desc",
-});
-
-const images = await getImages();
-
+const posts = await getPosts({ sort: "date", order: "desc" });
 const latestPosts = posts.slice(0, MAX_POSTS_HOMEPAGE);
+
+const images = await getImages({ sort: "date", order: "desc" });
 const latestImages = images.slice(
   0,
   Math.max(...Object.values(MAX_IMAGES_HOMEPAGE))

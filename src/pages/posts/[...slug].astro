@@ -5,7 +5,7 @@ import Post from "./_post.astro";
 import Index from "./_index.astro";
 
 export const getStaticPaths = async () => {
-  const posts = await getPosts({ includingNested: true });
+  const posts = await getPosts();
 
   const paths: { params: { slug: string | undefined } }[] = posts.map(
     (post) => ({

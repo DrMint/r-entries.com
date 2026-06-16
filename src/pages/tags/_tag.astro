@@ -11,14 +11,8 @@ interface Props {
 
 const { tag } = Astro.props;
 
-const posts = await getPosts({
-  tag,
-  includingNested: true,
-  sort: "date",
-  order: "desc",
-});
-
-const images = await getImages({ tag });
+const posts = await getPosts({ tag, sort: "date", order: "desc" });
+const images = await getImages({ tag, sort: "date", order: "desc" });
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}

@@ -5,7 +5,7 @@ import { WEBSITE_NAME, DEFAULT_DESCRIPTION } from "src/constants";
 import { getImages, getPosts } from "src/utils/collections";
 
 export const GET: APIRoute = async (context) => {
-  const posts = await getPosts({ includingNested: true });
+  const posts = await getPosts();
   const images = await getImages();
 
   const items = [

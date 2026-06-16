@@ -4,7 +4,7 @@ import { getImages, getTags } from "src/utils/collections";
 import ImagesGrid from "./_components/ImagesGrid.astro";
 import { getUrl } from "src/utils/navigation";
 
-const images = await getImages();
+const images = await getImages({ sort: "date", order: "desc" });
 const tags = await getTags({
   collection: "images",
   sort: "prevalence",

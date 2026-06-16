@@ -19,7 +19,11 @@ export const getStaticPaths = async () => {
 
 const activeTag = Astro.params.tag!;
 
-const posts = await getPosts({ tag: activeTag, includingNested: true });
+const posts = await getPosts({
+  tag: activeTag,
+  sort: "date",
+  order: "desc",
+});
 const tags = await getTags({
   collection: "posts",
   sort: "prevalence",
