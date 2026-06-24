@@ -5,6 +5,7 @@ interface Props {
   tags: { tag: string; count?: number }[] | undefined;
   activeTag?: string | undefined;
   getTagLink?: (tag: string) => string;
+  ariaLabel?: (tag: string) => string;
   align?: "center" | "start" | "end";
   large?: boolean;
 }
@@ -13,6 +14,7 @@ const {
   tags = [],
   activeTag,
   getTagLink,
+  ariaLabel,
   align = "center",
   large = false,
   ...rest
@@ -35,7 +37,7 @@ if (tags.length === 0) return;
           large={large}
         />
       ) : (
-        <a href={getTagLink(tag)}>
+        <a href={getTagLink(tag)} aria-label={ariaLabel?.(tag)}>
           <TagPill
             tag={tag}
             count={count}

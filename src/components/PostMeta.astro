@@ -15,7 +15,7 @@ const readingTime = getReadingTime(post.body);
 
 <div data-component="PostMeta" {...rest}>
   <p>{date.toLocaleDateString("en-US", { dateStyle: "long" })}</p>
-  <div class="separator">|</div>
+  <div class="separator"></div>
   <p>{`${readingTime} min read`}</p>
 </div>
 
@@ -29,8 +29,11 @@ const readingTime = getReadingTime(post.body);
     color: var(--foreground-60);
 
     .separator {
-      height: 26px;
+      height: 1em;
       color: var(--foreground-20);
+      width: 1px;
+      background-color: var(--foreground-20);
+      margin-inline: 0.1em;
     }
   }
 </style>

@@ -6,6 +6,7 @@ import Image from "./Image.astro";
 import defaultCover from "src/images/default-cover.jpg";
 import { ENABLE_TAG_FEATURE } from "src/constants";
 import Tags from "src/pages/posts/_components/Tags.astro";
+import { getReadingTime } from "src/utils/readingTime";
 
 interface Props {
   post: CollectionEntry<"posts">;
@@ -17,15 +18,20 @@ const tags = post.data.tags?.map((tag) => ({ tag })) ?? [];
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<a data-component="PostCard" href={getUrl(`/posts/${post.id}`)} {...rest}>
+<a
+  data-component="PostCard"
+  href={getUrl(`/posts/${post.id}`)}
+  aria-labelledby={`post-card-title-${post.id}`}
+  {...rest}
+>
   <Image
     src={post.data.cover ?? defaultCover}
     sizes="(max-width: 600px) 100vw, 280px"
     fallbackWidth={320}
     priority={false}
   />
-  <div>
-    <h2>{post.data.title}</h2>
+  <div aria-hidden="true">
+    <h3>{post.data.title}</h3>
     <p>{post.data.summary}</p>
     <PostMeta post={post} />
     {
@@ -33,6 +39,32 @@ const tags = post.data.tags?.map((tag) => ({ tag })) ?? [];
         <Tags tags={tags} align="start" />
       )
     }
+  </div>
+  <div id={`post-card-title-${post.id}`} class="hidden">
+    <h3>{post.data.title}</h3>
+    <p>{post.data.summary}</p>
+    <p>
+      This post was published on {
+        post.data.date.toLocaleDateString("en-US", { dateStyle: "long" })
+      }.
+    </p>
+    {
+      ENABLE_TAG_FEATURE && tags.length > 0 && (
+        <p>
+          It is tagged with:
+          {tags.length > 1 && (
+            <ul>
+              {tags.map((tag) => (
+                <li>{tag.tag}</li>
+              ))}
+            </ul>
+          )}
+          {tags.length === 1 && ` ${tags[0]!.tag}`}
+        </p>
+      )
+    }
+
+    <p>It takes about {getReadingTime(post.body)} minutes to read it.</p>
   </div>
 </a>
 
@@ -105,16 +137,21 @@ const tags = post.data.tags?.map((tag) => ({ tag })) ?? [];
       place-content: center;
       padding: 32px;
 
-      & > h2 {
+      & > h3 {
         margin-bottom: 0.4em;
       }
 
       & > p {
         line-height: 1.5;
+        margin-bottom: 0.3em;
       }
 
       & > [data-component="Tags"] {
         margin-top: 16px;
+      }
+
+      &.hidden {
+        display: none;
       }
     }
 

@@ -57,7 +57,11 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
     <PostMeta post={post} />
     {
       ENABLE_TAG_FEATURE && (
-        <Tags tags={tags} getTagLink={(tag) => getUrl(`/posts/tags/${tag}`)} />
+        <Tags
+          tags={tags}
+          getTagLink={(tag) => getUrl(`/posts/tags/${tag}`)}
+          ariaLabel={(tag) => `View posts tagged with "${tag}"`}
+        />
       )
     }
   </div>
