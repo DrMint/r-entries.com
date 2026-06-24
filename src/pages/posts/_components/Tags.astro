@@ -5,7 +5,8 @@ interface Props {
   tags: { tag: string; count?: number }[] | undefined;
   activeTag?: string | undefined;
   getTagLink?: (tag: string) => string;
-  ariaLabel?: (tag: string) => string;
+  ariaLabel?: (tag: string, count?: number) => string;
+  listAriaLabel?: string;
   align?: "center" | "start" | "end";
   large?: boolean;
 }
@@ -15,6 +16,7 @@ const {
   activeTag,
   getTagLink,
   ariaLabel,
+  listAriaLabel,
   align = "center",
   large = false,
   ...rest
@@ -25,19 +27,19 @@ if (tags.length === 0) return;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div data-component="Tags" data-align={align} {...rest}>
+<ul
+  data-component="Tags"
+  data-align={align}
+  {...rest}
+  aria-label={listAriaLabel}
+>
   {
     tags.map(({ tag, count }) =>
       getTagLink === undefined ? (
-        <TagPill
-          tag={tag}
-          count={count}
-          withLinks={activeTag !== tag}
-          active={activeTag === tag}
-          large={large}
-        />
-      ) : (
-        <a href={getTagLink(tag)} aria-label={ariaLabel?.(tag)}>
+        <li
+          aria-label={ariaLabel?.(tag, count)}
+          aria-current={activeTag === tag}
+        >
           <TagPill
             tag={tag}
             count={count}
@@ -45,11 +47,28 @@ if (tags.length === 0) return;
             active={activeTag === tag}
             large={large}
           />
-        </a>
+        </li>
+      ) : (
+        <li>
+          <a
+            href={getTagLink(tag)}
+            aria-label={ariaLabel?.(tag, count)}
+            aria-current={activeTag === tag}
+          >
+            <TagPill
+              tag={tag}
+              count={count}
+              withLinks={activeTag !== tag}
+              active={activeTag === tag}
+              large={large}
+              aria-hidden={ariaLabel === undefined ? undefined : "true"}
+            />
+          </a>
+        </li>
       )
     )
   }
-</div>
+</ul>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
@@ -58,6 +77,9 @@ if (tags.length === 0) return;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+
+    padding: 0;
+    margin: 0;
 
     &[data-align="start"] {
       justify-content: flex-start;
@@ -71,8 +93,12 @@ if (tags.length === 0) return;
       justify-content: center;
     }
 
-    & > a {
-      border-radius: 100vmax;
+    & > li {
+      list-style: none;
+
+      & > a {
+        border-radius: 100vmax;
+      }
     }
   }
 </style>

@@ -5,12 +5,16 @@ import Tags from "src/pages/posts/_components/Tags.astro";
 
 interface Props {
   title: string;
+  entityName: {
+    singular: string;
+    plural: string;
+  };
   tags?: { tag: string; count: number }[];
   activeTag?: string;
   getTagLink: (tag: string) => string;
 }
 
-const { title, activeTag, getTagLink } = Astro.props;
+const { title, entityName, activeTag, getTagLink } = Astro.props;
 const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
 ---
 
@@ -22,8 +26,14 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
     tags.length > 0 && (
       <Tags
         tags={tags}
+        listAriaLabel={`Filter ${entityName.plural} by tag.${activeTag ? ` You are currently viewing ${entityName.plural} tagged with "${activeTag}".` : ` Currently no tag is selected. All ${entityName.plural} are listed.`}`}
         activeTag={activeTag}
         getTagLink={getTagLink}
+        ariaLabel={(tag, count) =>
+          tag === activeTag
+            ? `Click to disable filtering and list all ${entityName.plural}.`
+            : `List ${entityName.plural} tagged with "${tag}".${count ? ` ${count} ${count > 1 ? entityName.plural : entityName.singular}.` : ""}`
+        }
         align="start"
         large
       />
