@@ -401,6 +401,7 @@ const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
   ul[data-rehype-non-mdx],
   ol[data-rehype-non-mdx] {
     margin-block: 0.75em;
+    padding-left: min(2.5em, 5vw);
 
     & > li + li {
       margin-top: 1em;
@@ -416,6 +417,7 @@ const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
     /* Allow long URLs/text to break and wrap */
     overflow-wrap: break-word;
     word-break: break-word;
+    list-style: revert;
   }
 
   ul > li[data-rehype-non-mdx] {
