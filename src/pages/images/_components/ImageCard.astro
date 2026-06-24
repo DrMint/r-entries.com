@@ -13,7 +13,6 @@ const { image } = Astro.props;
 <a data-component="ImageCard" href={getUrl(`/images/${image.id}`)}>
   <Image
     src={image.data.thumbnail ?? image.data.image}
-    alt=""
     sizes="
       (max-width: 300px) 100vw,
       (max-width: 450px) 50vw,

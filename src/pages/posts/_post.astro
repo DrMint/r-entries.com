@@ -42,12 +42,11 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
   openGraph={{
     title,
     description: summary,
-    thumbnail: cover?.src,
+    thumbnail: cover,
   }}
 >
   <Lightbox
-    src={cover?.src ?? defaultCover}
-    alt={cover?.alt ?? ""}
+    src={cover ?? defaultCover}
     sizes="(max-width: 1024px) 100vw, 1024px"
     fallbackWidth={1024}
     priority

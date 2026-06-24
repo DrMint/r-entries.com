@@ -19,8 +19,7 @@ const tags = post.data.tags?.map((tag) => ({ tag })) ?? [];
 
 <a data-component="PostCard" href={getUrl(`/posts/${post.id}`)} {...rest}>
   <Image
-    src={post.data.cover?.src ?? defaultCover}
-    alt={post.data.cover?.alt ?? ""}
+    src={post.data.cover ?? defaultCover}
     sizes="(max-width: 600px) 100vw, 280px"
     fallbackWidth={320}
     priority={false}

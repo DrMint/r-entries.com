@@ -3,7 +3,7 @@ import Lightbox from "src/components/layout/Lightbox.astro";
 
 interface Props {
   src: ImageMetadata;
-  alt: string;
+  alt?: string | undefined;
 }
 
 const { src, alt } = Astro.props;

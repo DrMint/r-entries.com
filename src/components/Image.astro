@@ -5,7 +5,7 @@ import DownloadIcon from "src/icons/lucide--download.svg";
 
 interface Props {
   src: ImageMetadata;
-  alt: string;
+  alt?: string | undefined;
   sizes: string;
   priority: boolean;
   fallbackWidth: ResponsiveWidth;
@@ -17,7 +17,7 @@ interface Props {
 
 const {
   src,
-  alt,
+  alt = "",
   sizes,
   priority,
   type,
@@ -52,6 +52,7 @@ const fallback = await responsiveImage.getFallback(fallbackWidth);
     width={fallback.width}
     height={fallback.height}
     alt={alt}
+    role={alt !== "" ? "img" : "presentation"}
     loading={priority ? "eager" : "lazy"}
     decoding={priority ? "sync" : "async"}
     fetchpriority={priority ? "high" : "auto"}
