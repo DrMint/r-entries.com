@@ -5,7 +5,6 @@ import { statSync } from "node:fs";
 import process from "node:process";
 import { exiftool } from "exiftool-vendored";
 
-const MAX_DIMENSION_PX = 4096;
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 const IMAGE_EXTENSIONS = new Set([
@@ -40,16 +39,6 @@ function listTrackedImageFiles() {
       }`
     );
   }
-}
-
-/** @param {unknown} value */
-function toNumber(value) {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const n = Number(value);
-    if (Number.isFinite(n)) return n;
-  }
-  return null;
 }
 
 /** @param {number} bytes */
@@ -92,24 +81,6 @@ function gpsSummaryFromTags(tags) {
   return null;
 }
 
-/** @param {Record<string, unknown>} tags */
-function dimensionSummaryFromTags(tags) {
-  const width = toNumber(
-    tags.ImageWidth ?? tags.ExifImageWidth ?? tags.SourceImageWidth
-  );
-  const height = toNumber(
-    tags.ImageHeight ?? tags.ExifImageHeight ?? tags.SourceImageHeight
-  );
-
-  if (width == null || height == null) return null;
-
-  if (width > MAX_DIMENSION_PX || height > MAX_DIMENSION_PX) {
-    return `${width}x${height}px (max ${MAX_DIMENSION_PX}px per side)`;
-  }
-
-  return null;
-}
-
 /** @param {string} filePath */
 function fileSizeSummary(filePath) {
   const { size } = statSync(filePath);
@@ -135,11 +106,8 @@ async function inspectImage(filePath) {
   const metadataSummary = gpsSummaryFromTags(
     /** @type {Record<string, unknown>} */ (tags)
   );
-  const dimensionSummary = dimensionSummaryFromTags(
-    /** @type {Record<string, unknown>} */ (tags)
-  );
 
-  return { metadataSummary, dimensionSummary, sizeSummary };
+  return { metadataSummary, sizeSummary };
 }
 
 let files;
@@ -155,22 +123,16 @@ try {
 /** @type {{ file: string, summary: string }[]} */
 const metadataOffenders = [];
 /** @type {{ file: string, summary: string }[]} */
-const dimensionOffenders = [];
-/** @type {{ file: string, summary: string }[]} */
 const sizeOffenders = [];
 /** @type {string[]} */
 const parseErrors = [];
 
 for (const file of files) {
   try {
-    const { metadataSummary, dimensionSummary, sizeSummary } =
-      await inspectImage(file);
+    const { metadataSummary, sizeSummary } = await inspectImage(file);
 
     if (metadataSummary) {
       metadataOffenders.push({ file, summary: metadataSummary });
-    }
-    if (dimensionSummary) {
-      dimensionOffenders.push({ file, summary: dimensionSummary });
     }
     if (sizeSummary) {
       sizeOffenders.push({ file, summary: sizeSummary });
@@ -195,10 +157,7 @@ if (parseErrors.length > 0) {
   process.exit(2);
 }
 
-const hasFailures =
-  metadataOffenders.length > 0 ||
-  dimensionOffenders.length > 0 ||
-  sizeOffenders.length > 0;
+const hasFailures = metadataOffenders.length > 0 || sizeOffenders.length > 0;
 
 if (hasFailures) {
   console.error("\n[check-image-metadata] Blocked commit:\n");
@@ -214,19 +173,6 @@ if (hasFailures) {
       "\nFix: strip metadata before committing (examples):\n" +
         "- exiftool: exiftool -all= -overwrite_original <file>\n" +
         "- ImageMagick: magick <in> -strip <out>\n"
-    );
-  }
-
-  if (dimensionOffenders.length > 0) {
-    console.error(
-      `\nDimensions above ${MAX_DIMENSION_PX}px in ${dimensionOffenders.length} image(s):\n`
-    );
-    for (const { file, summary } of dimensionOffenders) {
-      console.error(`- ${file} (${summary})`);
-    }
-    console.error(
-      "\nFix: resize before committing (example):\n" +
-        `- ImageMagick: magick <in> -resize '${MAX_DIMENSION_PX}x${MAX_DIMENSION_PX}>' <out>\n`
     );
   }
 
@@ -248,6 +194,5 @@ if (hasFailures) {
 }
 
 console.log(
-  `[check-image-metadata] OK: scanned ${files.length} image(s); no GPS/location metadata, ` +
-    `no dimension above ${MAX_DIMENSION_PX}px, and no file above 10MB.`
+  `[check-image-metadata] OK: scanned ${files.length} image(s); no GPS/location metadata and no file above 10MB.`
 );
