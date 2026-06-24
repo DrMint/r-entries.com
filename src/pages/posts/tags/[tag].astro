@@ -36,6 +36,7 @@ const tags = await getTags({
 <EntriesPage
   title="Posts"
   entityName={{ singular: "post", plural: "posts" }}
+  count={posts.length}
   tags={tags}
   getTagLink={(tag) =>
     activeTag === tag ? getUrl(`/posts`) : getUrl(`/posts/tags/${tag}`)}

@@ -17,6 +17,7 @@ const tags = await getTags({
 <EntriesPage
   title="Images"
   entityName={{ singular: "image", plural: "images" }}
+  count={images.length}
   tags={tags}
   getTagLink={(tag) => getUrl(`/images/tags/${tag}`)}
 >

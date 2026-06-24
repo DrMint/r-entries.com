@@ -16,11 +16,13 @@ const listing = (items: string[]): string => {
 };
 
 export const getPostDescription = (post: CollectionEntry<"posts">): string => {
+  const readingTime = getReadingTime(post.body);
+
   let description = "";
   description += `Read the post titled "${post.data.title}".`;
   description += ` ${terminateSentence(post.data.summary)}`;
   description += ` It was published on ${post.data.date.toLocaleDateString("en-US", { dateStyle: "long" })}.`;
-  description += ` It takes about ${getReadingTime(post.body)} minutes to read it.`;
+  description += ` It takes about ${readingTime} minute${readingTime === 1 ? "" : "s"} to read it.`;
   description += ` It is tagged with ${listing(post.data.tags?.map((tag) => `"${tag}"`) ?? [])}.`;
   return description;
 };
