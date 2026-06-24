@@ -89,7 +89,11 @@ const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
       href={getUrl("/apple-touch-icon.png", true)}
     />
     <meta name="apple-mobile-web-app-title" content="R-Entries" />
-    <link rel="manifest" href={getUrl("/site.webmanifest", true)} />
+    <link
+      rel="manifest"
+      href={getUrl("/site.webmanifest", true)}
+      fetchpriority="low"
+    />
 
     {/* RSS feed */}
     <link
