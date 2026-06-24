@@ -14,15 +14,19 @@ const { pathname } = new URL(Astro.request.url);
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <header data-component="Header" {...props}>
-  <nav>
+  <nav aria-label="Main pages">
     <a
       id="left"
       href={getUrl(NAVIGATION_HOME_ITEM.href)}
       class:list={{ active: isActive(NAVIGATION_HOME_ITEM, pathname) }}
       title={NAVIGATION_HOME_ITEM.tooltip}
+      aria-label={NAVIGATION_HOME_ITEM.label}
+      aria-current={isActive(NAVIGATION_HOME_ITEM, pathname)
+        ? "page"
+        : undefined}
     >
-      <WebsiteLogo />
-      <p>{WEBSITE_NAME}</p>
+      <WebsiteLogo aria-hidden="true" />
+      <p aria-hidden="true">{WEBSITE_NAME}</p>
     </a>
     <div id="right">
       {
@@ -35,8 +39,12 @@ const { pathname } = new URL(Astro.request.url);
                 active: isActive({ href, detection }, pathname),
               }}
               title={tooltip}
+              aria-label={label}
+              aria-current={
+                isActive({ href, detection }, pathname) ? "page" : undefined
+              }
             >
-              {label}
+              <span aria-hidden="true">{label}</span>
             </a>
           </div>
         ))

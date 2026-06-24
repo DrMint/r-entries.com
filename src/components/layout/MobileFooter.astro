@@ -11,7 +11,7 @@ const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <header data-component="MobileFooter" {...props}>
-  <nav>
+  <nav aria-label="Main pages">
     {
       items.map(({ href, label, icon: Icon, detection }) => (
         <a
@@ -19,9 +19,11 @@ const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
           class:list={{
             active: isActive({ href, detection }, pathname),
           }}
+          aria-label={label}
+          aria-current={isActive({ href, detection }, pathname)}
         >
-          <Icon width={24} height={24} />
-          <div>
+          <Icon width={24} height={24} aria-hidden="true" />
+          <div aria-hidden="true">
             <span aria-hidden="true">{label}</span>
             <div>{label}</div>
           </div>

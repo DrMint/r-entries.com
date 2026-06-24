@@ -37,9 +37,9 @@ const latestImages = images.slice(
         <h2>
           {latestImages.length === images.length ? "Images" : "Latest images"}
         </h2>
-        <div id="grid">
+        <ul id="grid" aria-label="Images">
           {latestImages.map((image, index) => (
-            <div
+            <li
               class:list={{
                 "hide-4": index >= MAX_IMAGES_HOMEPAGE.with4Columns,
                 "hide-3": index >= MAX_IMAGES_HOMEPAGE.with3Columns,
@@ -48,9 +48,9 @@ const latestImages = images.slice(
               }}
             >
               <ImageCard image={image} />
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
         {latestImages.length !== images.length && (
           <a class="view-all" href={getUrl("/images")}>
             View all images <RightArrow width={16} height={16} />
@@ -65,13 +65,13 @@ const latestImages = images.slice(
         <h2>
           {latestPosts.length === posts.length ? "Posts" : "Latest posts"}
         </h2>
-        <div id="rows">
+        <ul id="rows">
           {latestPosts.map((post) => (
-            <div>
+            <li>
               <PostCard post={post} />
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
         {latestPosts.length !== posts.length && (
           <a class="view-all" href={getUrl("/posts")}>
             View all posts <RightArrow width={16} height={16} />
@@ -155,26 +155,26 @@ const latestImages = images.slice(
         background-color: var(--layout-border);
         padding-block: 1px;
 
-        & > div.hide-1,
-        & > div.hide-2,
-        & > div.hide-3 {
+        & > .hide-1,
+        & > .hide-2,
+        & > .hide-3 {
           display: inherit;
         }
 
-        & > div.hide-4 {
+        & > .hide-4 {
           display: none;
         }
 
         @media (max-width: 768.5px) {
           grid-template-columns: repeat(3, 1fr);
 
-          & > div.hide-1,
-          & > div.hide-2,
-          & > div.hide-4 {
+          & > .hide-1,
+          & > .hide-2,
+          & > .hide-4 {
             display: inherit;
           }
 
-          & > div.hide-3 {
+          & > .hide-3 {
             display: none;
           }
         }
@@ -182,13 +182,13 @@ const latestImages = images.slice(
         @media (max-width: 450.5px) {
           grid-template-columns: repeat(2, 1fr);
 
-          & > div.hide-1,
-          & > div.hide-3,
-          & > div.hide-4 {
+          & > .hide-1,
+          & > .hide-3,
+          & > .hide-4 {
             display: inherit;
           }
 
-          & > div.hide-2 {
+          & > .hide-2 {
             display: none;
           }
         }
@@ -196,13 +196,13 @@ const latestImages = images.slice(
         @media (max-width: 300.5px) {
           grid-template-columns: repeat(1, 1fr);
 
-          & > div.hide-2,
-          & > div.hide-3,
-          & > div.hide-4 {
+          & > .hide-2,
+          & > .hide-3,
+          & > .hide-4 {
             display: inherit;
           }
 
-          & > div.hide-1 {
+          & > .hide-1 {
             display: none;
           }
         }
@@ -211,11 +211,11 @@ const latestImages = images.slice(
 
     & > #latest-posts {
       & > #rows {
-        & > div {
+        & > li {
           border-top: 1px solid var(--layout-border);
         }
 
-        & > div:last-child {
+        & > li:last-child {
           border-bottom: 1px solid var(--layout-border);
         }
       }

@@ -78,9 +78,14 @@ const imagesPageExists =
       margin-bottom: 1em;
     }
 
-    ul,
-    ol {
+    ul {
       margin-block: 0.75em;
+      padding-left: min(2.5em, 5vw);
+
+      & > li {
+        list-style: revert;
+        padding-left: 3px;
+      }
 
       & > li + li {
         margin-top: 0.5em;
@@ -89,14 +94,6 @@ const imagesPageExists =
       ::marker {
         color: var(--foreground-50);
       }
-    }
-
-    ul > li {
-      padding-left: 3px;
-    }
-
-    ol > li {
-      padding-left: 8px;
     }
 
     a {

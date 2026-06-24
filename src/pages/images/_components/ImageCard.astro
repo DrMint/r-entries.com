@@ -2,6 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import { getUrl } from "src/utils/navigation";
 import Image from "src/components/Image.astro";
+import { getImageDescription } from "src/utils/text-descriptions";
 
 interface Props {
   image: CollectionEntry<"images">;
@@ -10,7 +11,11 @@ interface Props {
 const { image } = Astro.props;
 ---
 
-<a data-component="ImageCard" href={getUrl(`/images/${image.id}`)}>
+<a
+  data-component="ImageCard"
+  href={getUrl(`/images/${image.id}`)}
+  aria-label={getImageDescription(image)}
+>
   <Image
     src={image.data.thumbnail ?? image.data.image}
     sizes="
@@ -23,6 +28,7 @@ const { image } = Astro.props;
     maxWidth={580}
     priority
     square
+    aria-hidden="true"
   />
 </a>
 

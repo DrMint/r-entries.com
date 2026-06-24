@@ -24,7 +24,8 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
 <Html data-page="EntriesPage" data-entry-type={title}>
   <h1>{title}</h1>
   <p>
-    This page lists all {entityName.plural}. Optionally, you can filter them by tag.
+    This page lists all {entityName.plural}. Optionally, you can filter them by
+    tag.
   </p>
   <p>
     {

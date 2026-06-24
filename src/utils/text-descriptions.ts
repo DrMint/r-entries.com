@@ -26,3 +26,13 @@ export const getPostDescription = (post: CollectionEntry<"posts">): string => {
   description += ` It is tagged with ${listing(post.data.tags?.map((tag) => `"${tag}"`) ?? [])}.`;
   return description;
 };
+
+export const getImageDescription = (
+  image: CollectionEntry<"images">
+): string => {
+  let description = "";
+  description += `View the image titled "${image.data.title}".`;
+  description += ` It was published on ${image.data.date.toLocaleDateString("en-US", { dateStyle: "long" })}.`;
+  description += ` It is tagged with ${listing(image.data.tags?.map((tag) => `"${tag}"`) ?? [])}.`;
+  return description;
+};

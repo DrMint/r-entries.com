@@ -11,12 +11,12 @@ interface Props {
 const { images } = Astro.props;
 ---
 
-<div data-component="ImagesGrid">
+<ul data-component="ImagesGrid" aria-label="Images">
   {
     images.map((image) => (
-      <div>
+      <li>
         <ImageCard image={image} />
-      </div>
+      </li>
     ))
   }
   {
@@ -29,6 +29,7 @@ const { images } = Astro.props;
           "hide-3": index >= 3 - (images.length % 3) || images.length % 3 === 0,
           "hide-4": index >= 4 - (images.length % 4) || images.length % 4 === 0,
         }}
+        aria-hidden="true"
       >
         <Image
           src={blankImage}
@@ -46,7 +47,7 @@ const { images } = Astro.props;
       </div>
     ))
   }
-</div>
+</ul>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
