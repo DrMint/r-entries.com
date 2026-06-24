@@ -48,6 +48,14 @@ const generateLightDarkColorTheme = (): Record<string, string> => {
 export const generateColorThemeInline = (): string => {
   const theme = generateLightDarkColorTheme();
   return Object.entries(theme)
-    .map(([key, value]) => `--${key}: ${value};`)
+    .map(([key, value]) => {
+      let minifiedKey = key
+        .replace("light-foreground", "lf")
+        .replace("dark-foreground", "df")
+        .replace("light-background", "lb")
+        .replace("dark-background", "db")
+        .replace("transparent", "t");
+      return `--${minifiedKey}: ${value};`;
+    })
     .join(" ");
 };

@@ -198,38 +198,38 @@ const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
 
 <style is:global>
   :root {
-    --foreground: var(--light-foreground);
-    --background: var(--light-background);
-    --foreground-3: var(--light-foreground-3);
-    --foreground-5: var(--light-foreground-5);
-    --foreground-10: var(--light-foreground-10);
-    --foreground-20: var(--light-foreground-20);
-    --foreground-30: var(--light-foreground-30);
-    --foreground-50: var(--light-foreground-50);
-    --foreground-60: var(--light-foreground-60);
-    --foreground-70: var(--light-foreground-70);
-    --foreground-80: var(--light-foreground-80);
-    --foreground-90: var(--light-foreground-90);
-    --background-70-transparent: var(--light-background-70-transparent);
-    --foreground-5-transparent: var(--light-foreground-5-transparent);
-    --foreground-20-transparent: var(--light-foreground-20-transparent);
+    --foreground: var(--lf);
+    --background: var(--lb);
+    --foreground-3: var(--lf-3);
+    --foreground-5: var(--lf-5);
+    --foreground-10: var(--lf-10);
+    --foreground-20: var(--lf-20);
+    --foreground-30: var(--lf-30);
+    --foreground-50: var(--lf-50);
+    --foreground-60: var(--lf-60);
+    --foreground-70: var(--lf-70);
+    --foreground-80: var(--lf-80);
+    --foreground-90: var(--lf-90);
+    --background-70-transparent: var(--lb-70-t);
+    --foreground-5-transparent: var(--lf-5-t);
+    --foreground-20-transparent: var(--lf-20-t);
 
     @media (prefers-color-scheme: dark) {
-      --foreground: var(--dark-foreground);
-      --background: var(--dark-background);
-      --foreground-3: var(--dark-foreground-3);
-      --foreground-5: var(--dark-foreground-5);
-      --foreground-10: var(--dark-foreground-10);
-      --foreground-20: var(--dark-foreground-20);
-      --foreground-30: var(--dark-foreground-30);
-      --foreground-50: var(--dark-foreground-50);
-      --foreground-60: var(--dark-foreground-60);
-      --foreground-70: var(--dark-foreground-70);
-      --foreground-80: var(--dark-foreground-80);
-      --foreground-90: var(--dark-foreground-90);
-      --background-70-transparent: var(--dark-background-70-transparent);
-      --foreground-5-transparent: var(--dark-foreground-5-transparent);
-      --foreground-20-transparent: var(--dark-foreground-20-transparent);
+      --foreground: var(--df);
+      --background: var(--db);
+      --foreground-3: var(--df-3);
+      --foreground-5: var(--df-5);
+      --foreground-10: var(--df-10);
+      --foreground-20: var(--df-20);
+      --foreground-30: var(--df-30);
+      --foreground-50: var(--df-50);
+      --foreground-60: var(--df-60);
+      --foreground-70: var(--df-70);
+      --foreground-80: var(--df-80);
+      --foreground-90: var(--df-90);
+      --background-70-transparent: var(--db-70-t);
+      --foreground-5-transparent: var(--df-5-t);
+      --foreground-20-transparent: var(--df-20-t);
     }
 
     --layout-border: var(--foreground-20);
