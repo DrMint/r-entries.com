@@ -42,8 +42,7 @@ export const getEntriesPageDescription = (
   entityName: { singular: string; plural: string },
   activeTag?: string
 ): string => {
-  let prefix =
-    `This page lists all ${entityName.plural}. Optionally, you can filter them by tag.\n`;
+  let prefix = `This page lists all ${entityName.plural}. Optionally, you can filter them by tag.\n`;
   if (activeTag) {
     if (count === 0) {
       return `${prefix}Current you are filtering by tag "${activeTag}", but there are no results.`;
@@ -67,5 +66,45 @@ export const getTagFilterDescription = (
     return `Click to disable filtering and list all ${entityName.plural}.`;
   } else {
     return `List all ${count === undefined ? "" : `${count} `}${(count ?? Infinity) > 1 ? entityName.plural : entityName.singular} tagged with "${tag}".`;
+  }
+};
+
+export const getNextPostsDescription = (
+  post: CollectionEntry<"posts"> | undefined
+): string => {
+  if (post) {
+    return `Go to the next post titled "${post.data.title}".`;
+  } else {
+    return "There is no next post.";
+  }
+};
+
+export const getPreviousPostsDescription = (
+  post: CollectionEntry<"posts"> | undefined
+): string => {
+  if (post) {
+    return `Go to the previous post titled "${post.data.title}".`;
+  } else {
+    return "There is no previous post.";
+  }
+};
+
+export const getNextImagesDescription = (
+  image: CollectionEntry<"images"> | undefined
+): string => {
+  if (image) {
+    return `Go to the next image titled "${image.data.title}".`;
+  } else {
+    return "There is no next image.";
+  }
+};
+
+export const getPreviousImagesDescription = (
+  image: CollectionEntry<"images"> | undefined
+): string => {
+  if (image) {
+    return `Go to the previous image titled "${image.data.title}".`;
+  } else {
+    return "There is no previous image.";
   }
 };

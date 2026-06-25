@@ -4,6 +4,10 @@ import LeftArrow from "src/icons/lucide--arrow-left.svg";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
 import { getUrl } from "src/utils/navigation";
 import { getAdjacentImages } from "src/utils/collections";
+import {
+  getNextImagesDescription,
+  getPreviousImagesDescription,
+} from "src/utils/text-descriptions";
 
 interface Props {
   currentImage: CollectionEntry<"images">;
@@ -15,20 +19,29 @@ const { previousImage, nextImage } = await getAdjacentImages(currentImage);
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<div data-component="AdjacentImages" {...rest}>
+<nav aria-label="Adjacent images" data-component="AdjacentImages" {...rest}>
   {
     nextImage ? (
-      <a id="next" href={getUrl(`/images/${nextImage.id}`)}>
-        <LeftArrow width={18} height={18} />
-        <div>
+      <a
+        id="next"
+        href={getUrl(`/images/${nextImage.id}`)}
+        aria-label={getNextImagesDescription(nextImage)}
+      >
+        <LeftArrow width={18} height={18} aria-hidden="true" />
+        <div aria-hidden="true">
           <p class="label">Next Image</p>
           <p>{nextImage.data.title}</p>
         </div>
       </a>
     ) : (
-      <div id="next" class="disabled">
-        <LeftArrow width={18} height={18} />
-        <div>
+      <div
+        id="next"
+        class="disabled"
+        aria-label={getNextImagesDescription(nextImage)}
+        aria-disabled={nextImage === undefined}
+      >
+        <LeftArrow width={18} height={18} aria-hidden="true" />
+        <div aria-hidden="true">
           <p class="label">Next Image</p>
           <p>Newest image!</p>
         </div>
@@ -38,24 +51,33 @@ const { previousImage, nextImage } = await getAdjacentImages(currentImage);
 
   {
     previousImage ? (
-      <a id="previous" href={getUrl(`/images/${previousImage.id}`)}>
-        <div>
+      <a
+        id="previous"
+        href={getUrl(`/images/${previousImage.id}`)}
+        aria-label={getPreviousImagesDescription(previousImage)}
+      >
+        <div aria-hidden="true">
           <p class="label">Previous Image</p>
           <p>{previousImage.data.title}</p>
         </div>
-        <RightArrow width={18} height={18} />
+        <RightArrow width={18} height={18} aria-hidden="true" />
       </a>
     ) : (
-      <div id="previous" class="disabled">
-        <div>
+      <div
+        id="previous"
+        class="disabled"
+        aria-label={getPreviousImagesDescription(previousImage)}
+        aria-disabled={previousImage === undefined}
+      >
+        <div aria-hidden="true">
           <p class="label">Previous Image</p>
           <p>Last image!</p>
         </div>
-        <RightArrow width={18} height={18} />
+        <RightArrow width={18} height={18} aria-hidden="true" />
       </div>
     )
   }
-</div>
+</nav>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
