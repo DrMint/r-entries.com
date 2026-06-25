@@ -36,3 +36,36 @@ export const getImageDescription = (
   description += ` It is tagged with ${listing(image.data.tags?.map((tag) => `"${tag}"`) ?? [])}.`;
   return description;
 };
+
+export const getEntriesPageDescription = (
+  count: number,
+  entityName: { singular: string; plural: string },
+  activeTag?: string
+): string => {
+  let prefix =
+    `This page lists all ${entityName.plural}. Optionally, you can filter them by tag.\n`;
+  if (activeTag) {
+    if (count === 0) {
+      return `${prefix}Current you are filtering by tag "${activeTag}", but there are no results.`;
+    }
+    if (count === 1) {
+      return `${prefix}Currently you are viewing the one and only ${entityName.singular} tagged with "${activeTag}".`;
+    }
+    return `${prefix}Currently you are viewing all ${count} ${entityName.plural} tagged with "${activeTag}".`;
+  } else {
+    return `${prefix}Currently no tag is selected. All ${count} ${entityName.plural} are listed.`;
+  }
+};
+
+export const getTagFilterDescription = (
+  tag: string,
+  count: number | undefined,
+  entityName: { singular: string; plural: string },
+  isActive: boolean
+): string => {
+  if (isActive) {
+    return `Click to disable filtering and list all ${entityName.plural}.`;
+  } else {
+    return `List all ${count === undefined ? "" : `${count} `}${(count ?? Infinity) > 1 ? entityName.plural : entityName.singular} tagged with "${tag}".`;
+  }
+};

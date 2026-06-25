@@ -2,6 +2,10 @@
 import Html from "src/components/layout/Html.astro";
 import { ENABLE_TAG_FEATURE } from "src/constants";
 import Tags from "src/pages/posts/_components/Tags.astro";
+import {
+  getEntriesPageDescription,
+  getTagFilterDescription,
+} from "src/utils/text-descriptions";
 
 interface Props {
   count: number;
@@ -24,15 +28,7 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
 <Html data-page="EntriesPage" data-entry-type={title}>
   <h1>{title}</h1>
   <p>
-    This page lists all {entityName.plural}. Optionally, you can filter them by
-    tag.
-  </p>
-  <p>
-    {
-      activeTag
-        ? `Currently you are viewing all ${count === undefined ? "" : `${count} `}${count > 1 ? entityName.plural : entityName.singular} tagged with "${activeTag}".`
-        : `Currently no tag is selected. All ${count === undefined ? "" : `${count} `}${count > 1 ? entityName.plural : entityName.singular} are listed.`
-    }
+    {getEntriesPageDescription(count, entityName, activeTag)}
   </p>
   {
     tags.length > 0 && (
@@ -42,9 +38,7 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
         activeTag={activeTag}
         getTagLink={getTagLink}
         ariaLabel={(tag, count) =>
-          tag === activeTag
-            ? `Click to disable filtering and list all ${entityName.plural}.`
-            : `List all ${count === undefined ? "" : `${count} `}${(count ?? Infinity) > 1 ? entityName.plural : entityName.singular} tagged with "${tag}".`
+          getTagFilterDescription(tag, count, entityName, tag === activeTag)
         }
         align="start"
         large
@@ -74,6 +68,11 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
     & > p {
       padding-inline: var(--middle-x-padding);
       margin-bottom: 8px;
+      line-height: 1.5;
+
+      @media (min-width: 550px) {
+        white-space: pre-line;
+      }
     }
   }
 </style>
