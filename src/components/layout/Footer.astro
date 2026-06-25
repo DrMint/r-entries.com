@@ -20,10 +20,10 @@ const props = Astro.props;
     </p>
     <div class="social-links">
       <a href={getUrl("/sitemap")} title="Sitemap">
-        <SitemapLogo width={16} height={16} />
+        <SitemapLogo width={16} height={16} aria-hidden="true" />
       </a>
       <a href={getUrl("/rss.xml", true)} title="RSS Feed">
-        <RssLogo width={16} height={16} />
+        <RssLogo width={16} height={16} aria-hidden="true" />
       </a>
     </div>
   </div>
