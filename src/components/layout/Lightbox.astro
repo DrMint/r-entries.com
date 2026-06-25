@@ -2,17 +2,19 @@
 import { ENABLE_IMAGE_ZOOM_FEATURE } from "src/constants";
 import Image from "../Image.astro";
 
-type Props = Parameters<typeof Image>[0];
-const props = Astro.props;
+type Props = Parameters<typeof Image>[0] & {
+  "aria-hidden"?: "true" | "false" | undefined;
+};
+const { "aria-hidden": ariaHidden, ...props } = Astro.props;
 ---
 
 {
   ENABLE_IMAGE_ZOOM_FEATURE ? (
-    <div data-component="Lightbox">
+    <div data-component="Lightbox" aria-hidden={ariaHidden}>
       <Image {...props} />
     </div>
   ) : (
-    <Image {...props} />
+    <Image {...props} aria-hidden={ariaHidden} />
   )
 }
 

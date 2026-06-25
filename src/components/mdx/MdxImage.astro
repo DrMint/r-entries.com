@@ -13,8 +13,10 @@ const text = caption === true ? alt : caption;
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<figure>
-  <MdxImageImage src={src} alt={alt} />
+<figure aria-hidden={text === undefined ? "true" : undefined}>
+  <div aria-hidden={alt === undefined ? "true" : undefined}>
+    <MdxImageImage src={src} alt={alt} />
+  </div>
   {text && <figcaption>{caption === true ? alt : caption}</figcaption>}
 </figure>
 

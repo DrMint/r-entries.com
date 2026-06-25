@@ -29,8 +29,13 @@ const tags = (entry.data.tags ?? []).map((tag) => ({ tag }));
     fallbackWidth={1024}
     priority
     openOriginal
+    aria-hidden="true"
   />
-  <div id="header" class:list={{ "with-body": entry.body }}>
+  <section
+    aria-label="Header"
+    id="header"
+    class:list={{ "with-body": entry.body }}
+  >
     <h1>{title}</h1>
     <p>
       {
@@ -43,12 +48,13 @@ const tags = (entry.data.tags ?? []).map((tag) => ({ tag }));
       ENABLE_TAG_FEATURE && (
         <Tags
           tags={tags}
+          listAriaLabel="Tags"
           getTagLink={(tag) => getUrl(`/images/tags/${tag}`)}
           ariaLabel={(tag) => `View images tagged with "${tag}"`}
         />
       )
     }
-  </div>
+  </section>
 
   {
     entry.body ? (

@@ -51,20 +51,22 @@ const numberedHeadings = headings.map(({ depth, slug, text }) => ({
     fallbackWidth={1024}
     priority
     openOriginal
+    aria-hidden="true"
   />
-  <div id="header">
+  <section aria-label="Header" id="header">
     <h1>{title}</h1>
     <PostMeta post={post} />
     {
       ENABLE_TAG_FEATURE && (
         <Tags
           tags={tags}
+          listAriaLabel="Tags"
           getTagLink={(tag) => getUrl(`/posts/tags/${tag}`)}
           ariaLabel={(tag) => `View posts tagged with "${tag}"`}
         />
       )
     }
-  </div>
+  </section>
   <div id="body">
     <div id="content">
       {
