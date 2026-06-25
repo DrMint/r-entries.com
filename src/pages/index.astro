@@ -1,12 +1,12 @@
 ---
 import { getUrl } from "src/utils/navigation";
 import Html from "src/components/layout/Html.astro";
-import PostCard from "src/components/PostCard.astro";
 import RightArrow from "src/icons/lucide--arrow-right.svg";
 import { getPosts, getPage, getImages } from "src/utils/collections";
 import { render } from "astro:content";
 import { MAX_POSTS_HOMEPAGE, MAX_IMAGES_HOMEPAGE } from "src/constants";
 import ImageCard from "./images/_components/ImageCard.astro";
+import PostsRows from "./posts/_components/PostsRows.astro";
 
 const homePage = await getPage("home");
 const { title, summary } = homePage.data;
@@ -25,16 +25,16 @@ const latestImages = images.slice(
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
 <Html openGraph={{ title, description: summary }} data-page="Home">
-  <div id="welcome">
+  <section aria-label="Welcome" id="welcome">
     <h1>{title}</h1>
     <div>
       <Content />
     </div>
-  </div>
+  </section>
   {
     latestImages.length > 0 && (
-      <section id="latest-images">
-        <h2>
+      <section aria-labelledby="latest-images-title" id="latest-images">
+        <h2 id="latest-images-title">
           {latestImages.length === images.length ? "Images" : "Latest images"}
         </h2>
         <ul id="grid" aria-label="Images">
@@ -52,8 +52,13 @@ const latestImages = images.slice(
           ))}
         </ul>
         {latestImages.length !== images.length && (
-          <a class="view-all" href={getUrl("/images")}>
-            View all images <RightArrow width={16} height={16} />
+          <a
+            class="view-all"
+            href={getUrl("/images")}
+            aria-label="View all images"
+          >
+            <span aria-hidden="true">View all images</span>
+            <RightArrow width={16} height={16} aria-hidden="true" />
           </a>
         )}
       </section>
@@ -61,20 +66,19 @@ const latestImages = images.slice(
   }
   {
     latestPosts.length > 0 && (
-      <section id="latest-posts">
-        <h2>
+      <section aria-labelledby="latest-posts-title" id="latest-posts">
+        <h2 id="latest-posts-title">
           {latestPosts.length === posts.length ? "Posts" : "Latest posts"}
         </h2>
-        <ul id="rows">
-          {latestPosts.map((post) => (
-            <li>
-              <PostCard post={post} />
-            </li>
-          ))}
-        </ul>
+        <PostsRows posts={latestPosts} />
         {latestPosts.length !== posts.length && (
-          <a class="view-all" href={getUrl("/posts")}>
-            View all posts <RightArrow width={16} height={16} />
+          <a
+            class="view-all"
+            href={getUrl("/posts")}
+            aria-label="View all posts"
+          >
+            <span aria-hidden="true">View all posts</span>
+            <RightArrow width={16} height={16} aria-hidden="true" />
           </a>
         )}
       </section>
@@ -98,10 +102,7 @@ const latestImages = images.slice(
     & > #welcome {
       padding-inline: var(--middle-x-padding);
       max-width: 70ch;
-
-      & > h1 {
-        margin-bottom: 1em;
-      }
+      gap: 2.5em;
     }
 
     & > section {
@@ -205,18 +206,6 @@ const latestImages = images.slice(
           & > .hide-1 {
             display: none;
           }
-        }
-      }
-    }
-
-    & > #latest-posts {
-      & > #rows {
-        & > li {
-          border-top: 1px solid var(--layout-border);
-        }
-
-        & > li:last-child {
-          border-bottom: 1px solid var(--layout-border);
         }
       }
     }

@@ -9,22 +9,26 @@ interface Props {
 const { posts } = Astro.props;
 ---
 
-{
-  posts.map((post) => (
-    <div>
-      <PostCard post={post} />
-    </div>
-  ))
-}
+<ul aria-label="Posts" data-component="PostsRows">
+  {
+    posts.map((post) => (
+      <li>
+        <PostCard post={post} />
+      </li>
+    ))
+  }
+</ul>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
 
 <style>
-  div {
-    border-top: 1px solid var(--layout-border);
-  }
+  [data-component="PostsRows"] {
+    & > li {
+      border-top: 1px solid var(--layout-border);
+    }
 
-  div:last-child {
-    border-bottom: 1px solid var(--layout-border);
+    & > li:last-child {
+      border-bottom: 1px solid var(--layout-border);
+    }
   }
 </style>
