@@ -15,6 +15,7 @@ import { getUrl } from "src/utils/navigation";
 import { generateColorThemeInline } from "src/utils/colors";
 import { getResponsiveImage } from "src/utils/images";
 import defaultCover from "src/images/default-cover.jpg";
+import SkipToContent from "./SkipToContent.astro";
 
 interface OpenGraph {
   title: string;
@@ -106,10 +107,11 @@ const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
     {/* Sitemap */}
     <link rel="sitemap" href={getUrl("/sitemap-index.xml", true)} />
   </head>
-  <body>
+  <body id="top">
+    <SkipToContent href="#main" />
     <Header class="fine-only" />
     <MobileHeader class="coarse-only" />
-    <main>
+    <main id="main">
       <div {...otherProps}>
         <slot />
       </div>

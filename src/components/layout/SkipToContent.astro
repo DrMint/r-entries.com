@@ -1,0 +1,40 @@
+---
+interface Props {
+  href: string;
+}
+
+const props = Astro.props;
+const { href } = props;
+---
+
+{/* --------------------------------[ HTML ]-------------------------------- */}
+
+<a href={href} data-component="SkipToContent">Skip to main content</a>
+
+{/* ---------------------------------[ CSS ]-------------------------------- */}
+
+<style>
+  [data-component="SkipToContent"] {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    padding: 16px;
+    background-color: var(--background);
+    border: 1px solid var(--foreground-10);
+    border-radius: 6px;
+    color: var(--foreground);
+    opacity: 0;
+    touch-action: none;
+    pointer-events: none;
+
+    transition: opacity 100ms;
+
+    &:focus-visible {
+      opacity: 1;
+      pointer-events: auto;
+      touch-action: auto;
+    }
+  }
+</style>
