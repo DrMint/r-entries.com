@@ -21,34 +21,32 @@ const { pathname } = new URL(Astro.request.url);
       class:list={{ active: isActive(NAVIGATION_HOME_ITEM, pathname) }}
       title={NAVIGATION_HOME_ITEM.tooltip}
       aria-label={NAVIGATION_HOME_ITEM.label}
-      aria-current={isActive(NAVIGATION_HOME_ITEM, pathname)
-        ? "page"
-        : undefined}
+      aria-current={
+        isActive(NAVIGATION_HOME_ITEM, pathname) ? "page" : undefined
+      }
     >
       <WebsiteLogo aria-hidden="true" />
       <p aria-hidden="true">{WEBSITE_NAME}</p>
     </a>
     <div id="right">
-      {
-        NAVIGATION_ITEMS.map(({ href, label, detection, tooltip }) => (
-          <div>
-            <div aria-hidden="true">{label}</div>
-            <a
-              href={getUrl(href)}
-              class:list={{
-                active: isActive({ href, detection }, pathname),
-              }}
-              title={tooltip}
-              aria-label={label}
-              aria-current={
-                isActive({ href, detection }, pathname) ? "page" : undefined
-              }
-            >
-              <span aria-hidden="true">{label}</span>
-            </a>
-          </div>
-        ))
-      }
+      {NAVIGATION_ITEMS.map(({ href, label, detection, tooltip }) => (
+        <div>
+          <div aria-hidden="true">{label}</div>
+          <a
+            href={getUrl(href)}
+            class:list={{
+              active: isActive({ href, detection }, pathname),
+            }}
+            title={tooltip}
+            aria-label={label}
+            aria-current={
+              isActive({ href, detection }, pathname) ? "page" : undefined
+            }
+          >
+            <span aria-hidden="true">{label}</span>
+          </a>
+        </div>
+      ))}
     </div>
   </nav>
 </header>
@@ -81,6 +79,7 @@ const { pathname } = new URL(Astro.request.url);
       max-width: 1024px;
       margin-inline: auto;
       padding-inline: calc(var(--middle-x-padding) - 16px);
+      padding-block: 5px;
 
       @media (min-width: 1024px) {
         border-inline: 1px solid var(--layout-border);
@@ -88,6 +87,7 @@ const { pathname } = new URL(Astro.request.url);
 
       display: flex;
       justify-content: space-between;
+      align-items: center;
 
       & > #left,
       & > #right {
@@ -115,8 +115,9 @@ const { pathname } = new URL(Astro.request.url);
 
       & a {
         color: var(--foreground-60);
-        padding: 16px;
+        padding: 8px 16px;
         transition: color 100ms;
+        border-radius: 6px;
 
         &:hover,
         &:focus-visible {

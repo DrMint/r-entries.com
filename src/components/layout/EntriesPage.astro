@@ -27,24 +27,20 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
 
 <Html data-page="EntriesPage" data-entry-type={title}>
   <h1>{title}</h1>
-  <p>
-    {getEntriesPageDescription(count, entityName, activeTag)}
-  </p>
-  {
-    tags.length > 0 && (
-      <Tags
-        tags={tags}
-        listAriaLabel={"Available tags for filtering."}
-        activeTag={activeTag}
-        getTagLink={getTagLink}
-        ariaLabel={(tag, count) =>
-          getTagFilterDescription(tag, count, entityName, tag === activeTag)
-        }
-        align="start"
-        large
-      />
-    )
-  }
+  <p>{getEntriesPageDescription(count, entityName, activeTag)}</p>
+  {tags.length > 0 && (
+    <Tags
+      tags={tags}
+      listAriaLabel={"Available tags for filtering."}
+      activeTag={activeTag}
+      getTagLink={getTagLink}
+      ariaLabel={(tag, count) =>
+        getTagFilterDescription(tag, count, entityName, tag === activeTag)
+      }
+      align="start"
+      large
+    />
+  )}
   <slot />
 </Html>
 

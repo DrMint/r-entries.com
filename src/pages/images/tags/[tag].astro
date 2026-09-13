@@ -33,7 +33,8 @@ const imageTags = await getTags({
   count={images.length}
   tags={imageTags}
   getTagLink={(tag) =>
-    activeTag === tag ? getUrl(`/images`) : getUrl(`/images/tags/${tag}`)}
+    activeTag === tag ? getUrl(`/images`) : getUrl(`/images/tags/${tag}`)
+  }
   activeTag={activeTag}
 >
   <ImagesGrid images={images} />

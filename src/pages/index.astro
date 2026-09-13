@@ -31,59 +31,51 @@ const latestImages = images.slice(
       <Content />
     </div>
   </section>
-  {
-    latestImages.length > 0 && (
-      <section aria-labelledby="latest-images-title" id="latest-images">
-        <h2 id="latest-images-title">
-          {latestImages.length === images.length ? "Images" : "Latest images"}
-        </h2>
-        <ul id="grid" aria-label="Images">
-          {latestImages.map((image, index) => (
-            <li
-              class:list={{
-                "hide-4": index >= MAX_IMAGES_HOMEPAGE.with4Columns,
-                "hide-3": index >= MAX_IMAGES_HOMEPAGE.with3Columns,
-                "hide-2": index >= MAX_IMAGES_HOMEPAGE.with2Columns,
-                "hide-1": index >= MAX_IMAGES_HOMEPAGE.with1Column,
-              }}
-            >
-              <ImageCard image={image} />
-            </li>
-          ))}
-        </ul>
-        {latestImages.length !== images.length && (
-          <a
-            class="view-all"
-            href={getUrl("/images")}
-            aria-label="View all images"
+  {latestImages.length > 0 && (
+    <section aria-labelledby="latest-images-title" id="latest-images">
+      <h2 id="latest-images-title">
+        {latestImages.length === images.length ? "Images" : "Latest images"}
+      </h2>
+      <ul id="grid" aria-label="Images">
+        {latestImages.map((image, index) => (
+          <li
+            class:list={{
+              "hide-4": index >= MAX_IMAGES_HOMEPAGE.with4Columns,
+              "hide-3": index >= MAX_IMAGES_HOMEPAGE.with3Columns,
+              "hide-2": index >= MAX_IMAGES_HOMEPAGE.with2Columns,
+              "hide-1": index >= MAX_IMAGES_HOMEPAGE.with1Column,
+            }}
           >
-            <span aria-hidden="true">View all images</span>
-            <RightArrow width={16} height={16} aria-hidden="true" />
-          </a>
-        )}
-      </section>
-    )
-  }
-  {
-    latestPosts.length > 0 && (
-      <section aria-labelledby="latest-posts-title" id="latest-posts">
-        <h2 id="latest-posts-title">
-          {latestPosts.length === posts.length ? "Posts" : "Latest posts"}
-        </h2>
-        <PostsRows posts={latestPosts} />
-        {latestPosts.length !== posts.length && (
-          <a
-            class="view-all"
-            href={getUrl("/posts")}
-            aria-label="View all posts"
-          >
-            <span aria-hidden="true">View all posts</span>
-            <RightArrow width={16} height={16} aria-hidden="true" />
-          </a>
-        )}
-      </section>
-    )
-  }
+            <ImageCard image={image} />
+          </li>
+        ))}
+      </ul>
+      {latestImages.length !== images.length && (
+        <a
+          class="view-all"
+          href={getUrl("/images")}
+          aria-label="View all images"
+        >
+          <span aria-hidden="true">View all images</span>
+          <RightArrow width={16} height={16} aria-hidden="true" />
+        </a>
+      )}
+    </section>
+  )}
+  {latestPosts.length > 0 && (
+    <section aria-labelledby="latest-posts-title" id="latest-posts">
+      <h2 id="latest-posts-title">
+        {latestPosts.length === posts.length ? "Posts" : "Latest posts"}
+      </h2>
+      <PostsRows posts={latestPosts} />
+      {latestPosts.length !== posts.length && (
+        <a class="view-all" href={getUrl("/posts")} aria-label="View all posts">
+          <span aria-hidden="true">View all posts</span>
+          <RightArrow width={16} height={16} aria-hidden="true" />
+        </a>
+      )}
+    </section>
+  )}
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}

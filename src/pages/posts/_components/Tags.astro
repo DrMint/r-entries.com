@@ -33,10 +33,21 @@ if (tags.length === 0) return;
   {...rest}
   aria-label={listAriaLabel}
 >
-  {
-    tags.map(({ tag, count }) =>
-      getTagLink === undefined ? (
-        <li
+  {tags.map(({ tag, count }) =>
+    getTagLink === undefined ? (
+      <li aria-label={ariaLabel?.(tag, count)} aria-current={activeTag === tag}>
+        <TagPill
+          tag={tag}
+          count={count}
+          withLinks={activeTag !== tag}
+          active={activeTag === tag}
+          large={large}
+        />
+      </li>
+    ) : (
+      <li>
+        <a
+          href={getTagLink(tag)}
           aria-label={ariaLabel?.(tag, count)}
           aria-current={activeTag === tag}
         >
@@ -46,28 +57,12 @@ if (tags.length === 0) return;
             withLinks={activeTag !== tag}
             active={activeTag === tag}
             large={large}
+            aria-hidden={ariaLabel === undefined ? undefined : "true"}
           />
-        </li>
-      ) : (
-        <li>
-          <a
-            href={getTagLink(tag)}
-            aria-label={ariaLabel?.(tag, count)}
-            aria-current={activeTag === tag}
-          >
-            <TagPill
-              tag={tag}
-              count={count}
-              withLinks={activeTag !== tag}
-              active={activeTag === tag}
-              large={large}
-              aria-hidden={ariaLabel === undefined ? undefined : "true"}
-            />
-          </a>
-        </li>
-      )
+        </a>
+      </li>
     )
-  }
+  )}
 </ul>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}

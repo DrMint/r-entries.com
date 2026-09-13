@@ -8,15 +8,13 @@ type Props = Parameters<typeof Image>[0] & {
 const { "aria-hidden": ariaHidden, ...props } = Astro.props;
 ---
 
-{
-  ENABLE_IMAGE_ZOOM_FEATURE ? (
-    <div data-component="Lightbox" aria-hidden={ariaHidden}>
-      <Image {...props} />
-    </div>
-  ) : (
-    <Image {...props} aria-hidden={ariaHidden} />
-  )
-}
+{ENABLE_IMAGE_ZOOM_FEATURE ? (
+  <div data-component="Lightbox" aria-hidden={ariaHidden}>
+    <Image {...props} />
+  </div>
+) : (
+  <Image {...props} aria-hidden={ariaHidden} />
+)}
 
 {/* ---------------------------------[ JS ]--------------------------------- */}
 

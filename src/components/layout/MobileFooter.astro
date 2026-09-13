@@ -12,24 +12,22 @@ const items = [NAVIGATION_HOME_ITEM, ...NAVIGATION_ITEMS];
 
 <header data-component="MobileFooter" {...props}>
   <nav aria-label="Main pages">
-    {
-      items.map(({ href, label, icon: Icon, detection }) => (
-        <a
-          href={getUrl(href)}
-          class:list={{
-            active: isActive({ href, detection }, pathname),
-          }}
-          aria-label={label}
-          aria-current={isActive({ href, detection }, pathname)}
-        >
-          <Icon width={24} height={24} aria-hidden="true" />
-          <div aria-hidden="true">
-            <span aria-hidden="true">{label}</span>
-            <div>{label}</div>
-          </div>
-        </a>
-      ))
-    }
+    {items.map(({ href, label, icon: Icon, detection }) => (
+      <a
+        href={getUrl(href)}
+        class:list={{
+          active: isActive({ href, detection }, pathname),
+        }}
+        aria-label={label}
+        aria-current={isActive({ href, detection }, pathname)}
+      >
+        <Icon width={24} height={24} aria-hidden="true" />
+        <div aria-hidden="true">
+          <span aria-hidden="true">{label}</span>
+          <div>{label}</div>
+        </div>
+      </a>
+    ))}
   </nav>
 </header>
 

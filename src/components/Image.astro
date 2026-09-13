@@ -38,15 +38,13 @@ const fallback = await responsiveImage.getFallback(fallbackWidth);
 ---
 
 <picture {...otherProps} data-component="Image">
-  {
-    srcSets.map(({ type, images }) => (
-      <source
-        srcset={images.map(({ src, width }) => `${src} ${width}w`).join(", ")}
-        type={type}
-        sizes={sizes}
-      />
-    ))
-  }
+  {srcSets.map(({ type, images }) => (
+    <source
+      srcset={images.map(({ src, width }) => `${src} ${width}w`).join(", ")}
+      type={type}
+      sizes={sizes}
+    />
+  ))}
   <img
     src={fallback.src}
     width={fallback.width}
@@ -58,18 +56,16 @@ const fallback = await responsiveImage.getFallback(fallbackWidth);
     fetchpriority={priority ? "high" : "auto"}
     {...otherProps}
   />
-  {
-    openOriginal && (
-      <a
-        href={responsiveImage.original.src}
-        title="Open original"
-        target="_blank"
-        {...otherProps}
-      >
-        <DownloadIcon />
-      </a>
-    )
-  }
+  {openOriginal && (
+    <a
+      href={responsiveImage.original.src}
+      title="Open original"
+      target="_blank"
+      {...otherProps}
+    >
+      <DownloadIcon />
+    </a>
+  )}
 </picture>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}

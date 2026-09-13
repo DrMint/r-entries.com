@@ -39,7 +39,8 @@ const tags = await getTags({
   count={posts.length}
   tags={tags}
   getTagLink={(tag) =>
-    activeTag === tag ? getUrl(`/posts`) : getUrl(`/posts/tags/${tag}`)}
+    activeTag === tag ? getUrl(`/posts`) : getUrl(`/posts/tags/${tag}`)
+  }
   activeTag={activeTag}
 >
   <PostsRows posts={posts} />

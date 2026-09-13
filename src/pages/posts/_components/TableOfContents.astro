@@ -28,13 +28,11 @@ const toc = headings
     <ChevronDown width={20} height={20} aria-hidden="true" />
   </summary>
   <ul>
-    {
-      toc.map((heading) => (
-        <li style={`--depth: ${heading.depth - 2}`}>
-          <a href={`#${heading.slug}`}>{heading.text}</a>
-        </li>
-      ))
-    }
+    {toc.map((heading) => (
+      <li style={`--depth: ${heading.depth - 2}`}>
+        <a href={`#${heading.slug}`}>{heading.text}</a>
+      </li>
+    ))}
   </ul>
 </details>
 

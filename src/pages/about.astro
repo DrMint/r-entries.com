@@ -18,26 +18,24 @@ const { Content } = await render(page);
 
   <Content />
 
-  {
-    SOCIAL_ITEMS.length > 0 && (
-      <div class="socials">
-        <h2>Links</h2>
-        <div>
-          {SOCIAL_ITEMS.map(({ href, icon: Icon, label, tooltip }) => (
-            <a
-              href={href}
-              title={tooltip}
-              rel="nofollow noreferrer noopener"
-              target="_blank"
-            >
-              <Icon width={24} height={24} />
-              {label}
-            </a>
-          ))}
-        </div>
+  {SOCIAL_ITEMS.length > 0 && (
+    <div class="socials">
+      <h2>Links</h2>
+      <div>
+        {SOCIAL_ITEMS.map(({ href, icon: Icon, label, tooltip }) => (
+          <a
+            href={href}
+            title={tooltip}
+            rel="nofollow noreferrer noopener"
+            target="_blank"
+          >
+            <Icon width={24} height={24} />
+            {label}
+          </a>
+        ))}
       </div>
-    )
-  }
+    </div>
+  )}
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}

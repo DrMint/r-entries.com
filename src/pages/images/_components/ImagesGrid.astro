@@ -12,41 +12,37 @@ const { images } = Astro.props;
 ---
 
 <ul data-component="ImagesGrid" aria-label="Images">
-  {
-    images.map((image) => (
-      <li>
-        <ImageCard image={image} />
-      </li>
-    ))
-  }
-  {
-    Array.from({ length: 4 }).map((_, index) => (
-      <div
-        class:list={{
-          "empty-space": true,
-          "hide-1": true,
-          "hide-2": index >= 2 - (images.length % 2) || images.length % 2 === 0,
-          "hide-3": index >= 3 - (images.length % 3) || images.length % 3 === 0,
-          "hide-4": index >= 4 - (images.length % 4) || images.length % 4 === 0,
-        }}
-        aria-hidden="true"
-      >
-        <Image
-          src={blankImage}
-          sizes="
+  {images.map((image) => (
+    <li>
+      <ImageCard image={image} />
+    </li>
+  ))}
+  {Array.from({ length: 4 }).map((_, index) => (
+    <div
+      class:list={{
+        "empty-space": true,
+        "hide-1": true,
+        "hide-2": index >= 2 - (images.length % 2) || images.length % 2 === 0,
+        "hide-3": index >= 3 - (images.length % 3) || images.length % 3 === 0,
+        "hide-4": index >= 4 - (images.length % 4) || images.length % 4 === 0,
+      }}
+      aria-hidden="true"
+    >
+      <Image
+        src={blankImage}
+        sizes="
               (max-width: 300px) 100vw,
               (max-width: 450px) 50vw,
               (max-width: 768px) 33vw,
               (max-width: 1024px) 25vw,
               256px"
-          fallbackWidth={580}
-          type="transparent"
-          square
-          priority
-        />
-      </div>
-    ))
-  }
+        fallbackWidth={580}
+        type="transparent"
+        square
+        priority
+      />
+    </div>
+  ))}
 </ul>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}

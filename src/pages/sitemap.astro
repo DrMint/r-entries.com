@@ -20,34 +20,30 @@ const imagesPageExists =
     <li>
       <a href={getUrl("/")}>Home</a>
     </li>
-    {
-      posts.length > 0 && (
-        <li>
-          {postsPageExists ? <a href={getUrl("/posts")}>Posts</a> : "Posts"}
-          <ul>
-            {posts.map((post) => (
-              <li>
-                <a href={getUrl(`/posts/${post.id}`)}>{post.data.title}</a>
-              </li>
-            ))}
-          </ul>
-        </li>
-      )
-    }
-    {
-      images.length > 0 && (
-        <li>
-          {imagesPageExists ? <a href={getUrl("/images")}>Images</a> : "Images"}
-          <ul>
-            {images.map((image) => (
-              <li>
-                <a href={getUrl(`/images/${image.id}`)}>{image.data.title}</a>
-              </li>
-            ))}
-          </ul>
-        </li>
-      )
-    }
+    {posts.length > 0 && (
+      <li>
+        {postsPageExists ? <a href={getUrl("/posts")}>Posts</a> : "Posts"}
+        <ul>
+          {posts.map((post) => (
+            <li>
+              <a href={getUrl(`/posts/${post.id}`)}>{post.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </li>
+    )}
+    {images.length > 0 && (
+      <li>
+        {imagesPageExists ? <a href={getUrl("/images")}>Images</a> : "Images"}
+        <ul>
+          {images.map((image) => (
+            <li>
+              <a href={getUrl(`/images/${image.id}`)}>{image.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </li>
+    )}
     <li>
       <a href={getUrl("/about")}>About</a>
     </li>

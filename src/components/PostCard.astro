@@ -34,11 +34,9 @@ const tags = post.data.tags?.map((tag) => ({ tag })) ?? [];
     <h3>{post.data.title}</h3>
     <p>{post.data.summary}</p>
     <PostMeta post={post} />
-    {
-      ENABLE_TAG_FEATURE && tags.length > 0 && (
-        <Tags tags={tags} align="start" />
-      )
-    }
+    {ENABLE_TAG_FEATURE && tags.length > 0 && (
+      <Tags tags={tags} align="start" />
+    )}
   </div>
 </a>
 
