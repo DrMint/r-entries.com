@@ -12,7 +12,7 @@
     "tsc": "tsc",
     "check:images": "node scripts/check-image-metadata.mjs",
     "precommit": "npm run tsc && npm run check && npm run format && npm run build && npm run check:images",
-    "upgrade": "npx @astrojs/upgrade && ncu"
+    "upgrade": "npx @astrojs/upgrade && ncu && npm audit fix"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.4",
