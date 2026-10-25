@@ -71,7 +71,7 @@ export default defineConfig({
     port: env.PORT,
   },
   devToolbar: {
-    enabled: true,
+    enabled: false,
   },
   site: env.SITE_URL,
   base: env.BASE_PATH,
