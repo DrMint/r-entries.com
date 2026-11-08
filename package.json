@@ -1,19 +1,20 @@
 {
   "name": "r-entries.com",
-  "type": "module",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
-    "format": "prettier --write --list-different .",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "tsc": "tsc",
     "check:images": "node scripts/check-image-metadata.mjs",
-    "precommit": "npm run tsc && npm run check && npm run lint && npm run format && npm run build && npm run check:images",
+    "precommit": "npm run tsc && npm run check && npm run lint && npm run format:check && npm run build && npm run check:images",
     "upgrade": "npx @astrojs/upgrade && ncu && npm audit fix"
   },
   "dependencies": {
@@ -32,12 +33,12 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@astrojs/compiler-rs": "^0.5.2",
     "@astrojs/upgrade": "^0.8.1",
     "exiftool-vendored": "^39.0.1",
     "npm-check-updates": "^23.1.1",
+    "oxfmt": "^0.77.0",
     "oxlint": "^1.92.0",
-    "prettier": "^3.9.10",
-    "prettier-plugin-astro": "^1.1.2",
     "typescript": "^6.0.3"
   }
 }
