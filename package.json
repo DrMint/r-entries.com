@@ -9,9 +9,11 @@
     "astro": "astro",
     "check": "astro check",
     "format": "prettier --write --list-different .",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "tsc": "tsc",
     "check:images": "node scripts/check-image-metadata.mjs",
-    "precommit": "npm run tsc && npm run check && npm run format && npm run build && npm run check:images",
+    "precommit": "npm run tsc && npm run check && npm run lint && npm run format && npm run build && npm run check:images",
     "upgrade": "npx @astrojs/upgrade && ncu && npm audit fix"
   },
   "dependencies": {
@@ -33,6 +35,7 @@
     "@astrojs/upgrade": "^0.8.1",
     "exiftool-vendored": "^39.0.1",
     "npm-check-updates": "^23.1.1",
+    "oxlint": "^1.92.0",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.2",
     "typescript": "^6.0.3"
