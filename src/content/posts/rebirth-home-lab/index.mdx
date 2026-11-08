@@ -4,7 +4,7 @@ summary: A journey of a homelab from scratch to a fully functional setup.
 cover: ./cover.jpg
 date: 2025-08-25
 tags:
-    - homelab
+  - homelab
 ---
 
 import MdxImage from "src/components/mdx/MdxImage.astro";
@@ -1281,6 +1281,47 @@ You can check the status of the Docker service with:
 systemctl status docker
 ```
 
+#### Service to prune Docker images and containers
+
+Create the service and timer files:
+
+```sh
+nano /etc/systemd/system/docker-cleanup.service
+```
+
+```ini
+[Unit]
+Description=Docker disk cleanup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=docker system prune -a -f
+```
+
+```sh
+nano /etc/systemd/system/docker-cleanup.timer
+```
+
+```ini
+[Unit]
+Description=Daily Docker cleanup
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+Enable the timer:
+
+```sh
+sudo systemctl enable --now docker-cleanup.timer
+```
+
 #### Container orchestration
 
 What I'm looking for in a Docker management tool/orchestrator:
@@ -2437,11 +2478,11 @@ Stucture and permissions:
 And then be careful with the permissions within the mounts themselves.
 
 To set all files to 640 and directories to 750 recursively from the current directory, you can use:
+
 ```sh
 chmod -R 640 .
 chmod -R u+X,g+X .
 ```
-
 
 ##### Ressource sharing
 
