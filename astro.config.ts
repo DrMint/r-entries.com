@@ -73,6 +73,7 @@ export default defineConfig({
   devToolbar: {
     enabled: false,
   },
+  cacheDir: "./.cache",
   site: env.SITE_URL,
   base: env.BASE_PATH,
 });
