@@ -87,7 +87,7 @@ const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
     localStorage.getItem("entries-page-scroll") ?? "{}"
   );
 
-  if (scroll.time < Date.now() + 3_000 && scroll.entryType === entryType) {
+  if (scroll.time < Date.now() - 3_000 && scroll.entryType === entryType) {
     window.scrollTo({ top: scroll.top, behavior: "instant" });
   }
 
