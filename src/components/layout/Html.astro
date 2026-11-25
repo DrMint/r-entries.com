@@ -126,7 +126,10 @@ const thumbnailUrl = new URL(thumbnail.src, Astro.url).toString();
   html {
     color-scheme: light dark;
     font-family: sans-serif;
-    scroll-behavior: smooth;
+
+    @media (prefers-reduced-motion: no-preference) {
+      scroll-behavior: smooth;
+    }
   }
 
   html,
