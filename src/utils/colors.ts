@@ -20,6 +20,8 @@ export const generateColorTheme = (
     "foreground-20": background.mix(foreground, 0.2).hex(),
     "foreground-30": background.mix(foreground, 0.3).hex(),
     "foreground-50": background.mix(foreground, 0.5).hex(),
+    // Lightest shade that keeps a 4.5:1 contrast ratio for text in both themes
+    "foreground-55": background.mix(foreground, 0.55).hex(),
     "foreground-60": background.mix(foreground, 0.6).hex(),
     "foreground-70": background.mix(foreground, 0.7).hex(),
     "foreground-80": background.mix(foreground, 0.8).hex(),
@@ -28,6 +30,7 @@ export const generateColorTheme = (
     "background-70-transparent": background.alpha(0.7).hexa(),
     "foreground-5-transparent": foreground.alpha(0.05).hexa(),
     "foreground-20-transparent": foreground.alpha(0.2).hexa(),
+    "foreground-70-transparent": foreground.alpha(0.7).hexa(),
   };
 };
 

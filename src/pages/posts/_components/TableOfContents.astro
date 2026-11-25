@@ -101,8 +101,10 @@ const toc = headings
 
       & li {
         padding-left: calc(var(--depth) * 16px);
-        opacity: max(calc(100% - 20% * (var(--depth))), 40%);
+        /* Below 60%, the text no longer meets the 4.5:1 contrast ratio */
+        opacity: max(calc(100% - 10% * (var(--depth))), 60%);
         font-weight: max(calc(700 - 200 * (var(--depth))), 400);
+        font-size: max(calc(1em - 0.1em * max(var(--depth) - 2, 0)), 0.8em);
 
         & > a {
           text-decoration: none;
