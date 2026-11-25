@@ -89,7 +89,7 @@ const queryEntries = <
   },
 >(
   entries: T[],
-  options?: QueryOptions,
+  options?: QueryOptions
 ) => {
   if (!options) return entries;
   const { tag, sort, order, maxCount } = options;
