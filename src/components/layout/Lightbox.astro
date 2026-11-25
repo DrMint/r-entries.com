@@ -23,6 +23,12 @@ const { "aria-hidden": ariaHidden, ...props } = Astro.props;
   const PADDING = 64;
   const MIN_UPSCALE_FACTOR = 1.1;
 
+  const reducedMotionQuery = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+  const getAnimDuration = () =>
+    reducedMotionQuery.matches ? 0 : ANIM_DURATION;
+
   const lightboxes = document.querySelectorAll<HTMLDivElement>(
     "[data-component='Lightbox']"
   );
@@ -110,6 +116,7 @@ const { "aria-hidden": ariaHidden, ...props } = Astro.props;
       if (isClickBlocked) return;
       isClickBlocked = true;
 
+      const animDuration = getAnimDuration();
       const pictureBoundingBox = picture.getBoundingClientRect();
       const imageBoundingBox = img.getBoundingClientRect();
 
@@ -119,7 +126,7 @@ const { "aria-hidden": ariaHidden, ...props } = Astro.props;
 
       lightbox.style.setProperty(
         "transition",
-        `backdrop-filter ${ANIM_DURATION}ms, background-color ${ANIM_DURATION}ms`
+        `backdrop-filter ${animDuration}ms, background-color ${animDuration}ms`
       );
       lightbox.style.setProperty("backdrop-filter", "blur(8px)");
       lightbox.style.setProperty(
@@ -147,7 +154,7 @@ const { "aria-hidden": ariaHidden, ...props } = Astro.props;
           "transition-property",
           "top, left, width, height"
         );
-        picture.style.setProperty("transition-duration", `${ANIM_DURATION}ms`);
+        picture.style.setProperty("transition-duration", `${animDuration}ms`);
         picture.style.setProperty("top", `${PADDING}px`);
         picture.style.setProperty("left", `${PADDING}px`);
         picture.style.setProperty("width", `calc(100% - ${PADDING * 2}px)`);
@@ -167,7 +174,7 @@ const { "aria-hidden": ariaHidden, ...props } = Astro.props;
             child.sizes = "100vw";
           }
         });
-      }, ANIM_DURATION);
+      }, animDuration);
     };
 
     const closeLightbox = () => {
@@ -176,6 +183,13 @@ const { "aria-hidden": ariaHidden, ...props } = Astro.props;
 
       document.removeEventListener("keydown", keydownListener);
       window.removeEventListener("resize", resizingListener);
+
+      const animDuration = getAnimDuration();
+      lightbox.style.setProperty(
+        "transition",
+        `backdrop-filter ${animDuration}ms, background-color ${animDuration}ms`
+      );
+      picture.style.setProperty("transition-duration", `${animDuration}ms`);
 
       // Step 4: Revert step 3
       picture.style.setProperty("top", `${previousPictureBoundingBox.top}px`);
@@ -212,7 +226,7 @@ const { "aria-hidden": ariaHidden, ...props } = Astro.props;
             child.sizes = initialSizes;
           }
         });
-      }, ANIM_DURATION);
+      }, animDuration);
     };
 
     lightbox.addEventListener("click", () => {

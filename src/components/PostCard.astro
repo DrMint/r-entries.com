@@ -56,8 +56,10 @@ const tags = post.data.tags?.map((tag) => ({ tag })) ?? [];
       background-color: var(--foreground-3);
       outline-color: var(--foreground-50);
 
-      & > [data-component="Image"] > img {
-        scale: 110%;
+      @media (prefers-reduced-motion: no-preference) {
+        & > [data-component="Image"] > img {
+          scale: 110%;
+        }
       }
 
       & > div {

@@ -51,8 +51,10 @@ const { image, priority } = Astro.props;
     &:focus-visible {
       outline-color: var(--foreground-50);
 
-      & > [data-component="Image"] > img {
-        scale: 110%;
+      @media (prefers-reduced-motion: no-preference) {
+        & > [data-component="Image"] > img {
+          scale: 110%;
+        }
       }
     }
 
