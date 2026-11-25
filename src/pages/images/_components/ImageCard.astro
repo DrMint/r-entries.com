@@ -6,9 +6,10 @@ import { getImageDescription } from "src/utils/text-descriptions";
 
 interface Props {
   image: CollectionEntry<"images">;
+  priority: boolean;
 }
 
-const { image } = Astro.props;
+const { image, priority } = Astro.props;
 ---
 
 <a
@@ -26,7 +27,7 @@ const { image } = Astro.props;
       256px"
     fallbackWidth={256}
     maxWidth={580}
-    priority
+    priority={priority}
     square
     aria-hidden="true"
   />

@@ -12,9 +12,9 @@ const { images } = Astro.props;
 ---
 
 <ul data-component="ImagesGrid" aria-label="Images">
-  {images.map((image) => (
+  {images.map((image, index) => (
     <li>
-      <ImageCard image={image} />
+      <ImageCard image={image} priority={index < 4} />
     </li>
   ))}
   {Array.from({ length: 4 }).map((_, index) => (
@@ -39,7 +39,7 @@ const { images } = Astro.props;
         fallbackWidth={580}
         type="transparent"
         square
-        priority
+        priority={false}
       />
     </div>
   ))}

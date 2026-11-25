@@ -46,7 +46,7 @@ const latestImages = images.slice(
               "hide-1": index >= MAX_IMAGES_HOMEPAGE.with1Column,
             }}
           >
-            <ImageCard image={image} />
+            <ImageCard image={image} priority={index < 4} />
           </li>
         ))}
       </ul>
