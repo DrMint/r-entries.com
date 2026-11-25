@@ -1,11 +1,16 @@
 ---
 import Html from "src/components/layout/Html.astro";
+import { getUrl } from "src/utils/navigation";
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html data-page="404">
-  <h1>404</h1>
+<Html openGraph={{ title: "Page not found" }} data-page="404">
+  <h1>404 – Page not found</h1>
+  <p>
+    This page doesn’t exist or may have moved.<br />
+    <a href={getUrl("/")}>Go back to the home page</a>.
+  </p>
 </Html>
 
 {/* ---------------------------------[ CSS ]-------------------------------- */}
@@ -16,6 +21,14 @@ import Html from "src/components/layout/Html.astro";
 
     & > h1 {
       margin-bottom: 1em;
+    }
+
+    & > p {
+      line-height: 1.5;
+
+      & > a {
+        text-decoration: underline;
+      }
     }
   }
 </style>

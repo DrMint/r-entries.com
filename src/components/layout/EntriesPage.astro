@@ -21,11 +21,16 @@ interface Props {
 
 const { title, entityName, count, activeTag, getTagLink } = Astro.props;
 const tags = ENABLE_TAG_FEATURE ? (Astro.props.tags ?? []) : [];
+const pageTitle = activeTag ? `${title} tagged "${activeTag}"` : title;
 ---
 
 {/* --------------------------------[ HTML ]-------------------------------- */}
 
-<Html data-page="EntriesPage" data-entry-type={title}>
+<Html
+  openGraph={{ title: pageTitle }}
+  data-page="EntriesPage"
+  data-entry-type={title}
+>
   <h1>{title}</h1>
   <p>{getEntriesPageDescription(count, entityName, activeTag)}</p>
   {tags.length > 0 && (
