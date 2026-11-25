@@ -60,10 +60,11 @@ const fallback = await responsiveImage.getFallback(fallbackWidth);
     <a
       href={responsiveImage.original.src}
       title="Open original"
+      aria-label="Open original image in a new tab"
       target="_blank"
       {...otherProps}
     >
-      <DownloadIcon />
+      <DownloadIcon aria-hidden="true" />
     </a>
   )}
 </picture>
@@ -81,7 +82,7 @@ const fallback = await responsiveImage.getFallback(fallbackWidth);
       }
 
       &:hover > a,
-      &:focus-visible > a {
+      & > a:focus-visible {
         opacity: 1;
       }
     }
