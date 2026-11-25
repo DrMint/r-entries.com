@@ -1,5 +1,5 @@
 ---
-import MdxImageImage from "src/components/mdx/MdxImageImage.astro";
+import Lightbox from "src/components/layout/Lightbox.astro";
 
 interface Props {
   src: ImageMetadata;
@@ -15,7 +15,14 @@ const text = caption === true ? alt : caption;
 
 <figure aria-hidden={text === undefined ? "true" : undefined}>
   <div aria-hidden={alt === undefined ? "true" : undefined}>
-    <MdxImageImage src={src} alt={alt} />
+    <Lightbox
+      src={src}
+      alt={alt}
+      sizes="(max-width: 650px) 100vw, 610px"
+      fallbackWidth={580}
+      priority={false}
+      openOriginal
+    />
   </div>
   {text && <figcaption>{caption === true ? alt : caption}</figcaption>}
 </figure>
@@ -32,6 +39,38 @@ const text = caption === true ? alt : caption;
       margin-bottom: 2em;
       color: var(--foreground-60);
       text-align: center;
+    }
+  }
+
+  picture {
+    width: 100%;
+
+    & > img {
+      --mobile-footer-height: 80px;
+
+      max-height: calc(100dvh);
+
+      @media (-moz-touch-enabled: 1), (pointer: coarse) {
+        max-height: calc(100dvh - var(--mobile-footer-height));
+      }
+
+      @media (max-height: 500px) {
+        max-height: unset;
+      }
+
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      margin-inline: auto;
+      border: 1px solid var(--layout-border);
+
+      background-color: var(--background);
+      background-image: radial-gradient(
+        var(--layout-border) 20%,
+        transparent 30%
+      );
+      background-size: 12px 12px;
+      background-repeat: space;
     }
   }
 </style>
